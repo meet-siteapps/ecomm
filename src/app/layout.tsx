@@ -1,12 +1,14 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
+import { Header } from '@/components/layout/Header';
+import { Footer } from '@/components/layout/Footer';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 export const metadata: Metadata = {
-  title: 'Next.js App',
-  description: 'Clean Next.js starting point',
+  title: 'The Shop | Simple & Minimal Storefront',
+  description: 'A clean, modern e-commerce shopping destination.',
 };
 
 export default function RootLayout({
@@ -16,8 +18,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>
-      <body className="min-h-screen bg-slate-50 text-slate-900 font-sans antialiased" suppressHydrationWarning>
-        {children}
+      <body
+        className="min-h-screen flex flex-col bg-[#FFFFFF] text-[#1F2937] font-sans antialiased"
+        suppressHydrationWarning
+      >
+        <Header />
+        <main className="flex-1">{children}</main>
+        <Footer />
       </body>
     </html>
   );
