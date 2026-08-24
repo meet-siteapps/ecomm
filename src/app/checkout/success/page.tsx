@@ -86,6 +86,15 @@ function CheckoutSuccessContent() {
             </span>
           </div>
 
+          {/* Payment Method Notice */}
+          <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200/80 flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="font-bold text-emerald-900">Payment Method: Cash on Delivery (COD)</span>
+            </div>
+            <span className="text-emerald-700 font-semibold">Pay ₹{order.total.toLocaleString('en-IN')} upon delivery</span>
+          </div>
+
           {/* Shipping Address */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-gray-600">
             <div className="p-4 rounded-2xl bg-gray-50/70 border border-gray-100 space-y-1.5">
@@ -135,7 +144,7 @@ function CheckoutSuccessContent() {
 
               {/* Total Row */}
               <div className="flex justify-between items-baseline pt-2">
-                <span className="text-sm font-bold text-[#1F2937]">Grand Total Paid/Pending:</span>
+                <span className="text-sm font-bold text-[#1F2937]">Total Amount Due on Delivery:</span>
                 <span className="text-lg font-extrabold text-[#1F2937]">
                   ₹{order.total.toLocaleString('en-IN')}
                 </span>

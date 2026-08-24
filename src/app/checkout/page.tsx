@@ -18,7 +18,10 @@ import {
   AlertCircle,
   Loader2,
   Lock,
-  Truck
+  Truck,
+  Banknote,
+  CreditCard,
+  CheckCircle2
 } from 'lucide-react';
 import { useCartStore } from '@/store/useCartStore';
 import { useAuthStore } from '@/store/useAuthStore';
@@ -56,6 +59,7 @@ export default function CheckoutPage() {
   const [city, setCity] = useState('');
   const [state, setState] = useState('Gujarat');
   const [pincode, setPincode] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState<'cod' | 'razorpay'>('cod');
 
   const [error, setError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -135,7 +139,7 @@ export default function CheckoutPage() {
     setIsProcessing(true);
 
     try {
-      // 2. Validate Stock & Create Pending Order in Supabase
+      // 2. Validate Stock & Create Pending COD Order in Supabase
       const result = await validateStockAndCreatePendingOrder({
         userId: user?.id || null,
         customerName: name.trim(),
@@ -168,7 +172,7 @@ export default function CheckoutPage() {
       clearCart();
 
       // 4. Redirect to order success page
-      router.push(`/checkout/success?order_number=${encodeURIComponent(createdOrder.order_number)}&order_id=${createdOrder.id}`);
+      router.push(`/checkout/success?order_number=${encodeURIComponent(createdOrder.order_number)}&order_id=${createdOrder.id}&payment_method=cod`);
     } catch (err: any) {
       console.error('Checkout error:', err);
       setError(err.message || 'An unexpected error occurred. Please try again.');
@@ -185,7 +189,7 @@ export default function CheckoutPage() {
             Checkout
           </h1>
           <p className="text-xs text-gray-500 mt-0.5">
-            Enter your shipping destination to place your order
+            Enter your delivery details and choose your payment method
           </p>
         </div>
 
@@ -201,7 +205,7 @@ export default function CheckoutPage() {
       {/* Main Grid: Form (Left) & Order Summary (Right) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* ============================================================ */}
-        {/* LEFT: SHIPPING & CONTACT DETAILS FORM */}
+        {/* LEFT: SHIPPING, CONTACT & PAYMENT FORM */}
         {/* ============================================================ */}
         <div className="lg:col-span-8">
           <form onSubmit={handleCheckoutSubmit} className="space-y-6">
@@ -356,6 +360,86 @@ export default function CheckoutPage() {
               </div>
             </div>
 
+            {/* 3. Payment Method Card (COD fully working + Razorpay Coming Soon) */}
+            <div className="bg-white p-6 rounded-3xl border border-gray-200/80 shadow-xs space-y-4">
+              <h2 className="text-sm font-bold text-[#1F2937] uppercase tracking-wider flex items-center gap-2 border-b border-gray-100 pb-3">
+                <Banknote className="w-4 h-4 text-[#4DA3FF]" />
+                <span>3. Payment Method</span>
+              </h2>
+
+              <div className="space-y-3">
+                {/* Cash on Delivery (Active / Default) */}
+                <label
+                  onClick={() => setPaymentMethod('cod')}
+                  className={`flex items-start justify-between p-4 rounded-2xl border-2 transition-all cursor-pointer ${
+                    paymentMethod === 'cod'
+                      ? 'border-[#4DA3FF] bg-[#EAF6FF]/30 shadow-xs'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className="flex items-start gap-3.5">
+                    <div className="mt-0.5">
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        checked={paymentMethod === 'cod'}
+                        onChange={() => setPaymentMethod('cod')}
+                        className="w-4 h-4 text-[#4DA3FF] focus:ring-[#4DA3FF]"
+                      />
+                    </div>
+                    <div className="space-y-0.5">
+                      <div className="flex items-center gap-2">
+                        <Banknote className="w-4 h-4 text-emerald-600" />
+                        <span className="text-xs sm:text-sm font-bold text-[#1F2937]">
+                          Cash on Delivery (COD)
+                        </span>
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800 uppercase tracking-wide">
+                          Available
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-500">
+                        Pay with cash or UPI at your doorstep upon order delivery.
+                      </p>
+                    </div>
+                  </div>
+                  <CheckCircle2
+                    className={`w-5 h-5 ${
+                      paymentMethod === 'cod' ? 'text-[#4DA3FF]' : 'text-gray-300'
+                    }`}
+                  />
+                </label>
+
+                {/* Online Payment / Razorpay (Disabled - Coming Soon) */}
+                <div className="flex items-start justify-between p-4 rounded-2xl border border-gray-200 bg-gray-50/70 opacity-75 cursor-not-allowed">
+                  <div className="flex items-start gap-3.5">
+                    <div className="mt-0.5">
+                      <input
+                        type="radio"
+                        disabled
+                        name="paymentMethod"
+                        checked={false}
+                        className="w-4 h-4 text-gray-300 cursor-not-allowed"
+                      />
+                    </div>
+                    <div className="space-y-0.5">
+                      <div className="flex items-center gap-2">
+                        <CreditCard className="w-4 h-4 text-gray-400" />
+                        <span className="text-xs sm:text-sm font-bold text-gray-600">
+                          Online Payment (Razorpay: UPI / Cards / NetBanking)
+                        </span>
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-purple-100 text-purple-700 uppercase tracking-wide">
+                          Coming Soon
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-400">
+                        Online payment gateway integration will be available shortly in Phase 10.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Place Order CTA button (Mobile/Desktop) */}
             <button
               type="submit"
@@ -365,12 +449,12 @@ export default function CheckoutPage() {
               {isProcessing ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  <span>Validating Stock & Placing Order...</span>
+                  <span>Validating Stock & Placing COD Order...</span>
                 </>
               ) : (
                 <>
                   <Lock className="w-4 h-4" />
-                  <span>Place Pending Order (₹{total.toLocaleString('en-IN')})</span>
+                  <span>Place COD Order (₹{total.toLocaleString('en-IN')})</span>
                 </>
               )}
             </button>
@@ -449,11 +533,11 @@ export default function CheckoutPage() {
             <div className="pt-2 border-t border-gray-100 text-[11px] text-gray-500 space-y-1.5">
               <div className="flex items-center gap-1.5">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span>SSL Encrypted Checkout</span>
+                <span>Cash on Delivery Verified</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <Truck className="w-3.5 h-3.5 text-[#4DA3FF] shrink-0" />
-                <span>Standard Delivery in 3-5 business days</span>
+                <span>Delivery within 3-5 business days</span>
               </div>
             </div>
           </div>
