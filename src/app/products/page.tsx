@@ -1,10 +1,12 @@
 'use client';
 
-import { useState, useMemo, Suspense } from 'react';
+import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { SAMPLE_PRODUCTS, SAMPLE_CATEGORIES } from '@/data/sampleProducts';
 import { ProductCard } from '@/components/products/ProductCard';
-import { Search, SlidersHorizontal, X, ArrowUpDown, ChevronDown } from 'lucide-react';
+import { getProducts } from '@/lib/supabase/products';
+import { Product } from '@/types/product';
+import { SAMPLE_CATEGORIES } from '@/data/sampleProducts';
+import { Search, SlidersHorizontal, X, ArrowUpDown, Loader2 } from 'lucide-react';
 
 const AGE_GROUPS = ['All Ages', '0–12 Months', '1–4 Years', '6–18 Months', '6+ Months'];
 const SORT_OPTIONS = [
@@ -19,6 +21,9 @@ function ProductsContent() {
   const initialSearch = searchParams.get('search') || '';
   const initialCategory = searchParams.get('category') || 'all';
 
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   const [search, setSearch] = useState(initialSearch);
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [selectedAge, setSelectedAge] = useState('All Ages');
@@ -26,9 +31,43 @@ function ProductsContent() {
   const [sortBy, setSortBy] = useState('featured');
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
-  // Filter and Sort Logic
+  // Sync URL search params if changed
+  useEffect(() => {
+    if (searchParams.get('search')) {
+      setSearch(searchParams.get('search') || '');
+    }
+    if (searchParams.get('category')) {
+      setSelectedCategory(searchParams.get('category') || 'all');
+    }
+  }, [searchParams]);
+
+  // Load products from Supabase
+  useEffect(() => {
+    let isMounted = true;
+    async function load() {
+      setIsLoading(true);
+      try {
+        const data = await getProducts();
+        if (isMounted) {
+          setProducts(data);
+        }
+      } catch (err) {
+        console.error('Failed to load products:', err);
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    }
+    load();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Filter and Sort Logic in memory over loaded database products
   const filteredProducts = useMemo(() => {
-    return SAMPLE_PRODUCTS.filter((product) => {
+    return products.filter((product) => {
       // Search query
       if (search.trim()) {
         const query = search.toLowerCase();
@@ -64,7 +103,7 @@ function ProductsContent() {
       if (sortBy === 'discount') return b.discount - a.discount;
       return 0; // default featured
     });
-  }, [search, selectedCategory, selectedAge, maxPrice, sortBy]);
+  }, [products, search, selectedCategory, selectedAge, maxPrice, sortBy]);
 
   const clearFilters = () => {
     setSearch('');
@@ -86,7 +125,9 @@ function ProductsContent() {
             All Products
           </h1>
           <p className="text-xs sm:text-sm text-gray-500 mt-1">
-            Showing {filteredProducts.length} {filteredProducts.length === 1 ? 'product' : 'products'}
+            {isLoading
+              ? 'Loading products...'
+              : `Showing ${filteredProducts.length} ${filteredProducts.length === 1 ? 'product' : 'products'}`}
           </p>
         </div>
 
@@ -235,7 +276,12 @@ function ProductsContent() {
 
         {/* Product Cards Grid Area */}
         <section className="lg:col-span-3">
-          {filteredProducts.length > 0 ? (
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center py-20 gap-3 text-gray-400">
+              <Loader2 className="w-8 h-8 animate-spin text-[#4DA3FF]" />
+              <span className="text-xs font-medium">Fetching catalog from database...</span>
+            </div>
+          ) : filteredProducts.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
               {filteredProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />

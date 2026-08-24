@@ -7,24 +7,17 @@ export interface Product {
   images: string[];
   mrp: number;
   price: number;
-  discount: number; // in percentage e.g. 20
-  stock: number;
-  is_active: boolean;
-  
-  // Basic Info
-  description?: string;
-
-  // Optional specifications (Dynamically rendered only when populated)
+  discount: number; // percentage discount (e.g. 20)
   age_group?: string;
   size?: string;
   colour?: string;
   material?: string;
-  dimensions?: string;
-  weight?: string;
-  key_features?: string[];
+  description?: string;
   whats_included?: string[];
+  key_features?: string[];
   care_instructions?: string;
-  
+  stock: number;
+  is_active: boolean;
   created_at?: string;
   updated_at?: string;
 }

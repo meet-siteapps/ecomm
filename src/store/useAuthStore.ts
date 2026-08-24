@@ -32,7 +32,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error fetching user profile:', error.message);
@@ -43,6 +43,22 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         set({ profile: data as UserProfile });
         return data as UserProfile;
       }
+
+      // Fallback to user metadata if database profile row is not created yet
+      const { data: authData } = await supabase.auth.getUser();
+      if (authData?.user && authData.user.id === userId) {
+        const meta = authData.user.user_metadata || {};
+        const fallbackProfile: UserProfile = {
+          id: userId,
+          name: meta.name || meta.full_name || authData.user.email?.split('@')[0] || 'User',
+          email: authData.user.email || '',
+          phone: meta.phone || '',
+          role: (meta.role as any) || 'customer',
+        };
+        set({ profile: fallbackProfile });
+        return fallbackProfile;
+      }
+
       return null;
     } catch (err) {
       console.error('Error in fetchProfile:', err);

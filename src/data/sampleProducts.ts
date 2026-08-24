@@ -55,9 +55,9 @@ export const SAMPLE_PRODUCTS: Product[] = [
     is_active: true,
     description: 'Natural beechwood stacking toy designed to promote fine motor skills and color recognition.',
     age_group: '1–4 Years',
+    size: 'One Size',
+    colour: 'Multicolor Pastel',
     material: 'Natural Beech Wood, Non-toxic Water-based Paint',
-    dimensions: '18 cm x 10 cm x 10 cm',
-    weight: '450 grams',
     key_features: [
       'Smooth, rounded edges for safe sensory play',
       'Non-toxic eco-friendly water-based colors',
@@ -146,9 +146,7 @@ export const SAMPLE_PRODUCTS: Product[] = [
     discount: 28,
     stock: 12,
     is_active: true,
-    description: 'Spacious, water-resistant canvas backpack equipped with insulated bottle pockets and stroller straps.',
-    dimensions: '40 cm x 30 cm x 18 cm',
-    weight: '850 grams',
+    size: 'Large (22L)',
     colour: 'Oatmeal & Navy',
     material: 'Waterproof Canvas & Vegan Leather Trim',
     key_features: [

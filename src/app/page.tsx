@@ -1,10 +1,13 @@
 import Link from 'next/link';
-import { ShoppingBag, ArrowRight, Sparkles, Tag, ShieldCheck, Heart } from 'lucide-react';
-import { SAMPLE_PRODUCTS, SAMPLE_CATEGORIES } from '@/data/sampleProducts';
+import { ShoppingBag, ArrowRight, Sparkles, Tag } from 'lucide-react';
+import { SAMPLE_CATEGORIES } from '@/data/sampleProducts';
 import { ProductCard } from '@/components/products/ProductCard';
+import { getProducts } from '@/lib/supabase/products';
 
-export default function HomePage() {
-  const featuredProducts = SAMPLE_PRODUCTS.slice(0, 4);
+export const revalidate = 60; // Revalidate every 60s for fresh products
+
+export default async function HomePage() {
+  const featuredProducts = await getProducts({ limit: 4 });
 
   return (
     <div className="w-full space-y-12 sm:space-y-16 pb-12">

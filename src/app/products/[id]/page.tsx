@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, use } from 'react';
+import { useState, useEffect, use } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -9,20 +9,18 @@ import {
   Zap,
   Check,
   ChevronLeft,
-  ShieldCheck,
   Package,
-  Layers,
   Sparkles,
   Info,
   Calendar,
   Ruler,
   Palette,
   Feather,
-  Box,
-  Scale,
-  HeartHandshake
+  HeartHandshake,
+  Loader2
 } from 'lucide-react';
-import { SAMPLE_PRODUCTS } from '@/data/sampleProducts';
+import { getProductById } from '@/lib/supabase/products';
+import { Product } from '@/types/product';
 import { useCartStore } from '@/store/useCartStore';
 import { PincodeChecker } from '@/components/products/PincodeChecker';
 
@@ -35,13 +33,46 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   const router = useRouter();
   const addItem = useCartStore((state) => state.addItem);
 
-  const product = SAMPLE_PRODUCTS.find((p) => p.id === id);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState<string>('');
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [added, setAdded] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function load() {
+      setIsLoading(true);
+      try {
+        const data = await getProductById(id);
+        if (isMounted) {
+          setProduct(data);
+        }
+      } catch (err) {
+        console.error('Failed to load product details:', err);
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    }
+    load();
+    return () => {
+      isMounted = false;
+    };
+  }, [id]);
+
+  if (isLoading) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-24 text-center space-y-4">
+        <Loader2 className="w-8 h-8 animate-spin text-[#4DA3FF] mx-auto" />
+        <p className="text-xs text-gray-500 font-medium">Loading product details...</p>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -63,12 +94,12 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
 
   // Parse color options if provided
   const colorOptions = product.colour
-    ? product.colour.split(',').map((c) => c.trim())
+    ? product.colour.split(',').map((c) => c.trim()).filter(Boolean)
     : [];
 
   // Parse size options if provided
   const sizeOptions = product.size
-    ? product.size.split(',').map((s) => s.trim())
+    ? product.size.split(',').map((s) => s.trim()).filter(Boolean)
     : [];
 
   const handleAddToCart = () => {
@@ -93,8 +124,6 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     product.size ||
     product.colour ||
     product.material ||
-    product.dimensions ||
-    product.weight ||
     (product.key_features && product.key_features.length > 0) ||
     (product.whats_included && product.whats_included.length > 0) ||
     product.care_instructions
@@ -163,8 +192,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
         </div>
 
         {/* ============================================================ */}
-        {/* 2. PRODUCT MAIN INFO & ACTIONS (Exact Roadmap Flow) */}
-        {/* Images -> Name -> Price -> Options -> Quantity -> Cart/Buy -> Delivery -> Description -> Available Details */}
+        {/* 2. PRODUCT MAIN INFO & ACTIONS */}
         {/* ============================================================ */}
         <div className="lg:col-span-6 space-y-6">
           {/* Brand & Name */}
@@ -339,8 +367,8 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
           )}
 
           {/* ============================================================ */}
-          {/* 3. OPTIONAL PRODUCT DETAILS (Dynamic Display Rule) */}
-          {/* Only rendered if populated. Never shows empty fields/labels. */}
+          {/* 3. OPTIONAL PRODUCT DETAILS */}
+          {/* Only rendered if populated. Never shows empty fields. */}
           {/* ============================================================ */}
           {hasSpecifications && (
             <div className="pt-4 border-t border-gray-100 space-y-4">
@@ -390,28 +418,6 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                     <div>
                       <span className="text-gray-400 font-medium block">Material</span>
                       <span className="font-semibold text-[#1F2937]">{product.material}</span>
-                    </div>
-                  </div>
-                )}
-
-                {/* Dimensions */}
-                {product.dimensions && (
-                  <div className="p-3 rounded-xl bg-slate-50 border border-gray-100 flex items-start gap-2.5">
-                    <Box className="w-4 h-4 text-[#4DA3FF] shrink-0 mt-0.5" />
-                    <div>
-                      <span className="text-gray-400 font-medium block">Dimensions</span>
-                      <span className="font-semibold text-[#1F2937]">{product.dimensions}</span>
-                    </div>
-                  </div>
-                )}
-
-                {/* Weight */}
-                {product.weight && (
-                  <div className="p-3 rounded-xl bg-slate-50 border border-gray-100 flex items-start gap-2.5">
-                    <Scale className="w-4 h-4 text-[#4DA3FF] shrink-0 mt-0.5" />
-                    <div>
-                      <span className="text-gray-400 font-medium block">Weight</span>
-                      <span className="font-semibold text-[#1F2937]">{product.weight}</span>
                     </div>
                   </div>
                 )}
