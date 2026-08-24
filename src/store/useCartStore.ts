@@ -4,6 +4,9 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { CartItem, Product } from '@/types/product';
 
+const FREE_SHIPPING_THRESHOLD = 999;
+const STANDARD_SHIPPING_FEE = 99;
+
 interface CartState {
   items: CartItem[];
   addItem: (product: Product, quantity?: number, selectedColor?: string, selectedSize?: string) => void;
@@ -12,17 +15,25 @@ interface CartState {
   clearCart: () => void;
   getTotalItems: () => number;
   getSubtotal: () => number;
+  getShippingFee: () => number;
+  getTotalSavings: () => number;
+  getTotal: () => number;
+  freeShippingThreshold: number;
 }
 
 export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       items: [],
+      freeShippingThreshold: FREE_SHIPPING_THRESHOLD,
 
       addItem: (product, quantity = 1, selectedColor, selectedSize) => {
         set((state) => {
           const existingIndex = state.items.findIndex(
-            (item) => item.product.id === product.id
+            (item) =>
+              item.product.id === product.id &&
+              item.selectedColor === selectedColor &&
+              item.selectedSize === selectedSize
           );
 
           if (existingIndex > -1) {
@@ -87,6 +98,29 @@ export const useCartStore = create<CartState>()(
           (total, item) => total + item.product.price * item.quantity,
           0
         );
+      },
+
+      getShippingFee: () => {
+        const subtotal = get().getSubtotal();
+        if (subtotal === 0 || subtotal >= FREE_SHIPPING_THRESHOLD) {
+          return 0;
+        }
+        return STANDARD_SHIPPING_FEE;
+      },
+
+      getTotalSavings: () => {
+        return get().items.reduce((savings, item) => {
+          if (item.product.mrp > item.product.price) {
+            return savings + (item.product.mrp - item.product.price) * item.quantity;
+          }
+          return savings;
+        }, 0);
+      },
+
+      getTotal: () => {
+        const subtotal = get().getSubtotal();
+        const shipping = get().getShippingFee();
+        return subtotal + shipping;
       },
     }),
     {
