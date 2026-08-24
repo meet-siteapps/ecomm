@@ -1,5 +1,5 @@
 export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded';
-export type OrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+export type OrderStatus = 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
 
 export interface ShippingAddress {
   fullName: string;

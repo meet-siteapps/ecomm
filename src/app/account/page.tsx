@@ -1,10 +1,38 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { User, Mail, Phone, ShieldCheck, LogOut, Package, ShoppingBag, ArrowRight, Loader2 } from 'lucide-react';
+import {
+  User,
+  Mail,
+  Phone,
+  ShieldCheck,
+  LogOut,
+  Package,
+  ShoppingBag,
+  ArrowRight,
+  Loader2,
+  Clock,
+  CheckCircle2,
+  AlertCircle,
+  Truck,
+  CreditCard,
+  Banknote,
+  ChevronRight
+} from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
+import { getUserOrders } from '@/lib/supabase/orders';
+import { Order, OrderStatus } from '@/types/order';
+
+const STATUS_BADGES: Record<OrderStatus, { label: string; bg: string; text: string; border: string }> = {
+  pending: { label: 'Pending Confirmation', bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200' },
+  confirmed: { label: 'Order Confirmed', bg: 'bg-cyan-50', text: 'text-cyan-700', border: 'border-cyan-200' },
+  processing: { label: 'Processing', bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200' },
+  shipped: { label: 'Shipped / In Transit', bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200' },
+  delivered: { label: 'Delivered', bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200' },
+  cancelled: { label: 'Cancelled', bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200' },
+};
 
 export default function AccountPage() {
   const user = useAuthStore((state) => state.user);
@@ -13,11 +41,33 @@ export default function AccountPage() {
   const signOut = useAuthStore((state) => state.signOut);
   const router = useRouter();
 
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loadingOrders, setLoadingOrders] = useState(true);
+
   useEffect(() => {
     if (!isLoading && !user) {
       router.push('/login');
     }
   }, [isLoading, user, router]);
+
+  useEffect(() => {
+    async function loadOrders() {
+      if (user?.id) {
+        setLoadingOrders(true);
+        try {
+          const userOrders = await getUserOrders(user.id);
+          setOrders(userOrders);
+        } catch (err) {
+          console.error('Failed to load user orders:', err);
+        } finally {
+          setLoadingOrders(false);
+        }
+      }
+    }
+    if (user?.id) {
+      loadOrders();
+    }
+  }, [user?.id]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -36,8 +86,10 @@ export default function AccountPage() {
   const isAdmin = profile?.role === 'admin';
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
-      {/* Header Profile Summary */}
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8">
+      {/* ============================================================ */}
+      {/* STEP 23 — ACCOUNT HEADER & PROFILE DETAILS */}
+      {/* ============================================================ */}
       <div className="bg-white p-6 sm:p-8 rounded-3xl border border-gray-200/80 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 rounded-2xl bg-[#EAF6FF] text-[#4DA3FF] flex items-center justify-center text-xl font-extrabold shadow-xs">
@@ -58,97 +110,177 @@ export default function AccountPage() {
                 {isAdmin ? 'Store Admin' : 'Customer'}
               </span>
             </div>
-            <p className="text-xs text-gray-500 flex items-center gap-1.5">
-              <Mail className="w-3.5 h-3.5 text-gray-400" />
-              <span>{user.email}</span>
-            </p>
+            <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500">
+              <span className="flex items-center gap-1.5">
+                <Mail className="w-3.5 h-3.5 text-gray-400" />
+                <span>{user.email}</span>
+              </span>
+              {profile?.phone && (
+                <span className="flex items-center gap-1.5">
+                  <Phone className="w-3.5 h-3.5 text-gray-400" />
+                  <span>{profile.phone}</span>
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Sign Out Button */}
-        <button
-          type="button"
-          onClick={handleSignOut}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-red-200 text-red-600 hover:bg-red-50 text-xs font-bold transition-colors shadow-2xs self-start sm:self-auto"
-        >
-          <LogOut className="w-4 h-4" />
-          <span>Sign Out</span>
-        </button>
+        {/* Action buttons */}
+        <div className="flex items-center gap-3 self-start sm:self-auto">
+          {isAdmin && (
+            <Link
+              href="/admin"
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 text-xs font-bold border border-purple-200 transition-colors shadow-2xs"
+            >
+              <ShieldCheck className="w-4 h-4 text-purple-700" />
+              <span>Admin Panel</span>
+            </Link>
+          )}
+
+          <button
+            type="button"
+            onClick={handleSignOut}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-red-200 text-red-600 hover:bg-red-50 text-xs font-bold transition-colors shadow-2xs"
+          >
+            <LogOut className="w-4 h-4" />
+            <span>Sign Out</span>
+          </button>
+        </div>
       </div>
 
-      {/* Account Info Details & Navigation */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Profile Info Card */}
-        <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-xs space-y-4">
-          <h2 className="text-sm font-bold text-[#1F2937] uppercase tracking-wider flex items-center gap-2">
-            <User className="w-4 h-4 text-[#4DA3FF]" />
-            Personal Details
-          </h2>
-
-          <div className="space-y-3 text-xs">
-            <div className="flex justify-between py-2 border-b border-gray-100">
-              <span className="text-gray-400">Full Name</span>
-              <span className="font-semibold text-[#1F2937]">{profile?.name || '—'}</span>
-            </div>
-            <div className="flex justify-between py-2 border-b border-gray-100">
-              <span className="text-gray-400">Email Address</span>
-              <span className="font-semibold text-[#1F2937]">{user.email}</span>
-            </div>
-            <div className="flex justify-between py-2 border-b border-gray-100">
-              <span className="text-gray-400">Phone</span>
-              <span className="font-semibold text-[#1F2937]">{profile?.phone || 'Not provided'}</span>
-            </div>
-            <div className="flex justify-between py-2">
-              <span className="text-gray-400">Account Type</span>
-              <span className="font-semibold text-[#1F2937] capitalize">{profile?.role || 'customer'}</span>
-            </div>
+      {/* ============================================================ */}
+      {/* STEP 24 — MY ORDERS */}
+      {/* ============================================================ */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <Package className="w-5 h-5 text-[#4DA3FF]" />
+            <h2 className="text-lg sm:text-xl font-extrabold text-[#1F2937] tracking-tight">
+              My Orders
+            </h2>
           </div>
+          <span className="text-xs font-semibold text-gray-500">
+            {orders.length} {orders.length === 1 ? 'order' : 'orders'} placed
+          </span>
         </div>
 
-        {/* Quick Actions Card */}
-        <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-xs space-y-4">
-          <h2 className="text-sm font-bold text-[#1F2937] uppercase tracking-wider flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-[#4DA3FF]" />
-            Quick Navigation
-          </h2>
-
-          <div className="space-y-2.5">
-            {isAdmin && (
-              <Link
-                href="/admin"
-                className="flex items-center justify-between p-3.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-200 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <ShieldCheck className="w-4 h-4 text-purple-700" />
-                  <span className="text-xs font-bold">Admin Management Dashboard</span>
-                </div>
-                <ArrowRight className="w-4 h-4 text-purple-600" />
-              </Link>
-            )}
-
+        {loadingOrders ? (
+          <div className="bg-white p-12 rounded-3xl border border-gray-200/80 text-center space-y-3 shadow-xs">
+            <Loader2 className="w-7 h-7 text-[#4DA3FF] animate-spin mx-auto" />
+            <p className="text-xs text-gray-500">Loading your purchase history...</p>
+          </div>
+        ) : orders.length === 0 ? (
+          <div className="bg-white p-12 rounded-3xl border border-gray-200/80 text-center space-y-4 shadow-xs">
+            <div className="w-14 h-14 rounded-2xl bg-gray-50 text-gray-400 flex items-center justify-center mx-auto">
+              <ShoppingBag className="w-7 h-7" />
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-sm font-bold text-[#1F2937]">No orders yet</h3>
+              <p className="text-xs text-gray-500 max-w-sm mx-auto">
+                You haven&apos;t placed any orders yet. Discover our collection of baby essentials.
+              </p>
+            </div>
             <Link
               href="/products"
-              className="flex items-center justify-between p-3.5 rounded-xl bg-[#EAF6FF]/50 hover:bg-[#EAF6FF] text-[#1F2937] border border-gray-200/60 transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#4DA3FF] hover:bg-[#2B8BE6] text-white text-xs font-bold transition-all shadow-xs"
             >
-              <div className="flex items-center gap-3">
-                <ShoppingBag className="w-4 h-4 text-[#4DA3FF]" />
-                <span className="text-xs font-semibold">Browse Products</span>
-              </div>
-              <ArrowRight className="w-4 h-4 text-gray-400" />
-            </Link>
-
-            <Link
-              href="/cart"
-              className="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-[#1F2937] border border-gray-200/60 transition-colors"
-            >
-              <div className="flex items-center gap-3">
-                <Package className="w-4 h-4 text-gray-600" />
-                <span className="text-xs font-semibold">View Shopping Cart</span>
-              </div>
-              <ArrowRight className="w-4 h-4 text-gray-400" />
+              <span>Start Shopping</span>
+              <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
-        </div>
+        ) : (
+          <div className="space-y-4">
+            {orders.map((order) => {
+              const statusBadge = STATUS_BADGES[order.order_status] || STATUS_BADGES.pending;
+
+              return (
+                <div
+                  key={order.id}
+                  className="bg-white rounded-3xl border border-gray-200/80 shadow-xs overflow-hidden divide-y divide-gray-100"
+                >
+                  {/* Order Top Meta */}
+                  <div className="p-5 bg-gray-50/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono font-bold text-[#4DA3FF] text-sm">
+                          {order.order_number}
+                        </span>
+                        <span
+                          className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase border ${statusBadge.bg} ${statusBadge.text} ${statusBadge.border}`}
+                        >
+                          {statusBadge.label}
+                        </span>
+                      </div>
+                      <span className="text-[11px] text-gray-400 block">
+                        Placed on{' '}
+                        {order.created_at
+                          ? new Date(order.created_at).toLocaleDateString('en-IN', {
+                              day: 'numeric',
+                              month: 'short',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })
+                          : 'Recently'}
+                      </span>
+                    </div>
+
+                    <div className="text-left sm:text-right">
+                      <span className="text-sm font-extrabold text-[#1F2937] block">
+                        ₹{order.total.toLocaleString('en-IN')}
+                      </span>
+                      <span className="text-[10px] text-gray-400 capitalize">
+                        Payment: {order.payment_status}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Order Items List */}
+                  <div className="p-5 space-y-3">
+                    {order.items && order.items.length > 0 ? (
+                      <div className="divide-y divide-gray-100">
+                        {order.items.map((item, idx) => (
+                          <div
+                            key={idx}
+                            className="py-2.5 first:pt-0 last:pb-0 flex items-center justify-between gap-4 text-xs"
+                          >
+                            <div>
+                              <span className="font-bold text-[#1F2937] block">{item.product_name}</span>
+                              <div className="flex items-center gap-2 text-[11px] text-gray-400 mt-0.5">
+                                <span>Quantity: {item.quantity}</span>
+                                {item.selected_colour && <span>• Color: {item.selected_colour}</span>}
+                                {item.selected_size && <span>• Size: {item.selected_size}</span>}
+                              </div>
+                            </div>
+                            <span className="font-bold text-[#1F2937] shrink-0">
+                              ₹{item.total.toLocaleString('en-IN')}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-gray-400">Order snapshot recorded</p>
+                    )}
+                  </div>
+
+                  {/* Order Shipping Summary Footer */}
+                  <div className="p-4 bg-gray-50/40 text-[11px] text-gray-500 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <span>
+                      Shipping to:{' '}
+                      <strong className="text-gray-700">
+                        {order.shipping_address?.fullName || order.customer_name}
+                      </strong>{' '}
+                      ({order.shipping_address?.city}, {order.shipping_address?.state})
+                    </span>
+                    <span className="text-emerald-700 font-semibold">
+                      Standard Delivery • 3-5 Business Days
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );
