@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ShoppingBag, Search, User, X, Shield } from 'lucide-react';
+import { ShoppingBag, Search, User, X, Shield, LogOut } from 'lucide-react';
 import { MobileMenu } from './MobileMenu';
 import { useCartStore } from '@/store/useCartStore';
 import { useAuthStore } from '@/store/useAuthStore';
@@ -17,6 +17,7 @@ export function Header() {
   const totalCartItems = useCartStore((state) => state.getTotalItems());
   const user = useAuthStore((state) => state.user);
   const profile = useAuthStore((state) => state.profile);
+  const signOut = useAuthStore((state) => state.signOut);
 
   useEffect(() => {
     setMounted(true);
@@ -33,6 +34,11 @@ export function Header() {
       router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
       setIsMobileSearchOpen(false);
     }
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.push('/login');
   };
 
   return (
@@ -101,7 +107,7 @@ export function Header() {
         </div>
 
         {/* Right Actions */}
-        <div className="flex items-center gap-1 sm:gap-3">
+        <div className="flex items-center gap-1 sm:gap-2">
           {/* Mobile Search Toggle Button */}
           <button
             type="button"
@@ -138,6 +144,20 @@ export function Header() {
             <User className="w-4 h-4 text-[#4DA3FF]" />
             <span>{isAuthenticated ? `Hi, ${displayName}` : 'Sign In'}</span>
           </Link>
+
+          {/* Quick Logout Button (Desktop) */}
+          {isAuthenticated && (
+            <button
+              type="button"
+              onClick={handleSignOut}
+              className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-gray-500 hover:text-red-600 hover:bg-red-50 border border-gray-200 hover:border-red-200 transition-all"
+              title="Sign Out"
+              aria-label="Sign Out"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Logout</span>
+            </button>
+          )}
 
           {/* Mobile Menu Trigger & Drawer */}
           <MobileMenu cartCount={cartCount} />
