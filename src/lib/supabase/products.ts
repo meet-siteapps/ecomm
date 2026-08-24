@@ -243,17 +243,47 @@ export async function getAdminDashboardStats() {
     // 2. Total customers from profiles
     const { count: totalCustomers } = await supabase
       .from('profiles')
+      .select('*', { count: 'exact', head: true });
+
+    // 3. Orders stats from orders table
+    const { count: totalOrders } = await supabase
+      .from('orders')
+      .select('*', { count: 'exact', head: true });
+
+    const { count: pendingOrders } = await supabase
+      .from('orders')
       .select('*', { count: 'exact', head: true })
-      .eq('role', 'customer');
+      .eq('order_status', 'pending');
+
+    // 4. Recent orders list
+    const { data: recentOrdersData } = await supabase
+      .from('orders')
+      .select('id, order_number, customer_name, total, order_status, created_at')
+      .order('created_at', { ascending: false })
+      .limit(5);
 
     return {
       totalProducts: totalProducts ?? SAMPLE_PRODUCTS.length,
       activeProducts: activeProducts ?? SAMPLE_PRODUCTS.length,
       lowStockProducts: lowStockProducts ?? 0,
-      totalCustomers: totalCustomers ?? 1,
-      totalOrders: 0,
-      pendingOrders: 0,
-      recentOrders: [],
+      totalCustomers: totalCustomers ?? 0,
+      totalOrders: totalOrders ?? 0,
+      pendingOrders: pendingOrders ?? 0,
+      recentOrders: (recentOrdersData || []).map((o) => ({
+        id: o.id,
+        order_number: o.order_number,
+        customer_name: o.customer_name,
+        amount: o.total,
+        status: o.order_status,
+        date: o.created_at
+          ? new Date(o.created_at).toLocaleDateString('en-IN', {
+              day: 'numeric',
+              month: 'short',
+              hour: '2-digit',
+              minute: '2-digit',
+            })
+          : 'Recently',
+      })),
     };
   } catch (err) {
     console.error('Error getting dashboard stats:', err);
@@ -261,7 +291,7 @@ export async function getAdminDashboardStats() {
       totalProducts: SAMPLE_PRODUCTS.length,
       activeProducts: SAMPLE_PRODUCTS.length,
       lowStockProducts: 0,
-      totalCustomers: 1,
+      totalCustomers: 0,
       totalOrders: 0,
       pendingOrders: 0,
       recentOrders: [],

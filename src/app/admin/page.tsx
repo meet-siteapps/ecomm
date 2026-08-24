@@ -184,12 +184,22 @@ export default function AdminDashboardPage() {
           ) : (
             <div className="divide-y divide-gray-100">
               {stats.recentOrders.map((order) => (
-                <div key={order.id} className="py-3 flex items-center justify-between">
-                  <div>
-                    <span className="text-xs font-bold text-[#1F2937]">#{order.id}</span>
-                    <span className="text-[11px] text-gray-400 block">{order.date}</span>
+                <div key={order.id} className="py-3.5 flex items-center justify-between gap-4 hover:bg-gray-50/60 transition-colors rounded-xl px-2">
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs font-bold text-[#4DA3FF]">
+                        {order.order_number || `#${order.id.slice(0, 8)}`}
+                      </span>
+                      <span className="px-2 py-0.5 rounded-md text-[10px] font-bold capitalize bg-amber-50 text-amber-700 border border-amber-200">
+                        {order.status}
+                      </span>
+                    </div>
+                    <p className="text-xs font-semibold text-[#1F2937]">{order.customer_name}</p>
+                    <span className="text-[10px] text-gray-400 block">{order.date}</span>
                   </div>
-                  <span className="text-xs font-bold text-[#1F2937]">₹{order.amount}</span>
+                  <span className="text-xs sm:text-sm font-extrabold text-[#1F2937]">
+                    ₹{order.amount.toLocaleString('en-IN')}
+                  </span>
                 </div>
               ))}
             </div>
