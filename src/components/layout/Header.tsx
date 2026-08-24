@@ -67,6 +67,14 @@ export function Header() {
           >
             All Products
           </Link>
+          {isAuthenticated && (
+            <Link
+              href="/account"
+              className="text-sm font-medium text-[#1F2937] hover:text-[#4DA3FF] transition-colors"
+            >
+              My Orders
+            </Link>
+          )}
           {isAdmin && (
             <Link
               href="/admin"

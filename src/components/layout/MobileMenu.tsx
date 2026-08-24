@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Menu, X, ShoppingBag, Search, User, Home, Grid, ChevronRight, Shield, LogOut } from 'lucide-react';
+import { Menu, X, ShoppingBag, Search, User, Home, Grid, ChevronRight, Shield, LogOut, Package } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
 
 interface MobileMenuProps {
@@ -153,6 +153,20 @@ export function MobileMenu({ cartCount = 0 }: MobileMenuProps) {
                       <span>Admin Panel</span>
                     </div>
                     <ChevronRight className="w-4 h-4 text-purple-400" />
+                  </Link>
+                )}
+
+                {isAuthenticated && (
+                  <Link
+                    href="/account"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-medium text-[#1F2937] hover:bg-[#EAF6FF] hover:text-[#4DA3FF] transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Package className="w-4 h-4 text-gray-500" />
+                      <span>My Orders</span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-gray-300" />
                   </Link>
                 )}
 
