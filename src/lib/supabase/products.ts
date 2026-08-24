@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/client';
 import { Product } from '@/types/product';
-import { SAMPLE_PRODUCTS, SAMPLE_CATEGORIES } from '@/data/sampleProducts';
+import { SAMPLE_PRODUCTS } from '@/data/sampleProducts';
 
 export interface ProductFilterOptions {
   search?: string;
@@ -114,6 +114,158 @@ export async function getProductById(id: string): Promise<Product | null> {
   } catch (err) {
     console.error('Error in getProductById:', err);
     return SAMPLE_PRODUCTS.find((p) => p.id === id) || null;
+  }
+}
+
+/**
+ * ==============================================================================
+ * ADMIN PRODUCT MANAGEMENT FUNCTIONS (Phase 6)
+ * ==============================================================================
+ */
+
+/**
+ * Fetch all products (both active & inactive) for Admin Catalog Management
+ */
+export async function getAllProductsAdmin(): Promise<Product[]> {
+  try {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching admin products:', error.message);
+      return SAMPLE_PRODUCTS;
+    }
+
+    return (data as Product[]) || [];
+  } catch (err) {
+    console.error('Error in getAllProductsAdmin:', err);
+    return SAMPLE_PRODUCTS;
+  }
+}
+
+/**
+ * Create a new product in Supabase
+ */
+export async function createProduct(
+  productData: Omit<Product, 'id' | 'created_at' | 'updated_at'>
+): Promise<Product> {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from('products')
+    .insert([productData])
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error creating product:', error);
+    throw new Error(error.message || 'Failed to create product');
+  }
+
+  return data as Product;
+}
+
+/**
+ * Update an existing product by ID
+ */
+export async function updateProduct(
+  id: string,
+  updates: Partial<Product>
+): Promise<Product> {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from('products')
+    .update({
+      ...updates,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error updating product:', error);
+    throw new Error(error.message || 'Failed to update product');
+  }
+
+  return data as Product;
+}
+
+/**
+ * Delete a product by ID
+ */
+export async function deleteProduct(id: string): Promise<boolean> {
+  const supabase = createClient();
+  const { error } = await supabase
+    .from('products')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    console.error('Error deleting product:', error);
+    throw new Error(error.message || 'Failed to delete product');
+  }
+
+  return true;
+}
+
+/**
+ * Quick toggle of active/inactive status
+ */
+export async function toggleProductStatus(id: string, is_active: boolean): Promise<Product> {
+  return updateProduct(id, { is_active });
+}
+
+/**
+ * Get simple stats for Admin Dashboard
+ */
+export async function getAdminDashboardStats() {
+  try {
+    const supabase = createClient();
+    
+    // 1. Total products & active products
+    const { count: totalProducts, error: prodErr } = await supabase
+      .from('products')
+      .select('*', { count: 'exact', head: true });
+
+    const { count: activeProducts } = await supabase
+      .from('products')
+      .select('*', { count: 'exact', head: true })
+      .eq('is_active', true);
+
+    const { count: lowStockProducts } = await supabase
+      .from('products')
+      .select('*', { count: 'exact', head: true })
+      .lte('stock', 5);
+
+    // 2. Total customers from profiles
+    const { count: totalCustomers } = await supabase
+      .from('profiles')
+      .select('*', { count: 'exact', head: true })
+      .eq('role', 'customer');
+
+    return {
+      totalProducts: totalProducts ?? SAMPLE_PRODUCTS.length,
+      activeProducts: activeProducts ?? SAMPLE_PRODUCTS.length,
+      lowStockProducts: lowStockProducts ?? 0,
+      totalCustomers: totalCustomers ?? 1,
+      totalOrders: 0,
+      pendingOrders: 0,
+      recentOrders: [],
+    };
+  } catch (err) {
+    console.error('Error getting dashboard stats:', err);
+    return {
+      totalProducts: SAMPLE_PRODUCTS.length,
+      activeProducts: SAMPLE_PRODUCTS.length,
+      lowStockProducts: 0,
+      totalCustomers: 1,
+      totalOrders: 0,
+      pendingOrders: 0,
+      recentOrders: [],
+    };
   }
 }
 

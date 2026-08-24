@@ -72,7 +72,7 @@ export const SAMPLE_PRODUCTS: Product[] = [
     category: 'Nursery & Bedding',
     subcategory: 'Swaddles',
     images: [
-      'https://images.unsplash.com/photo-1596464716127-f2a829822301?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=800&auto=format&fit=crop&q=80'
     ],
     mrp: 999,
     price: 699,
