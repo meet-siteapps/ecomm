@@ -18,6 +18,8 @@ import {
 import { getOrderDetails } from '@/lib/supabase/orders';
 import { Order } from '@/types/order';
 
+import { CuteTeddyLogo, HotAirBalloonIllustration } from '@/components/common/CartoonIllustrations';
+
 function CheckoutSuccessContent() {
   const searchParams = useSearchParams();
   const orderNumber = searchParams.get('order_number') || '';
@@ -48,58 +50,58 @@ function CheckoutSuccessContent() {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 space-y-8">
       {/* Top Banner */}
-      <div className="bg-white p-8 sm:p-10 rounded-3xl border border-gray-200/80 shadow-xs text-center space-y-4">
-        <div className="w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto shadow-2xs animate-in zoom-in-75">
+      <div className="bg-white p-8 sm:p-10 rounded-3xl border border-[#EFE7DE] shadow-cute text-center space-y-4 relative overflow-hidden">
+        <div className="w-16 h-16 rounded-3xl bg-[#D1FAE5] text-[#059669] flex items-center justify-center mx-auto shadow-2xs animate-in zoom-in-75">
           <CheckCircle2 className="w-8 h-8" />
         </div>
 
         <div className="space-y-1.5">
-          <span className="text-xs font-bold uppercase tracking-wider text-[#4DA3FF]">
-            Order Received
+          <span className="text-xs font-bold uppercase tracking-wider text-[#FF6B8B]">
+            Order Received ✨
           </span>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1F2937] tracking-tight">
-            Thank You For Your Order!
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#2D3748] tracking-tight">
+            Thank You For Your Order! 🎉
           </h1>
-          <p className="text-xs sm:text-sm text-gray-500 max-w-md mx-auto">
-            Your pending order has been recorded. We will notify you once fulfillment begins.
+          <p className="text-xs sm:text-sm text-[#718096] max-w-md mx-auto font-medium">
+            Your Baby Ladoo order has been recorded. We will notify you once fulfillment begins.
           </p>
         </div>
 
         {/* Order Number Pill */}
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-50 border border-gray-200 text-xs font-mono font-bold text-[#1F2937]">
+        <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#FAF7F2] border border-[#EFE7DE] text-xs font-mono font-bold text-[#2D3748]">
           <span>Order Number:</span>
-          <span className="text-[#4DA3FF]">{orderNumber || order?.order_number || 'ORD-PENDING'}</span>
+          <span className="text-[#FF6B8B]">{orderNumber || order?.order_number || 'ORD-PENDING'}</span>
         </div>
       </div>
 
       {/* Order Snapshot & Delivery Details */}
       {order && (
-        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-gray-200/80 shadow-xs space-y-6">
-          <div className="flex items-center justify-between border-b border-gray-100 pb-4">
-            <h2 className="text-sm font-bold text-[#1F2937] uppercase tracking-wider flex items-center gap-2">
-              <Package className="w-4 h-4 text-[#4DA3FF]" />
+        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-[#EFE7DE] shadow-cute space-y-6">
+          <div className="flex items-center justify-between border-b border-[#EFE7DE] pb-4">
+            <h2 className="text-xs font-extrabold text-[#2D3748] uppercase tracking-wider flex items-center gap-2">
+              <Package className="w-4 h-4 text-[#FF6B8B]" />
               <span>Order Details</span>
             </h2>
-            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200 capitalize flex items-center gap-1">
+            <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-[#FEF3C7] text-[#D97706] border border-[#FDE68A] capitalize flex items-center gap-1">
               <Clock className="w-3 h-3" />
               <span>{order.order_status}</span>
             </span>
           </div>
 
           {/* Payment Method Notice */}
-          <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200/80 flex items-center justify-between text-xs">
+          <div className="p-4 rounded-2xl bg-[#D1FAE5]/60 border border-[#A7F3D0] flex items-center justify-between text-xs font-medium">
             <div className="flex items-center gap-2.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="font-bold text-emerald-900">Payment Method: Cash on Delivery (COD)</span>
+              <span className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse" />
+              <span className="font-bold text-[#065F46]">Payment Method: Cash on Delivery (COD)</span>
             </div>
-            <span className="text-emerald-700 font-semibold">Pay ₹{order.total.toLocaleString('en-IN')} upon delivery</span>
+            <span className="text-[#059669] font-extrabold">Pay ₹{order.total.toLocaleString('en-IN')} upon delivery</span>
           </div>
 
           {/* Shipping Address */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-gray-600">
-            <div className="p-4 rounded-2xl bg-gray-50/70 border border-gray-100 space-y-1.5">
-              <span className="font-bold text-[#1F2937] block">Delivery Address:</span>
-              <p className="font-medium text-[#1F2937]">{order.shipping_address?.fullName || order.customer_name}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-[#718096]">
+            <div className="p-4 rounded-2xl bg-[#FAF7F2] border border-[#EFE7DE] space-y-1.5 font-medium">
+              <span className="font-bold text-[#2D3748] block">Delivery Address:</span>
+              <p className="font-extrabold text-[#2D3748]">{order.shipping_address?.fullName || order.customer_name}</p>
               <p>{order.shipping_address?.addressLine1}</p>
               {order.shipping_address?.addressLine2 && <p>{order.shipping_address.addressLine2}</p>}
               <p>
@@ -107,14 +109,14 @@ function CheckoutSuccessContent() {
               </p>
             </div>
 
-            <div className="p-4 rounded-2xl bg-gray-50/70 border border-gray-100 space-y-1.5">
-              <span className="font-bold text-[#1F2937] block">Contact Details:</span>
+            <div className="p-4 rounded-2xl bg-[#FAF7F2] border border-[#EFE7DE] space-y-1.5 font-medium">
+              <span className="font-bold text-[#2D3748] block">Contact Details:</span>
               <p className="flex items-center gap-1.5">
-                <Mail className="w-3.5 h-3.5 text-gray-400" />
+                <Mail className="w-3.5 h-3.5 text-[#A0AEC0]" />
                 <span>{order.customer_email}</span>
               </p>
               <p className="flex items-center gap-1.5">
-                <Phone className="w-3.5 h-3.5 text-gray-400" />
+                <Phone className="w-3.5 h-3.5 text-[#A0AEC0]" />
                 <span>{order.customer_phone}</span>
               </p>
             </div>
@@ -123,19 +125,19 @@ function CheckoutSuccessContent() {
           {/* Items Purchased */}
           {order.items && order.items.length > 0 && (
             <div className="space-y-3 pt-2">
-              <span className="text-xs font-bold text-gray-500 uppercase tracking-wider block">
+              <span className="text-xs font-bold text-[#718096] uppercase tracking-wider block">
                 Items ({order.items.length})
               </span>
-              <div className="divide-y divide-gray-100 border-t border-b border-gray-100">
+              <div className="divide-y divide-[#EFE7DE] border-t border-b border-[#EFE7DE]">
                 {order.items.map((item, idx) => (
-                  <div key={idx} className="py-3 flex items-center justify-between text-xs">
+                  <div key={idx} className="py-3 flex items-center justify-between text-xs font-medium">
                     <div>
-                      <span className="font-bold text-[#1F2937] block">{item.product_name}</span>
-                      <span className="text-[10px] text-gray-400">
+                      <span className="font-bold text-[#2D3748] block">{item.product_name}</span>
+                      <span className="text-[10px] text-[#A0AEC0]">
                         Qty: {item.quantity} × ₹{item.purchase_price.toLocaleString('en-IN')}
                       </span>
                     </div>
-                    <span className="font-bold text-[#1F2937]">
+                    <span className="font-extrabold text-[#2D3748]">
                       ₹{item.total.toLocaleString('en-IN')}
                     </span>
                   </div>
@@ -144,8 +146,8 @@ function CheckoutSuccessContent() {
 
               {/* Total Row */}
               <div className="flex justify-between items-baseline pt-2">
-                <span className="text-sm font-bold text-[#1F2937]">Total Amount Due on Delivery:</span>
-                <span className="text-lg font-extrabold text-[#1F2937]">
+                <span className="text-sm font-bold text-[#2D3748]">Total Amount Due on Delivery:</span>
+                <span className="text-xl font-extrabold text-[#2D3748]">
                   ₹{order.total.toLocaleString('en-IN')}
                 </span>
               </div>
@@ -158,14 +160,14 @@ function CheckoutSuccessContent() {
       <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
         <Link
           href="/products"
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#4DA3FF] hover:bg-[#2B8BE6] text-white text-xs sm:text-sm font-bold transition-all shadow-xs"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-[#FF6B8B] hover:bg-[#FA5578] text-white text-xs sm:text-sm font-extrabold transition-all shadow-cute-pink active:scale-98"
         >
           <ShoppingBag className="w-4 h-4" />
           <span>Continue Shopping</span>
         </Link>
         <Link
           href="/account"
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white hover:bg-gray-50 text-gray-700 text-xs sm:text-sm font-semibold border border-gray-200 transition-all shadow-xs"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-white hover:bg-[#FAF7F2] text-[#2D3748] text-xs sm:text-sm font-bold border border-[#EFE7DE] transition-all shadow-cute active:scale-98"
         >
           <span>View in My Account</span>
           <ArrowRight className="w-4 h-4" />

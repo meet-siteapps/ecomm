@@ -31,17 +31,17 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   return (
     <AdminGuard>
-      <div className="min-h-[85vh] bg-slate-50/50 pb-16">
+      <div className="min-h-[85vh] bg-[#FAF7F2] pb-16">
         {/* Admin Navigation Bar */}
-        <div className="bg-white border-b border-gray-200/80 sticky top-16 z-30 shadow-xs">
+        <div className="bg-white border-b border-[#EFE7DE] sticky top-16 z-30 shadow-2xs">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-14 gap-4 overflow-x-auto no-scrollbar">
               {/* Left: Section Title & Badge */}
-              <div className="flex items-center gap-2.5 shrink-0 pr-2 border-r border-gray-200">
-                <div className="w-7 h-7 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center">
+              <div className="flex items-center gap-2.5 shrink-0 pr-2 border-r border-[#EFE7DE]">
+                <div className="w-8 h-8 rounded-xl bg-[#F3E8FF] text-[#8B5CF6] flex items-center justify-center shadow-2xs">
                   <ShieldCheck className="w-4 h-4" />
                 </div>
-                <span className="text-xs font-extrabold text-[#1F2937] tracking-tight uppercase">
+                <span className="text-xs font-extrabold text-[#2D3748] tracking-tight uppercase">
                   Admin Panel
                 </span>
               </div>
@@ -58,10 +58,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                     <Link
                       key={item.href}
                       href={item.href}
-                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                      className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all ${
                         isActive
-                          ? 'bg-[#EAF6FF] text-[#4DA3FF] font-bold shadow-2xs'
-                          : 'text-gray-600 hover:text-[#1F2937] hover:bg-gray-100/80'
+                          ? 'bg-[#FFEAEF] text-[#FF6B8B] shadow-2xs'
+                          : 'text-[#718096] hover:text-[#2D3748] hover:bg-[#FAF7F2]'
                       }`}
                     >
                       <Icon className="w-3.5 h-3.5" />
@@ -75,7 +75,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               <div className="shrink-0 pl-2">
                 <Link
                   href="/"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-gray-600 hover:text-[#4DA3FF] bg-gray-50 hover:bg-[#EAF6FF] border border-gray-200 transition-all shadow-2xs"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold text-[#718096] hover:text-[#FF6B8B] bg-[#FAF7F2] hover:bg-[#FFEAEF] border border-[#EFE7DE] transition-all shadow-2xs"
                 >
                   <span>View Store</span>
                   <ExternalLink className="w-3 h-3" />

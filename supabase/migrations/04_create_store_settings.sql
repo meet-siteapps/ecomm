@@ -4,9 +4,9 @@
 
 CREATE TABLE IF NOT EXISTS public.store_settings (
     id TEXT PRIMARY KEY DEFAULT 'default',
-    store_name TEXT NOT NULL DEFAULT 'The Shop',
+    store_name TEXT NOT NULL DEFAULT 'Baby Ladoo',
     tagline TEXT DEFAULT 'Curated baby & kids essentials',
-    contact_email TEXT NOT NULL DEFAULT 'support@theshop.com',
+    contact_email TEXT NOT NULL DEFAULT 'support@babyladoo.com',
     contact_phone TEXT NOT NULL DEFAULT '+91 98765 43210',
     store_address TEXT DEFAULT 'Ahmedabad, Gujarat, India',
     shipping_fee NUMERIC NOT NULL DEFAULT 99,
@@ -52,9 +52,9 @@ INSERT INTO public.store_settings (
     is_cod_enabled
 ) VALUES (
     'default',
-    'The Shop',
+    'Baby Ladoo',
     'Curated baby & kids essentials',
-    'support@theshop.com',
+    'support@babyladoo.com',
     '+91 98765 43210',
     'Ahmedabad, Gujarat, India',
     99,

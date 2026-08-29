@@ -1,102 +1,111 @@
 import Link from 'next/link';
-import { ShoppingBag, ShieldCheck, Truck, RefreshCw } from 'lucide-react';
+import { ShieldCheck, Truck, HeartHandshake, Heart } from 'lucide-react';
+import { CuteTeddyLogo, HotAirBalloonIllustration, BabyGiraffeIllustration } from '@/components/common/CartoonIllustrations';
 
 export function Footer() {
   return (
-    <footer className="w-full bg-[#EAF6FF]/40 border-t border-gray-100 mt-auto">
-      {/* Value props banner */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 border-b border-gray-200/60">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center sm:text-left">
-          <div className="flex items-center justify-center sm:justify-start gap-3.5">
-            <div className="w-10 h-10 rounded-xl bg-white text-[#4DA3FF] shadow-xs flex items-center justify-center shrink-0">
-              <Truck className="w-5 h-5" />
+    <footer className="w-full bg-[#FAF7F2] border-t border-[#EFE7DE] mt-auto relative overflow-hidden">
+      {/* Value props banner - Floating Pill Style */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+          <div className="flex items-center gap-3.5 p-4 rounded-3xl bg-white border border-[#EFE7DE] shadow-cute hover:scale-102 transition-transform">
+            <div className="w-12 h-12 rounded-2xl bg-[#E0F2FE] text-[#0284C7] shadow-2xs flex items-center justify-center shrink-0">
+              <Truck className="w-6 h-6" />
             </div>
             <div>
-              <h4 className="text-sm font-semibold text-[#1F2937]">Fast Delivery</h4>
-              <p className="text-xs text-gray-500">Quick shipping to your doorstep</p>
+              <h4 className="text-sm font-extrabold text-[#2D3748]">Fast Delivery</h4>
+              <p className="text-xs text-[#718096] font-medium">Quick shipping across India</p>
             </div>
           </div>
 
-          <div className="flex items-center justify-center sm:justify-start gap-3.5">
-            <div className="w-10 h-10 rounded-xl bg-white text-[#4DA3FF] shadow-xs flex items-center justify-center shrink-0">
-              <ShieldCheck className="w-5 h-5" />
+          <div className="flex items-center gap-3.5 p-4 rounded-3xl bg-white border border-[#EFE7DE] shadow-cute hover:scale-102 transition-transform">
+            <div className="w-12 h-12 rounded-2xl bg-[#D1FAE5] text-[#059669] shadow-2xs flex items-center justify-center shrink-0">
+              <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
-              <h4 className="text-sm font-semibold text-[#1F2937]">Secure Payments</h4>
-              <p className="text-xs text-gray-500">100% secure checkout via Razorpay</p>
+              <h4 className="text-sm font-extrabold text-[#2D3748]">100% Safe & Organic</h4>
+              <p className="text-xs text-[#718096] font-medium">Gentle & certified for baby skin</p>
             </div>
           </div>
 
-          <div className="flex items-center justify-center sm:justify-start gap-3.5">
-            <div className="w-10 h-10 rounded-xl bg-white text-[#4DA3FF] shadow-xs flex items-center justify-center shrink-0">
-              <RefreshCw className="w-5 h-5" />
+          <div className="flex items-center gap-3.5 p-4 rounded-3xl bg-white border border-[#EFE7DE] shadow-cute hover:scale-102 transition-transform">
+            <div className="w-12 h-12 rounded-2xl bg-[#FFEAEF] text-[#FF6B8B] shadow-2xs flex items-center justify-center shrink-0">
+              <HeartHandshake className="w-6 h-6" />
             </div>
             <div>
-              <h4 className="text-sm font-semibold text-[#1F2937]">Easy Support</h4>
-              <p className="text-xs text-gray-500">Dedicated assistance for your orders</p>
+              <h4 className="text-sm font-extrabold text-[#2D3748]">Loved by Parents</h4>
+              <p className="text-xs text-[#718096] font-medium">Trusted by thousands of families</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Footer Links */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Brand */}
-          <div className="space-y-3 md:col-span-1">
-            <Link href="/" className="flex items-center gap-2 font-bold text-lg text-[#1F2937]">
-              <div className="w-8 h-8 rounded-xl bg-white shadow-xs text-[#4DA3FF] flex items-center justify-center">
-                <ShoppingBag className="w-4 h-4" />
-              </div>
-              <span>The Shop</span>
-            </Link>
-            <p className="text-xs text-gray-500 leading-relaxed">
-              Your clean, minimal online shopping destination. Quality products delivered with simplicity.
-            </p>
+      {/* Main Footer Links with Side Cartoon Characters */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+          {/* Left: Hot Air Balloon & Brand */}
+          <div className="md:col-span-4 flex items-start gap-4">
+            <div className="hidden sm:block shrink-0 -mt-3">
+              <HotAirBalloonIllustration className="w-24 h-36" />
+            </div>
+            <div className="space-y-3">
+              <Link href="/" className="flex items-center gap-2.5 font-extrabold text-xl text-[#2D3748] group">
+                <div className="w-10 h-10 rounded-2xl bg-[#FFEAEF] p-1 shadow-2xs flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <CuteTeddyLogo className="w-full h-full" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="group-hover:text-[#FF6B8B] transition-colors leading-tight">Baby Ladoo</span>
+                  <span className="text-[9px] text-[#FF6B8B] font-bold tracking-wider">FOR YOUR LITTLE ONES</span>
+                </div>
+              </Link>
+              <p className="text-xs text-[#718096] leading-relaxed font-medium">
+                Carefully crafted with love, keeping your little one&apos;s comfort and happiness in mind.
+              </p>
+            </div>
           </div>
 
           {/* Quick Links */}
-          <div>
-            <h5 className="text-xs font-semibold text-[#1F2937] uppercase tracking-wider mb-3">
+          <div className="md:col-span-2">
+            <h5 className="text-xs font-extrabold text-[#2D3748] uppercase tracking-wider mb-3">
               Shop
             </h5>
-            <ul className="space-y-2 text-xs text-gray-600">
+            <ul className="space-y-2.5 text-xs text-[#718096]">
               <li>
-                <Link href="/products" className="hover:text-[#4DA3FF] transition-colors">
+                <Link href="/products" className="hover:text-[#FF6B8B] transition-colors font-medium">
                   All Products
                 </Link>
               </li>
               <li>
-                <Link href="/products?sort=featured" className="hover:text-[#4DA3FF] transition-colors">
+                <Link href="/products?sort=featured" className="hover:text-[#FF6B8B] transition-colors font-medium">
                   Featured Items
                 </Link>
               </li>
               <li>
-                <Link href="/cart" className="hover:text-[#4DA3FF] transition-colors">
-                  Cart
+                <Link href="/cart" className="hover:text-[#FF6B8B] transition-colors font-medium">
+                  Shopping Cart
                 </Link>
               </li>
             </ul>
           </div>
 
           {/* Account */}
-          <div>
-            <h5 className="text-xs font-semibold text-[#1F2937] uppercase tracking-wider mb-3">
+          <div className="md:col-span-2">
+            <h5 className="text-xs font-extrabold text-[#2D3748] uppercase tracking-wider mb-3">
               Account
             </h5>
-            <ul className="space-y-2 text-xs text-gray-600">
+            <ul className="space-y-2.5 text-xs text-[#718096]">
               <li>
-                <Link href="/login" className="hover:text-[#4DA3FF] transition-colors">
+                <Link href="/login" className="hover:text-[#FF6B8B] transition-colors font-medium">
                   Sign In / Register
                 </Link>
               </li>
               <li>
-                <Link href="/account" className="hover:text-[#4DA3FF] transition-colors">
+                <Link href="/account" className="hover:text-[#FF6B8B] transition-colors font-medium">
                   My Profile
                 </Link>
               </li>
               <li>
-                <Link href="/account/orders" className="hover:text-[#4DA3FF] transition-colors">
+                <Link href="/account" className="hover:text-[#FF6B8B] transition-colors font-medium">
                   Order History
                 </Link>
               </li>
@@ -104,26 +113,37 @@ export function Footer() {
           </div>
 
           {/* Help & Policies */}
-          <div>
-            <h5 className="text-xs font-semibold text-[#1F2937] uppercase tracking-wider mb-3">
+          <div className="md:col-span-2">
+            <h5 className="text-xs font-extrabold text-[#2D3748] uppercase tracking-wider mb-3">
               Support
             </h5>
-            <ul className="space-y-2 text-xs text-gray-600">
+            <ul className="space-y-2.5 text-xs text-[#718096]">
               <li>
-                <span className="text-gray-500">Email: support@theshop.com</span>
+                <span className="font-medium block">support@babyladoo.com</span>
               </li>
               <li>
-                <span className="text-gray-500">Payments: INR (₹) Razorpay</span>
+                <span className="font-medium block">Cash on Delivery Available</span>
               </li>
             </ul>
           </div>
-        </div>
 
-        {/* Bottom copyright */}
-        <div className="pt-8 mt-8 border-t border-gray-200/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500">
-          <p>© {new Date().getFullYear()} The Shop. All rights reserved.</p>
-          <p className="text-[11px] text-gray-400">
-            Powered by Next.js & Supabase
+          {/* Right: Baby Giraffe Cartoon Illustration */}
+          <div className="hidden lg:flex md:col-span-2 justify-end -mt-6">
+            <BabyGiraffeIllustration className="w-24 h-44" />
+          </div>
+        </div>
+      </div>
+
+      {/* Storybook Scalloped Grass Bottom Bar */}
+      <div className="w-full bg-[#8BC380] text-white pt-4 pb-4 relative">
+        {/* Scalloped edge top of grass bar */}
+        <div className="absolute -top-3 left-0 right-0 h-4 bg-[#8BC380] rounded-t-full opacity-90" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs font-semibold">
+          <p>© {new Date().getFullYear()} Baby Ladoo. All rights reserved.</p>
+          <p className="text-[11px] flex items-center gap-1.5 opacity-90">
+            <span>Made with</span>
+            <Heart className="w-3.5 h-3.5 text-[#FFEAEF] fill-[#FFEAEF]" />
+            <span>for your baby&apos;s happy world</span>
           </p>
         </div>
       </div>

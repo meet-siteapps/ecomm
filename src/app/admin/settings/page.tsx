@@ -140,7 +140,7 @@ export default function AdminSettingsPage() {
                 required
                 value={settings.store_name}
                 onChange={(e) => setSettings({ ...settings, store_name: e.target.value })}
-                placeholder="e.g. The Shop"
+                placeholder="e.g. Baby Ladoo"
                 className="w-full text-xs text-[#1F2937] bg-gray-50/50 rounded-xl px-3.5 py-2.5 border border-gray-200 focus:bg-white focus:border-[#4DA3FF] focus:outline-none focus:ring-2 focus:ring-[#4DA3FF]/20"
               />
             </div>
@@ -174,7 +174,7 @@ export default function AdminSettingsPage() {
                   required
                   value={settings.contact_email}
                   onChange={(e) => setSettings({ ...settings, contact_email: e.target.value })}
-                  placeholder="support@theshop.com"
+                  placeholder="support@babyladoo.com"
                   className="w-full text-xs text-[#1F2937] bg-gray-50/50 rounded-xl pl-9 pr-3.5 py-2.5 border border-gray-200 focus:bg-white focus:border-[#4DA3FF] focus:outline-none focus:ring-2 focus:ring-[#4DA3FF]/20"
                 />
                 <Mail className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />

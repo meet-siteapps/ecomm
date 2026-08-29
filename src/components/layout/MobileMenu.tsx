@@ -77,40 +77,40 @@ export function MobileMenu({ cartCount = 0 }: MobileMenuProps) {
           />
 
           {/* Solid Slide-in Panel */}
-          <div className="relative z-10 w-full max-w-[320px] h-full bg-white shadow-2xl flex flex-col justify-between overflow-hidden border-l border-gray-100 animate-in slide-in-from-right duration-300">
+          <div className="relative z-10 w-full max-w-[320px] h-full bg-[#FAF7F2] shadow-2xl flex flex-col justify-between overflow-hidden border-l border-[#EFE7DE] animate-in slide-in-from-right duration-300">
             {/* Top Bar */}
             <div>
-              <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-white">
+              <div className="flex items-center justify-between px-5 py-4 border-b border-[#EFE7DE] bg-white">
                 <Link
                   href="/"
                   onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-2.5 font-bold text-base text-[#1F2937]"
+                  className="flex items-center gap-2.5 font-extrabold text-base text-[#2D3748]"
                 >
-                  <div className="w-8 h-8 rounded-xl bg-[#EAF6FF] text-[#4DA3FF] flex items-center justify-center shadow-xs">
+                  <div className="w-8 h-8 rounded-xl bg-[#FFEAEF] text-[#FF6B8B] flex items-center justify-center shadow-2xs">
                     <ShoppingBag className="w-4 h-4" />
                   </div>
-                  <span>The Shop</span>
+                  <span>Baby Ladoo</span>
                 </Link>
 
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="p-2 rounded-xl text-gray-500 hover:bg-gray-100 transition-colors"
+                  className="p-2 rounded-full text-gray-500 hover:bg-[#FFEAEF] hover:text-[#FF6B8B] transition-colors"
                   aria-label="Close mobile navigation"
                 >
-                  <X className="w-5 h-5 text-[#1F2937]" />
+                  <X className="w-5 h-5 text-[#2D3748]" />
                 </button>
               </div>
 
               {/* Search Bar */}
-              <div className="p-4 border-b border-gray-100 bg-slate-50/60">
+              <div className="p-4 border-b border-[#EFE7DE] bg-white/60">
                 <form onSubmit={handleSearch} className="relative">
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search products..."
-                    className="w-full bg-white text-sm text-[#1F2937] placeholder-gray-400 rounded-xl pl-9 pr-4 py-2.5 border border-gray-200 focus:border-[#4DA3FF] focus:outline-none focus:ring-2 focus:ring-[#4DA3FF]/20 transition-all"
+                    placeholder="Search baby products..."
+                    className="w-full bg-[#FAF7F2] text-xs text-[#2D3748] placeholder-gray-400 rounded-full pl-9 pr-4 py-2.5 border border-[#EFE7DE] focus:border-[#FF6B8B] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FF6B8B]/20 transition-all shadow-2xs"
                   />
                   <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 </form>
@@ -121,10 +121,12 @@ export function MobileMenu({ cartCount = 0 }: MobileMenuProps) {
                 <Link
                   href="/"
                   onClick={() => setIsOpen(false)}
-                  className="flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-medium text-[#1F2937] hover:bg-[#EAF6FF] hover:text-[#4DA3FF] transition-colors"
+                  className="flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold text-[#4A5568] hover:bg-white hover:text-[#FF6B8B] transition-all shadow-2xs"
                 >
                   <div className="flex items-center gap-3">
-                    <Home className="w-4 h-4 text-gray-500" />
+                    <div className="w-7 h-7 rounded-xl bg-[#FFEAEF] text-[#FF6B8B] flex items-center justify-center">
+                      <Home className="w-3.5 h-3.5" />
+                    </div>
                     <span>Home</span>
                   </div>
                   <ChevronRight className="w-4 h-4 text-gray-300" />
@@ -133,10 +135,12 @@ export function MobileMenu({ cartCount = 0 }: MobileMenuProps) {
                 <Link
                   href="/products"
                   onClick={() => setIsOpen(false)}
-                  className="flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-medium text-[#1F2937] hover:bg-[#EAF6FF] hover:text-[#4DA3FF] transition-colors"
+                  className="flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold text-[#4A5568] hover:bg-white hover:text-[#FF6B8B] transition-all shadow-2xs"
                 >
                   <div className="flex items-center gap-3">
-                    <Grid className="w-4 h-4 text-gray-500" />
+                    <div className="w-7 h-7 rounded-xl bg-[#FEF3C7] text-[#D97706] flex items-center justify-center">
+                      <Grid className="w-3.5 h-3.5" />
+                    </div>
                     <span>All Products</span>
                   </div>
                   <ChevronRight className="w-4 h-4 text-gray-300" />
@@ -146,10 +150,12 @@ export function MobileMenu({ cartCount = 0 }: MobileMenuProps) {
                   <Link
                     href="/admin"
                     onClick={() => setIsOpen(false)}
-                    className="flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-semibold bg-purple-50 text-purple-800 hover:bg-purple-100 transition-colors"
+                    className="flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold bg-[#F3E8FF] text-[#8B5CF6] hover:bg-[#E9D5FF] transition-all border border-[#E9D5FF] shadow-2xs"
                   >
                     <div className="flex items-center gap-3">
-                      <Shield className="w-4 h-4 text-purple-600" />
+                      <div className="w-7 h-7 rounded-xl bg-[#8B5CF6] text-white flex items-center justify-center">
+                        <Shield className="w-3.5 h-3.5" />
+                      </div>
                       <span>Admin Panel</span>
                     </div>
                     <ChevronRight className="w-4 h-4 text-purple-400" />
@@ -160,10 +166,12 @@ export function MobileMenu({ cartCount = 0 }: MobileMenuProps) {
                   <Link
                     href="/account"
                     onClick={() => setIsOpen(false)}
-                    className="flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-medium text-[#1F2937] hover:bg-[#EAF6FF] hover:text-[#4DA3FF] transition-colors"
+                    className="flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold text-[#4A5568] hover:bg-white hover:text-[#FF6B8B] transition-all shadow-2xs"
                   >
                     <div className="flex items-center gap-3">
-                      <Package className="w-4 h-4 text-gray-500" />
+                      <div className="w-7 h-7 rounded-xl bg-[#E0F2FE] text-[#0284C7] flex items-center justify-center">
+                        <Package className="w-3.5 h-3.5" />
+                      </div>
                       <span>My Orders</span>
                     </div>
                     <ChevronRight className="w-4 h-4 text-gray-300" />
@@ -173,14 +181,16 @@ export function MobileMenu({ cartCount = 0 }: MobileMenuProps) {
                 <Link
                   href="/cart"
                   onClick={() => setIsOpen(false)}
-                  className="flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-medium text-[#1F2937] hover:bg-[#EAF6FF] hover:text-[#4DA3FF] transition-colors"
+                  className="flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold text-[#4A5568] hover:bg-white hover:text-[#FF6B8B] transition-all shadow-2xs"
                 >
                   <div className="flex items-center gap-3">
-                    <ShoppingBag className="w-4 h-4 text-gray-500" />
+                    <div className="w-7 h-7 rounded-xl bg-[#D1FAE5] text-[#059669] flex items-center justify-center">
+                      <ShoppingBag className="w-3.5 h-3.5" />
+                    </div>
                     <span>Shopping Cart</span>
                   </div>
                   {cartCount > 0 ? (
-                    <span className="px-2 py-0.5 text-xs font-bold bg-[#4DA3FF] text-white rounded-full">
+                    <span className="px-2.5 py-0.5 text-xs font-extrabold bg-[#FF6B8B] text-white rounded-full shadow-cute-pink">
                       {cartCount}
                     </span>
                   ) : (
@@ -191,21 +201,21 @@ export function MobileMenu({ cartCount = 0 }: MobileMenuProps) {
             </div>
 
             {/* Bottom Account Action */}
-            <div className="p-4 border-t border-gray-100 bg-[#EAF6FF]/40 space-y-2">
+            <div className="p-4 border-t border-[#EFE7DE] bg-white space-y-2">
               {isAuthenticated ? (
                 <>
                   <Link
                     href="/account"
                     onClick={() => setIsOpen(false)}
-                    className="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 text-[#1F2937] text-sm font-semibold transition-colors shadow-2xs"
+                    className="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-full bg-[#FAF7F2] border border-[#EFE7DE] hover:bg-[#FFEAEF] hover:text-[#FF6B8B] text-[#2D3748] text-sm font-bold transition-all shadow-2xs"
                   >
-                    <User className="w-4 h-4 text-[#4DA3FF]" />
+                    <User className="w-4 h-4 text-[#FF6B8B]" />
                     <span>My Account ({displayName})</span>
                   </Link>
                   <button
                     type="button"
                     onClick={handleSignOut}
-                    className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl text-red-600 hover:bg-red-50 text-xs font-bold transition-colors"
+                    className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-full text-red-600 hover:bg-red-50 text-xs font-bold transition-colors"
                   >
                     <LogOut className="w-3.5 h-3.5" />
                     <span>Sign Out</span>
@@ -215,7 +225,7 @@ export function MobileMenu({ cartCount = 0 }: MobileMenuProps) {
                 <Link
                   href="/login"
                   onClick={() => setIsOpen(false)}
-                  className="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl bg-[#4DA3FF] hover:bg-[#2B8BE6] active:bg-[#2B8BE6] text-white text-sm font-semibold transition-colors shadow-xs"
+                  className="flex items-center justify-center gap-2 w-full py-3.5 px-4 rounded-full bg-[#FF6B8B] hover:bg-[#FA5578] text-white text-sm font-bold transition-all shadow-cute-pink active:scale-98"
                 >
                   <User className="w-4 h-4" />
                   <span>Account / Sign In</span>

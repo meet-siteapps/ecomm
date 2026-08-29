@@ -119,12 +119,12 @@ function ProductsContent() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Top Header & Search / Sort controls */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-gray-100">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-[#EFE7DE]">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1F2937] tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#2D3748] tracking-tight">
             All Products
           </h1>
-          <p className="text-xs sm:text-sm text-gray-500 mt-1">
+          <p className="text-xs sm:text-sm text-[#718096] mt-1 font-medium">
             {isLoading
               ? 'Loading products...'
               : `Showing ${filteredProducts.length} ${filteredProducts.length === 1 ? 'product' : 'products'}`}
@@ -137,12 +137,12 @@ function ProductsContent() {
           <button
             type="button"
             onClick={() => setIsMobileFilterOpen(true)}
-            className="flex-1 md:hidden inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-gray-200 text-sm font-medium text-[#1F2937] shadow-xs active:bg-gray-50"
+            className="flex-1 md:hidden inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-white border border-[#EFE7DE] text-sm font-bold text-[#2D3748] shadow-cute active:bg-gray-50"
           >
-            <SlidersHorizontal className="w-4 h-4 text-[#4DA3FF]" />
+            <SlidersHorizontal className="w-4 h-4 text-[#FF6B8B]" />
             <span>Filters</span>
             {hasActiveFilters && (
-              <span className="w-2 h-2 rounded-full bg-[#4DA3FF]" />
+              <span className="w-2 h-2 rounded-full bg-[#FF6B8B]" />
             )}
           </button>
 
@@ -151,7 +151,7 @@ function ProductsContent() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="w-full appearance-none bg-white text-xs sm:text-sm font-medium text-[#1F2937] rounded-xl pl-3.5 pr-8 py-2.5 border border-gray-200 focus:border-[#4DA3FF] focus:outline-none focus:ring-2 focus:ring-[#4DA3FF]/20 shadow-xs cursor-pointer"
+              className="w-full appearance-none bg-white text-xs sm:text-sm font-bold text-[#2D3748] rounded-full pl-4 pr-9 py-2.5 border border-[#EFE7DE] focus:border-[#FF6B8B] focus:outline-none focus:ring-2 focus:ring-[#FF6B8B]/20 shadow-cute cursor-pointer"
             >
               {SORT_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -159,7 +159,7 @@ function ProductsContent() {
                 </option>
               ))}
             </select>
-            <ArrowUpDown className="w-3.5 h-3.5 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <ArrowUpDown className="w-3.5 h-3.5 text-gray-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           </div>
         </div>
       </div>
@@ -167,17 +167,17 @@ function ProductsContent() {
       {/* Main Content Grid: Sidebar + Product Cards */}
       <div className="mt-8 grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
         {/* Desktop Filter Sidebar */}
-        <aside className="hidden lg:block lg:col-span-1 bg-white p-5 rounded-2xl border border-gray-200/80 shadow-xs space-y-6 sticky top-24">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-bold text-[#1F2937] uppercase tracking-wider flex items-center gap-2">
-              <SlidersHorizontal className="w-4 h-4 text-[#4DA3FF]" />
+        <aside className="hidden lg:block lg:col-span-1 bg-white p-6 rounded-3xl border border-[#EFE7DE] shadow-cute space-y-6 sticky top-24">
+          <div className="flex items-center justify-between border-b border-[#EFE7DE]/70 pb-3">
+            <h2 className="text-xs font-extrabold text-[#2D3748] uppercase tracking-wider flex items-center gap-2">
+              <SlidersHorizontal className="w-4 h-4 text-[#FF6B8B]" />
               Filters
             </h2>
             {hasActiveFilters && (
               <button
                 type="button"
                 onClick={clearFilters}
-                className="text-xs text-[#4DA3FF] hover:underline font-semibold"
+                className="text-xs text-[#FF6B8B] hover:underline font-bold"
               >
                 Reset All
               </button>
@@ -186,30 +186,30 @@ function ProductsContent() {
 
           {/* Search Filter */}
           <div className="space-y-2">
-            <label className="text-xs font-semibold text-gray-700">Search</label>
+            <label className="text-xs font-bold text-[#2D3748]">Search</label>
             <div className="relative">
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Product name, brand..."
-                className="w-full bg-[#EAF6FF]/40 text-xs text-[#1F2937] placeholder-gray-400 rounded-xl pl-8 pr-3 py-2 border border-gray-200 focus:border-[#4DA3FF] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#4DA3FF]/20"
+                className="w-full bg-[#FAF7F2] text-xs text-[#2D3748] placeholder-gray-400 rounded-full pl-9 pr-3.5 py-2.5 border border-[#EFE7DE] focus:border-[#FF6B8B] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FF6B8B]/20"
               />
-              <Search className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+              <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
             </div>
           </div>
 
           {/* Category Filter */}
           <div className="space-y-2">
-            <label className="text-xs font-semibold text-gray-700">Category</label>
+            <label className="text-xs font-bold text-[#2D3748]">Category</label>
             <div className="space-y-1">
               <button
                 type="button"
                 onClick={() => setSelectedCategory('all')}
-                className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                className={`w-full text-left px-3.5 py-2 rounded-2xl text-xs font-bold transition-all ${
                   selectedCategory === 'all'
-                    ? 'bg-[#EAF6FF] text-[#4DA3FF] font-bold'
-                    : 'text-gray-600 hover:bg-gray-50'
+                    ? 'bg-[#FFEAEF] text-[#FF6B8B]'
+                    : 'text-[#718096] hover:bg-[#FAF7F2] hover:text-[#2D3748]'
                 }`}
               >
                 All Categories
@@ -219,10 +219,10 @@ function ProductsContent() {
                   key={cat.id}
                   type="button"
                   onClick={() => setSelectedCategory(cat.name)}
-                  className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  className={`w-full text-left px-3.5 py-2 rounded-2xl text-xs font-bold transition-all ${
                     selectedCategory.toLowerCase() === cat.name.toLowerCase()
-                      ? 'bg-[#EAF6FF] text-[#4DA3FF] font-bold'
-                      : 'text-gray-600 hover:bg-gray-50'
+                      ? 'bg-[#FFEAEF] text-[#FF6B8B]'
+                      : 'text-[#718096] hover:bg-[#FAF7F2] hover:text-[#2D3748]'
                   }`}
                 >
                   {cat.name}
@@ -233,17 +233,17 @@ function ProductsContent() {
 
           {/* Age Group Filter */}
           <div className="space-y-2">
-            <label className="text-xs font-semibold text-gray-700">Age Group</label>
+            <label className="text-xs font-bold text-[#2D3748]">Age Group</label>
             <div className="space-y-1">
               {AGE_GROUPS.map((age) => (
                 <button
                   key={age}
                   type="button"
                   onClick={() => setSelectedAge(age)}
-                  className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  className={`w-full text-left px-3.5 py-2 rounded-2xl text-xs font-bold transition-all ${
                     selectedAge === age
-                      ? 'bg-[#EAF6FF] text-[#4DA3FF] font-bold'
-                      : 'text-gray-600 hover:bg-gray-50'
+                      ? 'bg-[#F3E8FF] text-[#8B5CF6]'
+                      : 'text-[#718096] hover:bg-[#FAF7F2] hover:text-[#2D3748]'
                   }`}
                 >
                   {age}
@@ -253,10 +253,10 @@ function ProductsContent() {
           </div>
 
           {/* Max Price Filter */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-xs font-semibold text-gray-700">
+          <div className="space-y-2 pt-2 border-t border-[#EFE7DE]/70">
+            <div className="flex items-center justify-between text-xs font-bold text-[#2D3748]">
               <span>Max Price</span>
-              <span className="text-[#4DA3FF]">₹{maxPrice.toLocaleString('en-IN')}</span>
+              <span className="text-[#FF6B8B] font-extrabold">₹{maxPrice.toLocaleString('en-IN')}</span>
             </div>
             <input
               type="range"
@@ -265,9 +265,9 @@ function ProductsContent() {
               step={100}
               value={maxPrice}
               onChange={(e) => setMaxPrice(Number(e.target.value))}
-              className="w-full accent-[#4DA3FF] cursor-pointer"
+              className="w-full accent-[#FF6B8B] cursor-pointer"
             />
-            <div className="flex justify-between text-[10px] text-gray-400">
+            <div className="flex justify-between text-[10px] font-bold text-[#A0AEC0]">
               <span>₹500</span>
               <span>₹4,000</span>
             </div>
@@ -278,8 +278,8 @@ function ProductsContent() {
         <section className="lg:col-span-3">
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-20 gap-3 text-gray-400">
-              <Loader2 className="w-8 h-8 animate-spin text-[#4DA3FF]" />
-              <span className="text-xs font-medium">Fetching catalog from database...</span>
+              <Loader2 className="w-8 h-8 animate-spin text-[#FF6B8B]" />
+              <span className="text-xs font-bold text-[#718096]">Fetching catalog...</span>
             </div>
           ) : filteredProducts.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
@@ -288,18 +288,18 @@ function ProductsContent() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-16 px-4 bg-white rounded-2xl border border-gray-200 shadow-xs space-y-4">
-              <div className="w-12 h-12 rounded-full bg-[#EAF6FF] text-[#4DA3FF] flex items-center justify-center mx-auto">
+            <div className="text-center py-16 px-4 bg-white rounded-3xl border border-[#EFE7DE] shadow-cute space-y-4">
+              <div className="w-14 h-14 rounded-2xl bg-[#FFEAEF] text-[#FF6B8B] flex items-center justify-center mx-auto shadow-2xs">
                 <Search className="w-6 h-6" />
               </div>
-              <h3 className="text-base font-bold text-[#1F2937]">No products found</h3>
-              <p className="text-xs text-gray-500 max-w-sm mx-auto">
+              <h3 className="text-base font-extrabold text-[#2D3748]">No products found</h3>
+              <p className="text-xs text-[#718096] max-w-sm mx-auto font-medium">
                 We couldn&apos;t find any products matching your selected filters. Try searching with different keywords or resetting filters.
               </p>
               <button
                 type="button"
                 onClick={clearFilters}
-                className="px-4 py-2 text-xs font-semibold bg-[#4DA3FF] text-white rounded-xl hover:bg-[#2B8BE6] transition-colors"
+                className="px-6 py-2.5 text-xs font-bold bg-[#FF6B8B] text-white rounded-full hover:bg-[#FA5578] transition-all shadow-cute-pink active:scale-95"
               >
                 Clear all filters
               </button>
@@ -315,17 +315,17 @@ function ProductsContent() {
             className="fixed inset-0 bg-black/50 backdrop-blur-xs"
             onClick={() => setIsMobileFilterOpen(false)}
           />
-          <div className="relative z-10 w-full max-w-xs h-full bg-white shadow-2xl flex flex-col justify-between overflow-y-auto animate-in slide-in-from-right duration-200">
+          <div className="relative z-10 w-full max-w-xs h-full bg-[#FAF7F2] shadow-2xl flex flex-col justify-between overflow-y-auto animate-in slide-in-from-right duration-200">
             <div className="p-5 space-y-6">
-              <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-                <h3 className="font-bold text-base text-[#1F2937] flex items-center gap-2">
-                  <SlidersHorizontal className="w-4 h-4 text-[#4DA3FF]" />
+              <div className="flex items-center justify-between border-b border-[#EFE7DE] pb-3 bg-white p-3 rounded-2xl shadow-2xs">
+                <h3 className="font-extrabold text-base text-[#2D3748] flex items-center gap-2">
+                  <SlidersHorizontal className="w-4 h-4 text-[#FF6B8B]" />
                   Filter Products
                 </h3>
                 <button
                   type="button"
                   onClick={() => setIsMobileFilterOpen(false)}
-                  className="p-1 text-gray-500 hover:bg-gray-100 rounded-lg"
+                  className="p-1 text-gray-500 hover:bg-[#FFEAEF] hover:text-[#FF6B8B] rounded-full"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -333,15 +333,15 @@ function ProductsContent() {
 
               {/* Mobile Category Filter */}
               <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-700">Category</label>
+                <label className="text-xs font-bold text-[#2D3748]">Category</label>
                 <div className="space-y-1">
                   <button
                     type="button"
                     onClick={() => setSelectedCategory('all')}
-                    className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium ${
+                    className={`w-full text-left px-4 py-2.5 rounded-2xl text-xs font-bold transition-all ${
                       selectedCategory === 'all'
-                        ? 'bg-[#EAF6FF] text-[#4DA3FF] font-bold'
-                        : 'text-gray-600'
+                        ? 'bg-[#FFEAEF] text-[#FF6B8B]'
+                        : 'text-[#718096] bg-white'
                     }`}
                   >
                     All Categories
@@ -351,10 +351,10 @@ function ProductsContent() {
                       key={cat.id}
                       type="button"
                       onClick={() => setSelectedCategory(cat.name)}
-                      className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium ${
+                      className={`w-full text-left px-4 py-2.5 rounded-2xl text-xs font-bold transition-all ${
                         selectedCategory.toLowerCase() === cat.name.toLowerCase()
-                          ? 'bg-[#EAF6FF] text-[#4DA3FF] font-bold'
-                          : 'text-gray-600'
+                          ? 'bg-[#FFEAEF] text-[#FF6B8B]'
+                          : 'text-[#718096] bg-white'
                       }`}
                     >
                       {cat.name}
@@ -365,17 +365,17 @@ function ProductsContent() {
 
               {/* Mobile Age Filter */}
               <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-700">Age Group</label>
+                <label className="text-xs font-bold text-[#2D3748]">Age Group</label>
                 <div className="space-y-1">
                   {AGE_GROUPS.map((age) => (
                     <button
                       key={age}
                       type="button"
                       onClick={() => setSelectedAge(age)}
-                      className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium ${
+                      className={`w-full text-left px-4 py-2.5 rounded-2xl text-xs font-bold transition-all ${
                         selectedAge === age
-                          ? 'bg-[#EAF6FF] text-[#4DA3FF] font-bold'
-                          : 'text-gray-600'
+                          ? 'bg-[#F3E8FF] text-[#8B5CF6]'
+                          : 'text-[#718096] bg-white'
                       }`}
                     >
                       {age}
@@ -385,10 +385,10 @@ function ProductsContent() {
               </div>
 
               {/* Mobile Price Slider */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs font-bold text-gray-700">
+              <div className="space-y-2 bg-white p-4 rounded-2xl border border-[#EFE7DE]">
+                <div className="flex items-center justify-between text-xs font-bold text-[#2D3748]">
                   <span>Max Price</span>
-                  <span className="text-[#4DA3FF]">₹{maxPrice.toLocaleString('en-IN')}</span>
+                  <span className="text-[#FF6B8B] font-extrabold">₹{maxPrice.toLocaleString('en-IN')}</span>
                 </div>
                 <input
                   type="range"
@@ -397,24 +397,24 @@ function ProductsContent() {
                   step={100}
                   value={maxPrice}
                   onChange={(e) => setMaxPrice(Number(e.target.value))}
-                  className="w-full accent-[#4DA3FF]"
+                  className="w-full accent-[#FF6B8B]"
                 />
               </div>
             </div>
 
             {/* Bottom Actions */}
-            <div className="p-4 border-t border-gray-100 bg-[#EAF6FF]/30 flex gap-2">
+            <div className="p-4 border-t border-[#EFE7DE] bg-white flex gap-2">
               <button
                 type="button"
                 onClick={clearFilters}
-                className="flex-1 py-2.5 rounded-xl border border-gray-200 text-xs font-semibold text-gray-700 bg-white"
+                className="flex-1 py-3 rounded-full border border-[#EFE7DE] text-xs font-bold text-[#718096] bg-[#FAF7F2]"
               >
                 Reset
               </button>
               <button
                 type="button"
                 onClick={() => setIsMobileFilterOpen(false)}
-                className="flex-1 py-2.5 rounded-xl bg-[#4DA3FF] text-white text-xs font-semibold"
+                className="flex-1 py-3 rounded-full bg-[#FF6B8B] text-white text-xs font-extrabold shadow-cute-pink"
               >
                 Apply
               </button>

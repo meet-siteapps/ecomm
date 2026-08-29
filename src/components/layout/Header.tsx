@@ -8,6 +8,8 @@ import { MobileMenu } from './MobileMenu';
 import { useCartStore } from '@/store/useCartStore';
 import { useAuthStore } from '@/store/useAuthStore';
 
+import { CuteTeddyLogo } from '@/components/common/CartoonIllustrations';
+
 export function Header() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
@@ -42,41 +44,41 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-white border-b border-gray-100 shadow-xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3 sm:gap-4">
-        {/* Brand Logo */}
-        <Link href="/" className="flex items-center gap-2 sm:gap-2.5 shrink-0 group">
-          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#EAF6FF] text-[#4DA3FF] flex items-center justify-center transition-transform group-hover:scale-105 shadow-xs">
-            <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5" />
+    <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-[#EFE7DE] shadow-cute">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-18 flex items-center justify-between gap-3 sm:gap-4">
+        {/* Brand Logo with Cute Cartoon Teddy */}
+        <Link href="/" className="flex items-center gap-2.5 sm:gap-3 shrink-0 group">
+          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-[#FFEAEF] p-1 flex items-center justify-center transition-all group-hover:scale-110 group-hover:rotate-6 shadow-2xs">
+            <CuteTeddyLogo className="w-full h-full" />
           </div>
           <div className="flex flex-col">
-            <span className="font-bold text-base sm:text-lg text-[#1F2937] tracking-tight leading-none">
-              The Shop
+            <span className="font-extrabold text-lg sm:text-xl text-[#2D3748] tracking-tight leading-none group-hover:text-[#FF6B8B] transition-colors">
+              Baby Ladoo
             </span>
-            <span className="text-[9px] sm:text-[10px] text-gray-400 font-medium tracking-wide">
-              STOREFRONT
+            <span className="text-[9px] sm:text-[10px] text-[#FF6B8B] font-bold tracking-wider mt-0.5">
+              FOR LITTLE ONES ✨
             </span>
           </div>
         </Link>
 
         {/* Desktop Navigation Links */}
-        <nav className="hidden md:flex items-center gap-6">
+        <nav className="hidden md:flex items-center gap-2">
           <Link
             href="/"
-            className="text-sm font-medium text-[#1F2937] hover:text-[#4DA3FF] transition-colors"
+            className="px-3.5 py-1.5 rounded-full text-sm font-bold text-[#4A5568] hover:text-[#FF6B8B] hover:bg-[#FFEAEF]/70 transition-all"
           >
             Home
           </Link>
           <Link
             href="/products"
-            className="text-sm font-medium text-[#1F2937] hover:text-[#4DA3FF] transition-colors"
+            className="px-3.5 py-1.5 rounded-full text-sm font-bold text-[#4A5568] hover:text-[#FF6B8B] hover:bg-[#FFEAEF]/70 transition-all"
           >
             All Products
           </Link>
           {isAuthenticated && (
             <Link
               href="/account"
-              className="text-sm font-medium text-[#1F2937] hover:text-[#4DA3FF] transition-colors"
+              className="px-3.5 py-1.5 rounded-full text-sm font-bold text-[#4A5568] hover:text-[#FF6B8B] hover:bg-[#FFEAEF]/70 transition-all"
             >
               My Orders
             </Link>
@@ -84,9 +86,9 @@ export function Header() {
           {isAdmin && (
             <Link
               href="/admin"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 transition-colors"
+              className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-[#F3E8FF] text-[#8B5CF6] hover:bg-[#E9D5FF] border border-[#E9D5FF] transition-all shadow-2xs"
             >
-              <Shield className="w-3.5 h-3.5" />
+              <Shield className="w-3.5 h-3.5 text-[#8B5CF6]" />
               <span>Admin Panel</span>
             </Link>
           )}
@@ -99,20 +101,20 @@ export function Header() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search products, brands..."
-              className="w-full bg-[#EAF6FF]/50 hover:bg-[#EAF6FF]/70 text-sm text-[#1F2937] placeholder-gray-400 rounded-xl pl-10 pr-4 py-2 border border-transparent focus:border-[#4DA3FF] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#4DA3FF]/20 transition-all"
+              placeholder="Search soft clothing, cute toys, essentials..."
+              className="w-full bg-[#FAF7F2] hover:bg-[#FAF7F2]/80 text-xs sm:text-sm font-medium text-[#2D3748] placeholder-gray-400 rounded-full pl-10 pr-4 py-2.5 border border-[#EFE7DE] focus:border-[#FF6B8B] focus:bg-white focus:outline-none focus:ring-3 focus:ring-[#FF6B8B]/15 transition-all shadow-2xs"
             />
             <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           </form>
         </div>
 
         {/* Right Actions */}
-        <div className="flex items-center gap-1 sm:gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2.5">
           {/* Mobile Search Toggle Button */}
           <button
             type="button"
             onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
-            className="lg:hidden p-2 rounded-xl text-[#1F2937] hover:bg-[#EAF6FF] hover:text-[#4DA3FF] transition-colors"
+            className="lg:hidden p-2.5 rounded-full text-[#4A5568] hover:bg-[#FFEAEF] hover:text-[#FF6B8B] transition-all"
             aria-label="Toggle search"
           >
             {isMobileSearchOpen ? (
@@ -125,12 +127,12 @@ export function Header() {
           {/* Cart Button */}
           <Link
             href="/cart"
-            className="relative p-2 rounded-xl text-[#1F2937] hover:bg-[#EAF6FF] hover:text-[#4DA3FF] transition-colors"
+            className="relative p-2.5 rounded-full text-[#4A5568] hover:bg-[#FFEAEF] hover:text-[#FF6B8B] transition-all"
             aria-label="Shopping Cart"
           >
             <ShoppingBag className="w-5 h-5" />
             {cartCount > 0 && (
-              <span className="absolute top-1 right-1 min-w-[18px] h-[18px] px-1 text-[10px] font-bold bg-[#4DA3FF] text-white rounded-full flex items-center justify-center animate-in zoom-in-75 duration-200">
+              <span className="absolute top-1 right-1 min-w-[20px] h-[20px] px-1 text-[10px] font-extrabold bg-[#FF6B8B] text-white rounded-full flex items-center justify-center shadow-cute-pink animate-in zoom-in-75 duration-200">
                 {cartCount > 9 ? '9+' : cartCount}
               </span>
             )}
@@ -139,9 +141,9 @@ export function Header() {
           {/* Account Button (Desktop) */}
           <Link
             href={isAuthenticated ? '/account' : '/login'}
-            className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-medium text-[#1F2937] hover:bg-[#EAF6FF] hover:text-[#4DA3FF] border border-gray-200 hover:border-[#4DA3FF]/30 transition-all"
+            className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold text-[#4A5568] bg-[#FAF7F2] hover:bg-[#FFEAEF] hover:text-[#FF6B8B] border border-[#EFE7DE] hover:border-[#FF6B8B]/30 transition-all shadow-2xs"
           >
-            <User className="w-4 h-4 text-[#4DA3FF]" />
+            <User className="w-4 h-4 text-[#FF6B8B]" />
             <span>{isAuthenticated ? `Hi, ${displayName}` : 'Sign In'}</span>
           </Link>
 
@@ -150,7 +152,7 @@ export function Header() {
             <button
               type="button"
               onClick={handleSignOut}
-              className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-gray-500 hover:text-red-600 hover:bg-red-50 border border-gray-200 hover:border-red-200 transition-all"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-bold text-gray-500 hover:text-red-600 hover:bg-red-50 border border-[#EFE7DE] hover:border-red-200 transition-all"
               title="Sign Out"
               aria-label="Sign Out"
             >
@@ -166,15 +168,15 @@ export function Header() {
 
       {/* Expandable Mobile Search Bar Dropdown */}
       {isMobileSearchOpen && (
-        <div className="lg:hidden px-4 py-3 bg-[#EAF6FF]/40 border-t border-gray-100 animate-in slide-in-from-top-2 duration-200">
+        <div className="lg:hidden px-4 py-3 bg-[#FAF7F2] border-t border-[#EFE7DE] animate-in slide-in-from-top-2 duration-200">
           <form onSubmit={handleSearch} className="relative">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search products, brands..."
+              placeholder="Search baby clothing, toys..."
               autoFocus
-              className="w-full bg-white text-sm text-[#1F2937] placeholder-gray-400 rounded-xl pl-10 pr-4 py-2.5 border border-gray-200 focus:border-[#4DA3FF] focus:outline-none focus:ring-2 focus:ring-[#4DA3FF]/20 shadow-xs"
+              className="w-full bg-white text-xs sm:text-sm text-[#2D3748] placeholder-gray-400 rounded-full pl-10 pr-4 py-2.5 border border-[#EFE7DE] focus:border-[#FF6B8B] focus:outline-none focus:ring-2 focus:ring-[#FF6B8B]/20 shadow-2xs"
             />
             <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           </form>

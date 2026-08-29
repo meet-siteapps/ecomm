@@ -90,34 +90,34 @@ export default function AccountPage() {
       {/* ============================================================ */}
       {/* STEP 23 — ACCOUNT HEADER & PROFILE DETAILS */}
       {/* ============================================================ */}
-      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-gray-200/80 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-[#EFE7DE] shadow-cute flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-2xl bg-[#EAF6FF] text-[#4DA3FF] flex items-center justify-center text-xl font-extrabold shadow-xs">
+          <div className="w-16 h-16 rounded-3xl bg-[#FFEAEF] text-[#FF6B8B] flex items-center justify-center text-xl font-extrabold shadow-cute-pink">
             {(profile?.name || user.email || 'U').charAt(0).toUpperCase()}
           </div>
           <div className="space-y-1">
             <div className="flex items-center gap-2.5">
-              <h1 className="text-xl sm:text-2xl font-extrabold text-[#1F2937]">
+              <h1 className="text-xl sm:text-2xl font-extrabold text-[#2D3748]">
                 {profile?.name || 'Customer'}
               </h1>
               <span
-                className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider ${
+                className={`px-3 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider ${
                   isAdmin
-                    ? 'bg-purple-100 text-purple-700 border border-purple-200'
-                    : 'bg-[#EAF6FF] text-[#4DA3FF] border border-[#4DA3FF]/20'
+                    ? 'bg-[#F3E8FF] text-[#8B5CF6] border border-[#E9D5FF]'
+                    : 'bg-[#FFEAEF] text-[#FF6B8B] border border-[#FF6B8B]/20'
                 }`}
               >
                 {isAdmin ? 'Store Admin' : 'Customer'}
               </span>
             </div>
-            <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500">
+            <div className="flex flex-wrap items-center gap-3 text-xs text-[#718096] font-medium">
               <span className="flex items-center gap-1.5">
-                <Mail className="w-3.5 h-3.5 text-gray-400" />
+                <Mail className="w-3.5 h-3.5 text-[#A0AEC0]" />
                 <span>{user.email}</span>
               </span>
               {profile?.phone && (
                 <span className="flex items-center gap-1.5">
-                  <Phone className="w-3.5 h-3.5 text-gray-400" />
+                  <Phone className="w-3.5 h-3.5 text-[#A0AEC0]" />
                   <span>{profile.phone}</span>
                 </span>
               )}
@@ -130,9 +130,9 @@ export default function AccountPage() {
           {isAdmin && (
             <Link
               href="/admin"
-              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 text-xs font-bold border border-purple-200 transition-colors shadow-2xs"
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-[#F3E8FF] hover:bg-[#E9D5FF] text-[#8B5CF6] text-xs font-bold border border-[#E9D5FF] transition-colors shadow-2xs"
             >
-              <ShieldCheck className="w-4 h-4 text-purple-700" />
+              <ShieldCheck className="w-4 h-4 text-[#8B5CF6]" />
               <span>Admin Panel</span>
             </Link>
           )}
@@ -140,7 +140,7 @@ export default function AccountPage() {
           <button
             type="button"
             onClick={handleSignOut}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-red-200 text-red-600 hover:bg-red-50 text-xs font-bold transition-colors shadow-2xs"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full border border-[#FF6B8B]/30 text-[#FF6B8B] hover:bg-[#FFEAEF] text-xs font-bold transition-colors shadow-2xs"
           >
             <LogOut className="w-4 h-4" />
             <span>Sign Out</span>
@@ -154,35 +154,35 @@ export default function AccountPage() {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <Package className="w-5 h-5 text-[#4DA3FF]" />
-            <h2 className="text-lg sm:text-xl font-extrabold text-[#1F2937] tracking-tight">
+            <Package className="w-5 h-5 text-[#FF6B8B]" />
+            <h2 className="text-lg sm:text-xl font-extrabold text-[#2D3748] tracking-tight">
               My Orders
             </h2>
           </div>
-          <span className="text-xs font-semibold text-gray-500">
+          <span className="text-xs font-bold text-[#718096]">
             {orders.length} {orders.length === 1 ? 'order' : 'orders'} placed
           </span>
         </div>
 
         {loadingOrders ? (
-          <div className="bg-white p-12 rounded-3xl border border-gray-200/80 text-center space-y-3 shadow-xs">
-            <Loader2 className="w-7 h-7 text-[#4DA3FF] animate-spin mx-auto" />
-            <p className="text-xs text-gray-500">Loading your purchase history...</p>
+          <div className="bg-white p-12 rounded-3xl border border-[#EFE7DE] text-center space-y-3 shadow-cute">
+            <Loader2 className="w-7 h-7 text-[#FF6B8B] animate-spin mx-auto" />
+            <p className="text-xs text-[#718096] font-medium">Loading your purchase history...</p>
           </div>
         ) : orders.length === 0 ? (
-          <div className="bg-white p-12 rounded-3xl border border-gray-200/80 text-center space-y-4 shadow-xs">
-            <div className="w-14 h-14 rounded-2xl bg-gray-50 text-gray-400 flex items-center justify-center mx-auto">
-              <ShoppingBag className="w-7 h-7" />
+          <div className="bg-white p-12 rounded-3xl border border-[#EFE7DE] text-center space-y-4 shadow-cute">
+            <div className="w-16 h-16 rounded-3xl bg-[#FFEAEF] text-[#FF6B8B] flex items-center justify-center mx-auto shadow-2xs">
+              <ShoppingBag className="w-8 h-8" />
             </div>
             <div className="space-y-1">
-              <h3 className="text-sm font-bold text-[#1F2937]">No orders yet</h3>
-              <p className="text-xs text-gray-500 max-w-sm mx-auto">
+              <h3 className="text-base font-extrabold text-[#2D3748]">No orders yet</h3>
+              <p className="text-xs text-[#718096] max-w-sm mx-auto font-medium">
                 You haven&apos;t placed any orders yet. Discover our collection of baby essentials.
               </p>
             </div>
             <Link
               href="/products"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#4DA3FF] hover:bg-[#2B8BE6] text-white text-xs font-bold transition-all shadow-xs"
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-[#FF6B8B] hover:bg-[#FA5578] text-white text-xs font-extrabold transition-all shadow-cute-pink active:scale-98"
             >
               <span>Start Shopping</span>
               <ArrowRight className="w-4 h-4" />
@@ -196,22 +196,22 @@ export default function AccountPage() {
               return (
                 <div
                   key={order.id}
-                  className="bg-white rounded-3xl border border-gray-200/80 shadow-xs overflow-hidden divide-y divide-gray-100"
+                  className="bg-white rounded-3xl border border-[#EFE7DE] shadow-cute overflow-hidden divide-y divide-[#EFE7DE]"
                 >
                   {/* Order Top Meta */}
-                  <div className="p-5 bg-gray-50/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                  <div className="p-5 bg-[#FAF7F2] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono font-bold text-[#4DA3FF] text-sm">
+                        <span className="font-mono font-bold text-[#FF6B8B] text-sm">
                           {order.order_number}
                         </span>
                         <span
-                          className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase border ${statusBadge.bg} ${statusBadge.text} ${statusBadge.border}`}
+                          className={`px-3 py-0.5 rounded-full text-[10px] font-bold uppercase border ${statusBadge.bg} ${statusBadge.text} ${statusBadge.border}`}
                         >
                           {statusBadge.label}
                         </span>
                       </div>
-                      <span className="text-[11px] text-gray-400 block">
+                      <span className="text-[11px] text-[#A0AEC0] block font-medium">
                         Placed on{' '}
                         {order.created_at
                           ? new Date(order.created_at).toLocaleDateString('en-IN', {
@@ -226,10 +226,10 @@ export default function AccountPage() {
                     </div>
 
                     <div className="text-left sm:text-right">
-                      <span className="text-sm font-extrabold text-[#1F2937] block">
+                      <span className="text-sm font-extrabold text-[#2D3748] block">
                         ₹{order.total.toLocaleString('en-IN')}
                       </span>
-                      <span className="text-[10px] text-gray-400 capitalize">
+                      <span className="text-[10px] text-[#A0AEC0] capitalize font-medium">
                         Payment: {order.payment_status}
                       </span>
                     </div>
@@ -238,41 +238,41 @@ export default function AccountPage() {
                   {/* Order Items List */}
                   <div className="p-5 space-y-3">
                     {order.items && order.items.length > 0 ? (
-                      <div className="divide-y divide-gray-100">
+                      <div className="divide-y divide-[#EFE7DE]">
                         {order.items.map((item, idx) => (
                           <div
                             key={idx}
-                            className="py-2.5 first:pt-0 last:pb-0 flex items-center justify-between gap-4 text-xs"
+                            className="py-2.5 first:pt-0 last:pb-0 flex items-center justify-between gap-4 text-xs font-medium"
                           >
                             <div>
-                              <span className="font-bold text-[#1F2937] block">{item.product_name}</span>
-                              <div className="flex items-center gap-2 text-[11px] text-gray-400 mt-0.5">
+                              <span className="font-bold text-[#2D3748] block">{item.product_name}</span>
+                              <div className="flex items-center gap-2 text-[11px] text-[#A0AEC0] mt-0.5">
                                 <span>Quantity: {item.quantity}</span>
                                 {item.selected_colour && <span>• Color: {item.selected_colour}</span>}
                                 {item.selected_size && <span>• Size: {item.selected_size}</span>}
                               </div>
                             </div>
-                            <span className="font-bold text-[#1F2937] shrink-0">
+                            <span className="font-extrabold text-[#2D3748] shrink-0">
                               ₹{item.total.toLocaleString('en-IN')}
                             </span>
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <p className="text-xs text-gray-400">Order snapshot recorded</p>
+                      <p className="text-xs text-[#A0AEC0] font-medium">Order snapshot recorded</p>
                     )}
                   </div>
 
                   {/* Order Shipping Summary Footer */}
-                  <div className="p-4 bg-gray-50/40 text-[11px] text-gray-500 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="p-4 bg-[#FAF7F2] text-[11px] text-[#718096] flex flex-col sm:flex-row sm:items-center justify-between gap-2 font-medium">
                     <span>
                       Shipping to:{' '}
-                      <strong className="text-gray-700">
+                      <strong className="text-[#2D3748]">
                         {order.shipping_address?.fullName || order.customer_name}
                       </strong>{' '}
                       ({order.shipping_address?.city}, {order.shipping_address?.state})
                     </span>
-                    <span className="text-emerald-700 font-semibold">
+                    <span className="text-[#059669] font-bold">
                       Standard Delivery • 3-5 Business Days
                     </span>
                   </div>

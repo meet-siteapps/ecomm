@@ -15,9 +15,9 @@ export interface StoreSettings {
 
 export const DEFAULT_STORE_SETTINGS: StoreSettings = {
   id: 'default',
-  store_name: 'The Shop',
+  store_name: 'Baby Ladoo',
   tagline: 'Curated baby & kids essentials',
-  contact_email: 'support@theshop.com',
+  contact_email: 'support@babyladoo.com',
   contact_phone: '+91 98765 43210',
   store_address: 'Ahmedabad, Gujarat, India',
   shipping_fee: 99,

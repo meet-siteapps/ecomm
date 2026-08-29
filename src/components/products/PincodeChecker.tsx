@@ -29,9 +29,11 @@ export function PincodeChecker() {
   };
 
   return (
-    <div className="p-4 rounded-2xl bg-[#EAF6FF]/50 border border-gray-200/80 space-y-3">
-      <div className="flex items-center gap-2 text-xs font-semibold text-[#1F2937]">
-        <Truck className="w-4 h-4 text-[#4DA3FF]" />
+    <div className="p-4 rounded-3xl bg-[#FAF7F2] border border-[#EFE7DE] space-y-3 shadow-2xs">
+      <div className="flex items-center gap-2 text-xs font-bold text-[#2D3748]">
+        <div className="w-6 h-6 rounded-lg bg-[#FFEAEF] text-[#FF6B8B] flex items-center justify-center">
+          <Truck className="w-3.5 h-3.5" />
+        </div>
         <span>Delivery Options & Estimate</span>
       </div>
 
@@ -46,29 +48,29 @@ export function PincodeChecker() {
               if (status !== 'idle') setStatus('idle');
             }}
             placeholder="Enter 6-digit Pincode"
-            className="w-full bg-white text-xs text-[#1F2937] placeholder-gray-400 rounded-xl pl-8 pr-3 py-2.5 border border-gray-200 focus:border-[#4DA3FF] focus:outline-none focus:ring-2 focus:ring-[#4DA3FF]/20"
+            className="w-full bg-white text-xs text-[#2D3748] placeholder-gray-400 rounded-full pl-9 pr-3.5 py-2.5 border border-[#EFE7DE] focus:border-[#FF6B8B] focus:outline-none focus:ring-2 focus:ring-[#FF6B8B]/20 font-medium"
           />
-          <MapPin className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+          <MapPin className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
         </div>
         <button
           type="submit"
           disabled={pincode.length !== 6}
-          className="px-4 py-2.5 rounded-xl bg-[#4DA3FF] hover:bg-[#2B8BE6] text-white text-xs font-semibold disabled:bg-gray-200 disabled:text-gray-400 transition-colors shadow-xs"
+          className="px-5 py-2.5 rounded-full bg-[#FF6B8B] hover:bg-[#FA5578] text-white text-xs font-bold disabled:bg-gray-200 disabled:text-gray-400 transition-all shadow-cute-pink active:scale-95"
         >
           Check
         </button>
       </form>
 
       {status === 'available' && (
-        <div className="flex items-center gap-2 text-xs text-emerald-700 font-medium animate-in fade-in-50 duration-200">
-          <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+        <div className="flex items-center gap-2 text-xs text-[#059669] font-medium bg-[#D1FAE5]/60 p-2.5 rounded-2xl animate-in fade-in-50 duration-200">
+          <CheckCircle2 className="w-4 h-4 shrink-0 text-[#10B981]" />
           <span>Delivery available by <strong>{deliveryDate}</strong>. Free shipping applicable.</span>
         </div>
       )}
 
       {status === 'invalid' && (
-        <div className="flex items-center gap-2 text-xs text-red-600 font-medium animate-in fade-in-50 duration-200">
-          <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />
+        <div className="flex items-center gap-2 text-xs text-[#E11D48] font-medium bg-[#FFEAEF] p-2.5 rounded-2xl animate-in fade-in-50 duration-200">
+          <AlertCircle className="w-4 h-4 shrink-0 text-[#FF6B8B]" />
           <span>Please enter a valid 6-digit Indian pincode.</span>
         </div>
       )}

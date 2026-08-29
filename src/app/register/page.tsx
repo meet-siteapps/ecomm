@@ -33,6 +33,7 @@ export default function RegisterPage() {
 
     try {
       const supabase = createClient();
+      const origin = window.location.origin;
       const { data, error: signUpError } = await supabase.auth.signUp({
         email: email.trim(),
         password,
@@ -42,6 +43,7 @@ export default function RegisterPage() {
             phone: phone.trim(),
             role: 'customer',
           },
+          emailRedirectTo: `${origin}/auth/callback?next=/account`,
         },
       });
 
@@ -80,30 +82,30 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-[75vh] flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md bg-white p-6 sm:p-8 rounded-3xl border border-gray-200/80 shadow-sm space-y-6">
+      <div className="w-full max-w-md bg-white p-6 sm:p-8 rounded-3xl border border-[#EFE7DE] shadow-cute space-y-6">
         {/* Header */}
         <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-2xl bg-[#EAF6FF] text-[#4DA3FF] flex items-center justify-center mx-auto shadow-xs">
-            <ShoppingBag className="w-6 h-6" />
+          <div className="w-14 h-14 rounded-3xl bg-[#FFEAEF] text-[#FF6B8B] flex items-center justify-center mx-auto shadow-cute-pink">
+            <ShoppingBag className="w-7 h-7" />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1F2937] tracking-tight">
-            Create Account
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#2D3748] tracking-tight">
+            Create Account ✨
           </h1>
-          <p className="text-xs sm:text-sm text-gray-500">
-            Sign up to start shopping and tracking your orders
+          <p className="text-xs sm:text-sm text-[#718096] font-medium">
+            Sign up to start shopping and tracking your Baby Ladoo orders
           </p>
         </div>
 
         {/* Success Alert */}
         {success && (
-          <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium space-y-2 animate-in fade-in-50">
-            <div className="flex items-center gap-2 font-bold text-sm text-emerald-900">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+          <div className="p-4 rounded-2xl bg-[#D1FAE5] border border-[#A7F3D0] text-[#065F46] text-xs font-medium space-y-2 animate-in fade-in-50">
+            <div className="flex items-center gap-2 font-bold text-sm text-[#065F46]">
+              <CheckCircle2 className="w-4 h-4 text-[#10B981]" />
               <span>Registration Successful!</span>
             </div>
             <p>
               Please check your email to confirm your account, then{' '}
-              <Link href="/login" className="font-bold underline text-emerald-900">
+              <Link href="/login" className="font-bold underline text-[#065F46]">
                 sign in here
               </Link>.
             </p>
@@ -112,8 +114,8 @@ export default function RegisterPage() {
 
         {/* Error Alert */}
         {error && (
-          <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs font-medium flex items-start gap-2.5 animate-in fade-in-50">
-            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+          <div className="p-3.5 rounded-2xl bg-[#FFEAEF] border border-[#FF6B8B]/30 text-[#E11D48] text-xs font-bold flex items-start gap-2.5 animate-in fade-in-50">
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-[#FF6B8B]" />
             <span>{error}</span>
           </div>
         )}
@@ -123,7 +125,7 @@ export default function RegisterPage() {
           <form onSubmit={handleRegister} className="space-y-4">
             {/* Full Name */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
+              <label className="text-xs font-bold text-[#2D3748] uppercase tracking-wider">
                 Full Name
               </label>
               <div className="relative">
@@ -134,15 +136,15 @@ export default function RegisterPage() {
                   onChange={(e) => setName(e.target.value)}
                   placeholder="John Doe"
                   suppressHydrationWarning
-                  className="w-full bg-[#EAF6FF]/30 text-sm text-[#1F2937] placeholder-gray-400 rounded-xl pl-10 pr-4 py-2.5 border border-gray-200 focus:border-[#4DA3FF] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#4DA3FF]/20 transition-all"
+                  className="w-full bg-[#FAF7F2] text-sm text-[#2D3748] placeholder-gray-400 rounded-2xl pl-10 pr-4 py-3 border border-[#EFE7DE] focus:border-[#FF6B8B] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FF6B8B]/20 transition-all font-medium"
                 />
-                <User className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <User className="w-4 h-4 text-[#A0AEC0] absolute left-3.5 top-1/2 -translate-y-1/2" />
               </div>
             </div>
 
             {/* Email Address */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
+              <label className="text-xs font-bold text-[#2D3748] uppercase tracking-wider">
                 Email Address
               </label>
               <div className="relative">
@@ -153,15 +155,15 @@ export default function RegisterPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@example.com"
                   suppressHydrationWarning
-                  className="w-full bg-[#EAF6FF]/30 text-sm text-[#1F2937] placeholder-gray-400 rounded-xl pl-10 pr-4 py-2.5 border border-gray-200 focus:border-[#4DA3FF] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#4DA3FF]/20 transition-all"
+                  className="w-full bg-[#FAF7F2] text-sm text-[#2D3748] placeholder-gray-400 rounded-2xl pl-10 pr-4 py-3 border border-[#EFE7DE] focus:border-[#FF6B8B] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FF6B8B]/20 transition-all font-medium"
                 />
-                <Mail className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Mail className="w-4 h-4 text-[#A0AEC0] absolute left-3.5 top-1/2 -translate-y-1/2" />
               </div>
             </div>
 
             {/* Phone Number */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
+              <label className="text-xs font-bold text-[#2D3748] uppercase tracking-wider">
                 Phone Number (Optional)
               </label>
               <div className="relative">
@@ -171,15 +173,15 @@ export default function RegisterPage() {
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="+91 98765 43210"
                   suppressHydrationWarning
-                  className="w-full bg-[#EAF6FF]/30 text-sm text-[#1F2937] placeholder-gray-400 rounded-xl pl-10 pr-4 py-2.5 border border-gray-200 focus:border-[#4DA3FF] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#4DA3FF]/20 transition-all"
+                  className="w-full bg-[#FAF7F2] text-sm text-[#2D3748] placeholder-gray-400 rounded-2xl pl-10 pr-4 py-3 border border-[#EFE7DE] focus:border-[#FF6B8B] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FF6B8B]/20 transition-all font-medium"
                 />
-                <Phone className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Phone className="w-4 h-4 text-[#A0AEC0] absolute left-3.5 top-1/2 -translate-y-1/2" />
               </div>
             </div>
 
             {/* Password */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
+              <label className="text-xs font-bold text-[#2D3748] uppercase tracking-wider">
                 Password
               </label>
               <div className="relative">
@@ -191,16 +193,16 @@ export default function RegisterPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="At least 6 characters"
                   suppressHydrationWarning
-                  className="w-full bg-[#EAF6FF]/30 text-sm text-[#1F2937] placeholder-gray-400 rounded-xl pl-10 pr-4 py-2.5 border border-gray-200 focus:border-[#4DA3FF] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#4DA3FF]/20 transition-all"
+                  className="w-full bg-[#FAF7F2] text-sm text-[#2D3748] placeholder-gray-400 rounded-2xl pl-10 pr-4 py-3 border border-[#EFE7DE] focus:border-[#FF6B8B] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FF6B8B]/20 transition-all font-medium"
                 />
-                <Lock className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Lock className="w-4 h-4 text-[#A0AEC0] absolute left-3.5 top-1/2 -translate-y-1/2" />
               </div>
             </div>
 
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3.5 px-4 rounded-xl bg-[#4DA3FF] hover:bg-[#2B8BE6] active:scale-98 text-white text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-xs disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full py-4 px-4 rounded-full bg-[#FF6B8B] hover:bg-[#FA5578] active:scale-98 text-white text-sm font-extrabold flex items-center justify-center gap-2 transition-all shadow-cute-pink disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <>
@@ -218,9 +220,9 @@ export default function RegisterPage() {
         )}
 
         {/* Footer */}
-        <div className="pt-4 border-t border-gray-100 text-center text-xs text-gray-500">
+        <div className="pt-4 border-t border-[#EFE7DE] text-center text-xs text-[#718096] font-medium">
           Already have an account?{' '}
-          <Link href="/login" className="font-bold text-[#4DA3FF] hover:underline">
+          <Link href="/login" className="font-extrabold text-[#FF6B8B] hover:underline">
             Sign In
           </Link>
         </div>
