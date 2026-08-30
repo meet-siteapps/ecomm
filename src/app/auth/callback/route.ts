@@ -32,10 +32,12 @@ export async function GET(request: Request) {
     console.error('Auth callback code exchange error:', error.message);
   }
 
-  // Handle token_hash verification (email OTP / confirmation)
-  if (token_hash && type) {
+  // Handle token_hash verification (email OTP / confirmation / password reset)
+  if (token_hash) {
+    const defaultType: EmailOtpType = redirectPath.includes('reset-password') ? 'recovery' : 'signup';
+    const otpType: EmailOtpType = type || defaultType;
     const { error } = await supabase.auth.verifyOtp({
-      type,
+      type: otpType,
       token_hash,
     });
     if (!error) {

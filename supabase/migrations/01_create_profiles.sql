@@ -45,6 +45,14 @@ USING (
     auth.uid() = id OR public.is_admin()
 );
 
+-- Allow users to insert their own profile
+DROP POLICY IF EXISTS "Users can insert own profile" ON public.profiles;
+CREATE POLICY "Users can insert own profile"
+ON public.profiles
+FOR INSERT
+TO authenticated
+WITH CHECK (auth.uid() = id);
+
 -- Allow users to update their own profile details (excluding changing their own role)
 DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
 CREATE POLICY "Users can update own profile"
@@ -94,6 +102,17 @@ CREATE TRIGGER on_auth_user_created
     AFTER INSERT OR UPDATE ON auth.users
     FOR EACH ROW
     EXECUTE FUNCTION public.handle_new_user();
+
+-- 5. Backfill any existing auth.users into public.profiles
+INSERT INTO public.profiles (id, name, email, phone, role)
+SELECT 
+    id,
+    COALESCE(raw_user_meta_data->>'name', raw_user_meta_data->>'full_name', split_part(email, '@', 1)),
+    COALESCE(email, ''),
+    COALESCE(raw_user_meta_data->>'phone', ''),
+    COALESCE(raw_user_meta_data->>'role', 'customer')
+FROM auth.users
+ON CONFLICT (id) DO NOTHING;
 
 -- 5. Storage Bucket for Products
 INSERT INTO storage.buckets (id, name, public)

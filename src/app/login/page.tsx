@@ -8,14 +8,19 @@ import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/store/useAuthStore';
 
 function LoginForm() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirect');
+  const errorParam = searchParams.get('error');
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(
+    errorParam === 'confirmation_failed'
+      ? 'Email confirmation link was invalid or has expired. Please sign in or reset your password.'
+      : null
+  );
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchProfile = useAuthStore((state) => state.fetchProfile);
   const setUser = useAuthStore((state) => state.setUser);

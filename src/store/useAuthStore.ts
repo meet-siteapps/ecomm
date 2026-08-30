@@ -35,8 +35,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         .maybeSingle();
 
       if (error) {
-        console.error('Error fetching user profile:', error.message);
-        return null;
+        console.warn('Note: Profile table lookup returned:', error.message);
       }
 
       if (data) {
@@ -45,16 +44,47 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
 
       // Fallback to user metadata if database profile row is not created yet
-      const { data: authData } = await supabase.auth.getUser();
-      if (authData?.user && authData.user.id === userId) {
-        const meta = authData.user.user_metadata || {};
+      const currentUser = get().user;
+      let targetUser = currentUser && currentUser.id === userId ? currentUser : null;
+      if (!targetUser) {
+        const { data: authData } = await supabase.auth.getUser();
+        if (authData?.user && authData.user.id === userId) {
+          targetUser = authData.user;
+        }
+      }
+
+      if (targetUser && targetUser.id === userId) {
+        const meta = targetUser.user_metadata || {};
         const fallbackProfile: UserProfile = {
           id: userId,
-          name: meta.name || meta.full_name || authData.user.email?.split('@')[0] || 'User',
-          email: authData.user.email || '',
+          name: meta.name || meta.full_name || targetUser.email?.split('@')[0] || 'User',
+          email: targetUser.email || '',
           phone: meta.phone || '',
           role: (meta.role as any) || 'customer',
         };
+
+        // Try to auto-create missing profile in database
+        try {
+          const { data: insertedData } = await supabase
+            .from('profiles')
+            .upsert({
+              id: userId,
+              name: fallbackProfile.name,
+              email: fallbackProfile.email,
+              phone: fallbackProfile.phone,
+              role: fallbackProfile.role,
+            })
+            .select()
+            .maybeSingle();
+
+          if (insertedData) {
+            set({ profile: insertedData as UserProfile });
+            return insertedData as UserProfile;
+          }
+        } catch {
+          // In-memory fallback if upsert is restricted
+        }
+
         set({ profile: fallbackProfile });
         return fallbackProfile;
       }
@@ -70,9 +100,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       const supabase = createClient();
       await supabase.auth.signOut();
-      set({ user: null, profile: null, isLoading: false });
     } catch (err) {
       console.error('Error during signOut:', err);
+    } finally {
+      set({ user: null, profile: null, isLoading: false });
     }
   },
 }));

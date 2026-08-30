@@ -33,7 +33,7 @@ export default function RegisterPage() {
 
     try {
       const supabase = createClient();
-      const origin = window.location.origin;
+      const origin = typeof window !== 'undefined' ? window.location.origin : '';
       const { data, error: signUpError } = await supabase.auth.signUp({
         email: email.trim(),
         password,
@@ -43,18 +43,26 @@ export default function RegisterPage() {
             phone: phone.trim(),
             role: 'customer',
           },
-          emailRedirectTo: `${origin}/auth/callback?next=/account`,
+          emailRedirectTo: origin ? `${origin}/auth/callback?next=/account` : undefined,
         },
       });
 
       if (signUpError) {
-        setError(signUpError.message || 'Registration failed.');
+        if (
+          signUpError.message?.toLowerCase().includes('already registered') ||
+          signUpError.message?.toLowerCase().includes('already exists') ||
+          signUpError.message?.toLowerCase().includes('user already exists')
+        ) {
+          setError('An account with this email already exists. Please log in instead.');
+        } else {
+          setError(signUpError.message || 'Registration failed.');
+        }
         setIsLoading(false);
         return;
       }
 
       if (data.user) {
-        // If email enumeration protection is ON, an already registered user returns empty identities array
+        // In Supabase Auth (Email Enumeration Protection), existing accounts return an empty identities array []
         if (data.user.identities && data.user.identities.length === 0) {
           setError('An account with this email already exists. Please log in instead.');
           setIsLoading(false);
@@ -64,17 +72,17 @@ export default function RegisterPage() {
         setUser(data.user);
 
         if (data.session) {
-          // Auto signed in
+          // Auto signed in (Email confirmation disabled)
           await fetchProfile(data.user.id);
           router.push('/account');
         } else {
-          // Email confirmation required
+          // Email confirmation required for new account
           setSuccess(true);
         }
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Registration error:', err);
-      setError('An unexpected error occurred. Please try again.');
+      setError(err?.message || 'An unexpected error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }
