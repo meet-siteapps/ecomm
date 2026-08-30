@@ -54,7 +54,7 @@ export async function validateStockAndCreatePendingOrder(
     if (Array.isArray(payloadOrItems)) {
       items = payloadOrItems;
       shippingAddress = argShippingAddress!;
-      customerName = shippingAddress?.full_name || '';
+      customerName = shippingAddress?.fullName || (shippingAddress as any)?.full_name || '';
       customerPhone = shippingAddress?.phone || '';
       customerEmail = argEmail || '';
       userId = argUserId || null;

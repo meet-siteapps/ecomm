@@ -10,6 +10,7 @@ export interface ShippingAddress {
   city: string;
   state: string;
   pincode: string;
+  landmark?: string;
 }
 
 export interface OrderItem {

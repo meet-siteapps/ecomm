@@ -97,9 +97,16 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     );
   }
 
-  // Parse color options
-  const colorList = product.colors && product.colors.length > 0 ? product.colors : ['#FFE5EC', '#E5F3FE', '#E8F5E9'];
-  const sizeList = product.sizes && product.sizes.length > 0 ? product.sizes : ['0-3M', '3-6M', '6-12M'];
+  // Parse color and size options safely
+  const parsedColors = product.colour
+    ? product.colour.split(',').map((c: string) => c.trim()).filter(Boolean)
+    : [];
+  const colorList: string[] = parsedColors.length > 0 ? parsedColors : ['#FFE5EC', '#E5F3FE', '#E8F5E9'];
+
+  const parsedSizes = product.size
+    ? product.size.split(',').map((s: string) => s.trim()).filter(Boolean)
+    : [];
+  const sizeList: string[] = parsedSizes.length > 0 ? parsedSizes : ['0-3M', '3-6M', '6-12M'];
 
   const handleAddToCart = () => {
     addItem(product, quantity);
@@ -239,7 +246,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
               </span>
             </label>
             <div className="flex items-center gap-2.5">
-              {colorList.map((colorHex, idx) => (
+              {colorList.map((colorHex: string, idx: number) => (
                 <button
                   key={idx}
                   type="button"
@@ -265,7 +272,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
               </span>
             </label>
             <div className="flex flex-wrap gap-2">
-              {sizeList.map((sz) => (
+              {sizeList.map((sz: string) => (
                 <button
                   key={sz}
                   type="button"

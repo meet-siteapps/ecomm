@@ -72,7 +72,7 @@ export default function CheckoutPage() {
   // Prefill authenticated profile info
   useEffect(() => {
     if (profile) {
-      if (profile.full_name) setName(profile.full_name);
+      if (profile.name) setName(profile.name);
       if (profile.phone) setPhone(profile.phone);
       if (profile.email) setEmail(profile.email);
     } else if (user?.email) {
@@ -138,10 +138,11 @@ export default function CheckoutPage() {
       const result = await validateStockAndCreatePendingOrder(
         items,
         {
-          full_name: name.trim(),
+          fullName: name.trim(),
           phone: phone.trim(),
-          address_line1: addressLine1.trim(),
-          address_line2: addressLine2.trim(),
+          email: email.trim(),
+          addressLine1: addressLine1.trim(),
+          addressLine2: addressLine2.trim(),
           city: city.trim(),
           state: state.trim(),
           pincode: pincode.trim(),
@@ -159,7 +160,7 @@ export default function CheckoutPage() {
       }
 
       // Order created successfully
-      setCreatedOrderNumber(result.orderNumber || result.orderId);
+      setCreatedOrderNumber(result.orderNumber || result.orderId || '');
       setIsSuccess(true);
       clearCart();
     } catch (err: any) {
