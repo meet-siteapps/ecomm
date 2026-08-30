@@ -1,10 +1,24 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useSyncExternalStore } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { Menu, X, ShoppingBag, Search, User, Home, Grid, ChevronRight, Shield, LogOut, Package } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import {
+  Menu,
+  X,
+  ShoppingBag,
+  User,
+  Home,
+  Shield,
+  Heart,
+  HelpCircle,
+  Phone,
+  LogOut,
+} from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
+import { CuteTeddyLogo } from '@/components/common/CartoonIllustrations';
+
+const emptySubscribe = () => () => {};
 
 interface MobileMenuProps {
   cartCount?: number;
@@ -12,46 +26,43 @@ interface MobileMenuProps {
 
 export function MobileMenu({ cartCount = 0 }: MobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [mounted, setMounted] = useState(false);
-  const router = useRouter();
+  const pathname = usePathname();
+
+  const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
 
   const user = useAuthStore((state) => state.user);
   const profile = useAuthStore((state) => state.profile);
   const signOut = useAuthStore((state) => state.signOut);
 
-  useEffect(() => {
-    setMounted(true);
+  const closeMenu = useCallback(() => {
+    setIsOpen(false);
   }, []);
 
-  // Prevent background scrolling when mobile menu is open
+  // Lock body scroll when drawer is open & handle ESC key
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          closeMenu();
+        }
+      };
+      window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        document.body.style.overflow = '';
+        window.removeEventListener('keydown', handleKeyDown);
+      };
     } else {
       document.body.style.overflow = '';
     }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isOpen]);
+  }, [isOpen, closeMenu]);
 
   const isAuthenticated = mounted && Boolean(user);
   const isAdmin = mounted && profile?.role === 'admin';
-  const displayName = mounted && (profile?.name ? profile.name.split(' ')[0] : user?.email ? user.email.split('@')[0] : 'User');
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
-      setIsOpen(false);
-    }
-  };
 
   const handleSignOut = async () => {
     await signOut();
-    setIsOpen(false);
-    router.push('/login');
+    closeMenu();
   };
 
   return (
@@ -60,175 +71,209 @@ export function MobileMenu({ cartCount = 0 }: MobileMenuProps) {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="p-2 rounded-xl text-[#1F2937] hover:bg-[#EAF6FF] active:bg-[#EAF6FF] transition-colors focus:outline-none"
-        aria-label="Open mobile navigation"
+        className="p-2 rounded-full text-[#193653] hover:bg-[#FDE8EB] hover:text-[#F27A8A] active:scale-95 transition-all focus:outline-none"
+        aria-label="Open mobile navigation menu"
+        aria-expanded={isOpen}
       >
-        <Menu className="w-6 h-6 text-[#1F2937]" />
+        <Menu className="w-6 h-6 text-current" />
       </button>
 
       {/* Mobile Drawer Modal */}
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex justify-end">
-          {/* Dark Backdrop */}
+        <div className="fixed inset-0 z-50 flex justify-end">
+          {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity duration-300"
-            onClick={() => setIsOpen(false)}
+            className="fixed inset-0 bg-[#193653]/40 backdrop-blur-xs transition-opacity duration-300 animate-in fade-in"
+            onClick={closeMenu}
             aria-hidden="true"
           />
 
-          {/* Solid Slide-in Panel */}
-          <div className="relative z-10 w-full max-w-[320px] h-full bg-[#FAF7F2] shadow-2xl flex flex-col justify-between overflow-hidden border-l border-[#EFE7DE] animate-in slide-in-from-right duration-300">
-            {/* Top Bar */}
-            <div>
-              <div className="flex items-center justify-between px-5 py-4 border-b border-[#EFE7DE] bg-white">
-                <Link
-                  href="/"
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-2.5 font-extrabold text-base text-[#2D3748]"
-                >
-                  <div className="w-8 h-8 rounded-xl bg-[#FFEAEF] text-[#FF6B8B] flex items-center justify-center shadow-2xs">
-                    <ShoppingBag className="w-4 h-4" />
-                  </div>
-                  <span>Baby Ladoo</span>
-                </Link>
+          {/* Slide-in Drawer */}
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Navigation Menu"
+            className="relative z-10 w-full max-w-[300px] h-screen h-[100dvh] bg-[#FAF4EE] shadow-2xl flex flex-col justify-between overflow-hidden border-l border-[#EFE4D6] animate-in slide-in-from-right duration-300 ease-out"
+          >
+            {/* Top Bar with Brand & Close Button */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-[#EFE4D6] bg-white shrink-0">
+              <Link
+                href="/"
+                onClick={closeMenu}
+                className="flex items-center gap-2 group focus:outline-none"
+              >
+                <div className="w-8 h-8 rounded-xl bg-[#FDE8EB] p-1 flex items-center justify-center border border-[#F27A8A]/30">
+                  <CuteTeddyLogo className="w-full h-full" />
+                </div>
+                {/* Colorful letters for Baby Ladoo */}
+                <div className="flex items-baseline font-black text-base tracking-tight select-none">
+                  <span className="text-[#F27A8A]">B</span>
+                  <span className="text-[#D99A26]">a</span>
+                  <span className="text-[#1F95B5]">b</span>
+                  <span className="text-[#5E933E]">y</span>
+                  <span className="w-1.5 inline-block"></span>
+                  <span className="text-[#F27A8A]">L</span>
+                  <span className="text-[#D99A26]">a</span>
+                  <span className="text-[#1F95B5]">d</span>
+                  <span className="text-[#5E933E]">o</span>
+                  <span className="text-[#F27A8A]">o</span>
+                </div>
+              </Link>
 
-                <button
-                  type="button"
-                  onClick={() => setIsOpen(false)}
-                  className="p-2 rounded-full text-gray-500 hover:bg-[#FFEAEF] hover:text-[#FF6B8B] transition-colors"
-                  aria-label="Close mobile navigation"
-                >
-                  <X className="w-5 h-5 text-[#2D3748]" />
-                </button>
-              </div>
-
-              {/* Search Bar */}
-              <div className="p-4 border-b border-[#EFE7DE] bg-white/60">
-                <form onSubmit={handleSearch} className="relative">
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search baby products..."
-                    className="w-full bg-[#FAF7F2] text-xs text-[#2D3748] placeholder-gray-400 rounded-full pl-9 pr-4 py-2.5 border border-[#EFE7DE] focus:border-[#FF6B8B] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FF6B8B]/20 transition-all shadow-2xs"
-                  />
-                  <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                </form>
-              </div>
-
-              {/* Navigation Links */}
-              <nav className="p-3 space-y-1">
-                <Link
-                  href="/"
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold text-[#4A5568] hover:bg-white hover:text-[#FF6B8B] transition-all shadow-2xs"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-xl bg-[#FFEAEF] text-[#FF6B8B] flex items-center justify-center">
-                      <Home className="w-3.5 h-3.5" />
-                    </div>
-                    <span>Home</span>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-gray-300" />
-                </Link>
-
-                <Link
-                  href="/products"
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold text-[#4A5568] hover:bg-white hover:text-[#FF6B8B] transition-all shadow-2xs"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-xl bg-[#FEF3C7] text-[#D97706] flex items-center justify-center">
-                      <Grid className="w-3.5 h-3.5" />
-                    </div>
-                    <span>All Products</span>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-gray-300" />
-                </Link>
-
-                {isAdmin && (
-                  <Link
-                    href="/admin"
-                    onClick={() => setIsOpen(false)}
-                    className="flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold bg-[#F3E8FF] text-[#8B5CF6] hover:bg-[#E9D5FF] transition-all border border-[#E9D5FF] shadow-2xs"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-7 h-7 rounded-xl bg-[#8B5CF6] text-white flex items-center justify-center">
-                        <Shield className="w-3.5 h-3.5" />
-                      </div>
-                      <span>Admin Panel</span>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-purple-400" />
-                  </Link>
-                )}
-
-                {isAuthenticated && (
-                  <Link
-                    href="/account"
-                    onClick={() => setIsOpen(false)}
-                    className="flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold text-[#4A5568] hover:bg-white hover:text-[#FF6B8B] transition-all shadow-2xs"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-7 h-7 rounded-xl bg-[#E0F2FE] text-[#0284C7] flex items-center justify-center">
-                        <Package className="w-3.5 h-3.5" />
-                      </div>
-                      <span>My Orders</span>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-gray-300" />
-                  </Link>
-                )}
-
-                <Link
-                  href="/cart"
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold text-[#4A5568] hover:bg-white hover:text-[#FF6B8B] transition-all shadow-2xs"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-xl bg-[#D1FAE5] text-[#059669] flex items-center justify-center">
-                      <ShoppingBag className="w-3.5 h-3.5" />
-                    </div>
-                    <span>Shopping Cart</span>
-                  </div>
-                  {cartCount > 0 ? (
-                    <span className="px-2.5 py-0.5 text-xs font-extrabold bg-[#FF6B8B] text-white rounded-full shadow-cute-pink">
-                      {cartCount}
-                    </span>
-                  ) : (
-                    <ChevronRight className="w-4 h-4 text-gray-300" />
-                  )}
-                </Link>
-              </nav>
+              <button
+                type="button"
+                onClick={closeMenu}
+                className="p-1.5 rounded-full text-[#5D7285] hover:bg-[#FDE8EB] hover:text-[#F27A8A] transition-all"
+                aria-label="Close navigation menu"
+              >
+                <X className="w-5 h-5 text-current" />
+              </button>
             </div>
 
-            {/* Bottom Account Action */}
-            <div className="p-4 border-t border-[#EFE7DE] bg-white space-y-2">
+            {/* Navigation Links */}
+            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1.5">
+              {/* Home */}
+              <Link
+                href="/"
+                onClick={closeMenu}
+                className={`flex items-center justify-between px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold transition-all ${
+                  pathname === '/'
+                    ? 'bg-[#FDE8EB] text-[#F27A8A]'
+                    : 'text-[#193653] hover:bg-white hover:text-[#F27A8A]'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <Home className="w-4 h-4 text-[#F27A8A]" />
+                  <span>Home</span>
+                </div>
+              </Link>
+
+              {/* Shop */}
+              <Link
+                href="/products"
+                onClick={closeMenu}
+                className={`flex items-center justify-between px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold transition-all ${
+                  pathname.startsWith('/products')
+                    ? 'bg-[#FDE8EB] text-[#F27A8A]'
+                    : 'text-[#193653] hover:bg-white hover:text-[#F27A8A]'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <ShoppingBag className="w-4 h-4 text-[#193653]" />
+                  <span>Shop</span>
+                </div>
+              </Link>
+
+              {/* About Us */}
+              <Link
+                href="/about"
+                onClick={closeMenu}
+                className={`flex items-center justify-between px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold transition-all ${
+                  pathname === '/about'
+                    ? 'bg-[#FDE8EB] text-[#F27A8A]'
+                    : 'text-[#193653] hover:bg-white hover:text-[#F27A8A]'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <HelpCircle className="w-4 h-4 text-[#193653]" />
+                  <span>About Us</span>
+                </div>
+              </Link>
+
+              {/* Contact Us */}
+              <Link
+                href="/contact"
+                onClick={closeMenu}
+                className={`flex items-center justify-between px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold transition-all ${
+                  pathname === '/contact'
+                    ? 'bg-[#FDE8EB] text-[#F27A8A]'
+                    : 'text-[#193653] hover:bg-white hover:text-[#F27A8A]'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <Phone className="w-4 h-4 text-[#193653]" />
+                  <span>Contact Us</span>
+                </div>
+              </Link>
+
+              {/* Divider */}
+              <div className="my-2 border-t border-[#EFE4D6]" />
+
+              {/* My Account */}
+              <Link
+                href={isAuthenticated ? '/account' : '/login'}
+                onClick={closeMenu}
+                className="flex items-center justify-between px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold text-[#193653] hover:bg-white hover:text-[#F27A8A] transition-all"
+              >
+                <div className="flex items-center gap-3">
+                  <User className="w-4 h-4 text-[#193653]" />
+                  <span>My Account</span>
+                </div>
+              </Link>
+
+              {/* Wishlist */}
+              <Link
+                href="/products?sort=featured"
+                onClick={closeMenu}
+                className="flex items-center justify-between px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold text-[#193653] hover:bg-white hover:text-[#F27A8A] transition-all"
+              >
+                <div className="flex items-center gap-3">
+                  <Heart className="w-4 h-4 text-[#193653]" />
+                  <span>Wishlist</span>
+                </div>
+              </Link>
+
+              {/* Cart */}
+              <Link
+                href="/cart"
+                onClick={closeMenu}
+                className="flex items-center justify-between px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold text-[#193653] hover:bg-white hover:text-[#F27A8A] transition-all"
+              >
+                <div className="flex items-center gap-3">
+                  <ShoppingBag className="w-4 h-4 text-[#193653]" />
+                  <span>Cart</span>
+                </div>
+                {cartCount > 0 && (
+                  <span className="w-5 h-5 rounded-full bg-[#F27A8A] text-white text-[10px] font-extrabold flex items-center justify-center shadow-cute-pink">
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
+
+              {/* Admin Panel */}
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  onClick={closeMenu}
+                  className="flex items-center justify-between px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold bg-[#8FD3E8]/30 text-[#193653] transition-all"
+                >
+                  <div className="flex items-center gap-3">
+                    <Shield className="w-4 h-4" />
+                    <span>Admin Panel</span>
+                  </div>
+                </Link>
+              )}
+            </div>
+
+            {/* Bottom Account Trigger */}
+            <div className="p-4 border-t border-[#EFE4D6] bg-white shrink-0">
               {isAuthenticated ? (
-                <>
-                  <Link
-                    href="/account"
-                    onClick={() => setIsOpen(false)}
-                    className="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-full bg-[#FAF7F2] border border-[#EFE7DE] hover:bg-[#FFEAEF] hover:text-[#FF6B8B] text-[#2D3748] text-sm font-bold transition-all shadow-2xs"
-                  >
-                    <User className="w-4 h-4 text-[#FF6B8B]" />
-                    <span>My Account ({displayName})</span>
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={handleSignOut}
-                    className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-full text-red-600 hover:bg-red-50 text-xs font-bold transition-colors"
-                  >
-                    <LogOut className="w-3.5 h-3.5" />
-                    <span>Sign Out</span>
-                  </button>
-                </>
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-[#FAF4EE] border border-red-200 text-red-600 text-xs font-bold shadow-2xs hover:bg-red-50 transition-all"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>Sign Out</span>
+                </button>
               ) : (
                 <Link
                   href="/login"
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center justify-center gap-2 w-full py-3.5 px-4 rounded-full bg-[#FF6B8B] hover:bg-[#FA5578] text-white text-sm font-bold transition-all shadow-cute-pink active:scale-98"
+                  onClick={closeMenu}
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-[#F27A8A] hover:bg-[#e06878] text-white text-xs font-extrabold shadow-cute-pink transition-all"
                 >
                   <User className="w-4 h-4" />
-                  <span>Account / Sign In</span>
+                  <span>Sign In</span>
                 </Link>
               )}
             </div>

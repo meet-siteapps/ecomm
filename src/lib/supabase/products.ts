@@ -1,6 +1,5 @@
 import { createClient } from '@/lib/supabase/client';
 import { Product } from '@/types/product';
-import { SAMPLE_PRODUCTS } from '@/data/sampleProducts';
 
 export interface ProductFilterOptions {
   search?: string;
@@ -12,8 +11,7 @@ export interface ProductFilterOptions {
 }
 
 /**
- * Fetch all active products matching optional filters from Supabase.
- * Falls back to sample data if table has not been created/populated yet.
+ * Fetch all active real products matching optional filters from Supabase.
  */
 export async function getProducts(options: ProductFilterOptions = {}): Promise<Product[]> {
   try {
@@ -51,18 +49,17 @@ export async function getProducts(options: ProductFilterOptions = {}): Promise<P
     const { data, error } = await query;
 
     if (error) {
-      console.warn('Could not fetch products from Supabase, using fallback:', error.message);
-      return filterSampleProducts(options);
+      console.error('Error fetching real products from Supabase:', error.message);
+      return [];
     }
 
     if (!data || data.length === 0) {
-      // If table is empty or not seeded yet, fallback cleanly
-      return filterSampleProducts(options);
+      return [];
     }
 
     let products = data as Product[];
 
-    // In-memory search & age group filtering for highest accuracy across fields
+    // In-memory search & age group filtering for multi-field matching
     if (options.search?.trim()) {
       const q = options.search.toLowerCase().trim();
       products = products.filter(
@@ -84,12 +81,12 @@ export async function getProducts(options: ProductFilterOptions = {}): Promise<P
     return products;
   } catch (err) {
     console.error('Error in getProducts:', err);
-    return filterSampleProducts(options);
+    return [];
   }
 }
 
 /**
- * Fetch a single product by its ID from Supabase
+ * Fetch a single real product by its ID from Supabase
  */
 export async function getProductById(id: string): Promise<Product | null> {
   try {
@@ -101,30 +98,25 @@ export async function getProductById(id: string): Promise<Product | null> {
       .maybeSingle();
 
     if (error) {
-      console.warn('Error fetching product by ID from Supabase:', error.message);
-      return SAMPLE_PRODUCTS.find((p) => p.id === id) || null;
+      console.error('Error fetching product by ID from Supabase:', error.message);
+      return null;
     }
 
-    if (data) {
-      return data as Product;
-    }
-
-    // Fallback search in sample products if id matches mock ID
-    return SAMPLE_PRODUCTS.find((p) => p.id === id) || null;
+    return (data as Product) || null;
   } catch (err) {
     console.error('Error in getProductById:', err);
-    return SAMPLE_PRODUCTS.find((p) => p.id === id) || null;
+    return null;
   }
 }
 
 /**
  * ==============================================================================
- * ADMIN PRODUCT MANAGEMENT FUNCTIONS (Phase 6)
+ * ADMIN PRODUCT MANAGEMENT FUNCTIONS
  * ==============================================================================
  */
 
 /**
- * Fetch all products (both active & inactive) for Admin Catalog Management
+ * Fetch all products (both active & inactive) for Admin Catalog Management from Supabase
  */
 export async function getAllProductsAdmin(): Promise<Product[]> {
   try {
@@ -135,14 +127,14 @@ export async function getAllProductsAdmin(): Promise<Product[]> {
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.error('Error fetching admin products:', error.message);
-      return SAMPLE_PRODUCTS;
+      console.error('Error fetching admin products from Supabase:', error.message);
+      return [];
     }
 
     return (data as Product[]) || [];
   } catch (err) {
     console.error('Error in getAllProductsAdmin:', err);
-    return SAMPLE_PRODUCTS;
+    return [];
   }
 }
 
@@ -168,7 +160,7 @@ export async function createProduct(
 }
 
 /**
- * Update an existing product by ID
+ * Update an existing product by ID in Supabase
  */
 export async function updateProduct(
   id: string,
@@ -194,7 +186,7 @@ export async function updateProduct(
 }
 
 /**
- * Delete a product by ID
+ * Delete a product by ID in Supabase
  */
 export async function deleteProduct(id: string): Promise<boolean> {
   const supabase = createClient();
@@ -212,21 +204,21 @@ export async function deleteProduct(id: string): Promise<boolean> {
 }
 
 /**
- * Quick toggle of active/inactive status
+ * Quick toggle of active/inactive status in Supabase
  */
 export async function toggleProductStatus(id: string, is_active: boolean): Promise<Product> {
   return updateProduct(id, { is_active });
 }
 
 /**
- * Get simple stats for Admin Dashboard
+ * Get stats for Admin Dashboard from Supabase
  */
 export async function getAdminDashboardStats() {
   try {
     const supabase = createClient();
     
     // 1. Total products & active products
-    const { count: totalProducts, error: prodErr } = await supabase
+    const { count: totalProducts } = await supabase
       .from('products')
       .select('*', { count: 'exact', head: true });
 
@@ -263,8 +255,8 @@ export async function getAdminDashboardStats() {
       .limit(5);
 
     return {
-      totalProducts: totalProducts ?? SAMPLE_PRODUCTS.length,
-      activeProducts: activeProducts ?? SAMPLE_PRODUCTS.length,
+      totalProducts: totalProducts ?? 0,
+      activeProducts: activeProducts ?? 0,
       lowStockProducts: lowStockProducts ?? 0,
       totalCustomers: totalCustomers ?? 0,
       totalOrders: totalOrders ?? 0,
@@ -288,8 +280,8 @@ export async function getAdminDashboardStats() {
   } catch (err) {
     console.error('Error getting dashboard stats:', err);
     return {
-      totalProducts: SAMPLE_PRODUCTS.length,
-      activeProducts: SAMPLE_PRODUCTS.length,
+      totalProducts: 0,
+      activeProducts: 0,
       lowStockProducts: 0,
       totalCustomers: 0,
       totalOrders: 0,
@@ -297,46 +289,4 @@ export async function getAdminDashboardStats() {
       recentOrders: [],
     };
   }
-}
-
-/**
- * Helper to filter mock products when DB is offline or not yet migrated
- */
-function filterSampleProducts(options: ProductFilterOptions): Product[] {
-  return SAMPLE_PRODUCTS.filter((product) => {
-    if (options.search?.trim()) {
-      const q = options.search.toLowerCase().trim();
-      const match =
-        product.name.toLowerCase().includes(q) ||
-        product.brand.toLowerCase().includes(q) ||
-        product.category.toLowerCase().includes(q);
-      if (!match) return false;
-    }
-
-    if (options.category && options.category !== 'all') {
-      if (product.category.toLowerCase() !== options.category.toLowerCase()) {
-        return false;
-      }
-    }
-
-    if (options.ageGroup && options.ageGroup !== 'All Ages') {
-      if (
-        !product.age_group ||
-        !product.age_group.toLowerCase().includes(options.ageGroup.toLowerCase().slice(0, 4))
-      ) {
-        return false;
-      }
-    }
-
-    if (options.maxPrice && product.price > options.maxPrice) {
-      return false;
-    }
-
-    return true;
-  }).sort((a, b) => {
-    if (options.sortBy === 'price-low') return a.price - b.price;
-    if (options.sortBy === 'price-high') return b.price - a.price;
-    if (options.sortBy === 'discount') return b.discount - a.discount;
-    return 0;
-  });
 }

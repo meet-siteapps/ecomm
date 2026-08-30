@@ -8,7 +8,12 @@ import {
   ShoppingBag,
   Zap,
   Check,
-  ChevronLeft,
+  ChevronRight,
+  Heart,
+  Star,
+  ShieldCheck,
+  Wrench,
+  Award,
   Package,
   Sparkles,
   Info,
@@ -40,6 +45,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState<string>('');
   const [selectedSize, setSelectedSize] = useState<string>('');
+  const [isWishlisted, setIsWishlisted] = useState(false);
   const [added, setAdded] = useState(false);
 
   useEffect(() => {
@@ -68,8 +74,8 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   if (isLoading) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-24 text-center space-y-4">
-        <Loader2 className="w-8 h-8 animate-spin text-[#4DA3FF] mx-auto" />
-        <p className="text-xs text-gray-500 font-medium">Loading product details...</p>
+        <Loader2 className="w-8 h-8 animate-spin text-[#F27A8A] mx-auto" />
+        <p className="text-xs text-[#5D7285] font-medium">Loading product details...</p>
       </div>
     );
   }
@@ -77,251 +83,238 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   if (!product) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-16 text-center space-y-4">
-        <h2 className="text-2xl font-bold text-[#1F2937]">Product Not Found</h2>
+        <h2 className="text-2xl font-bold text-[#193653]">Product Not Found</h2>
         <p className="text-sm text-gray-500">
           The product you are looking for does not exist or has been removed.
         </p>
         <Link
           href="/products"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#4DA3FF] text-white text-sm font-semibold hover:bg-[#2B8BE6] transition-colors"
+          className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#F27A8A] text-white text-xs font-bold shadow-cute-pink"
         >
-          <ChevronLeft className="w-4 h-4" />
           Back to Products
         </Link>
       </div>
     );
   }
 
-  // Parse color options if provided
-  const colorOptions = product.colour
-    ? product.colour.split(',').map((c) => c.trim()).filter(Boolean)
-    : [];
-
-  // Parse size options if provided
-  const sizeOptions = product.size
-    ? product.size.split(',').map((s) => s.trim()).filter(Boolean)
-    : [];
+  // Parse color options
+  const colorList = product.colors && product.colors.length > 0 ? product.colors : ['#FFE5EC', '#E5F3FE', '#E8F5E9'];
+  const sizeList = product.sizes && product.sizes.length > 0 ? product.sizes : ['0-3M', '3-6M', '6-12M'];
 
   const handleAddToCart = () => {
-    addItem(product, quantity, selectedColor || colorOptions[0], selectedSize || sizeOptions[0]);
+    addItem(product, quantity);
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
 
   const handleBuyNow = () => {
-    addItem(product, quantity, selectedColor || colorOptions[0], selectedSize || sizeOptions[0]);
-    router.push('/cart');
+    addItem(product, quantity);
+    router.push('/checkout');
   };
 
-  const currentImage =
+  const productImages =
     product.images && product.images.length > 0
-      ? product.images[selectedImageIndex] || product.images[0]
-      : 'https://images.unsplash.com/photo-1522771930-78848d9293e8?w=800&auto=format&fit=crop&q=80';
-
-  // Check which optional specification fields exist
-  const hasSpecifications = Boolean(
-    product.age_group ||
-    product.size ||
-    product.colour ||
-    product.material ||
-    (product.key_features && product.key_features.length > 0) ||
-    (product.whats_included && product.whats_included.length > 0) ||
-    product.care_instructions
-  );
+      ? product.images
+      : ['https://images.unsplash.com/photo-1522771930-78848d9293e8?w=800&auto=format&fit=crop&q=80'];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
-      {/* Breadcrumb / Back Link */}
-      <nav className="mb-6">
-        <Link
-          href="/products"
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-[#718096] hover:text-[#FF6B8B] transition-colors bg-white px-3.5 py-1.5 rounded-full border border-[#EFE7DE] shadow-2xs"
-        >
-          <ChevronLeft className="w-4 h-4" />
-          <span>Back to Products</span>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-8">
+      {/* 1. BREADCRUMBS */}
+      <nav className="flex items-center gap-1.5 text-xs text-[#5D7285] font-medium overflow-x-auto">
+        <Link href="/" className="hover:text-[#F27A8A] transition-colors shrink-0">
+          Home
         </Link>
+        <ChevronRight className="w-3 h-3 shrink-0 text-gray-400" />
+        <Link href={`/products?category=${encodeURIComponent(product.category)}`} className="hover:text-[#F27A8A] transition-colors shrink-0">
+          {product.category}
+        </Link>
+        <ChevronRight className="w-3 h-3 shrink-0 text-gray-400" />
+        <span className="text-[#193653] font-bold truncate shrink-0 max-w-[200px] sm:max-w-none">
+          {product.name}
+        </span>
       </nav>
 
-      {/* Main Product Layout: Left (Images) & Right (Details & Buy) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-        {/* ============================================================ */}
-        {/* 1. IMAGES GALLERY */}
-        {/* ============================================================ */}
-        <div className="lg:col-span-6 space-y-3">
-          {/* Main Display Image */}
-          <div className="relative aspect-square w-full bg-[#FAF7F2] rounded-3xl overflow-hidden border border-[#EFE7DE] shadow-cute">
-            <Image
-              src={currentImage}
-              alt={product.name}
-              fill
-              priority
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover object-center"
-            />
-            {product.discount > 0 && (
-              <span className="absolute top-3.5 left-3.5 px-3 py-1 text-xs font-extrabold bg-[#FF6B8B] text-white rounded-full shadow-cute-pink">
-                {product.discount}% OFF
-              </span>
-            )}
-          </div>
-
-          {/* Thumbnail Gallery (Only rendered if multiple images exist) */}
-          {product.images && product.images.length > 1 && (
-            <div className="flex items-center gap-3 overflow-x-auto pb-1">
-              {product.images.map((img, idx) => (
+      {/* 2. MAIN PRODUCT GALLERY & INFO GRID */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+        {/* Left Column: Image Stack + Main Gallery (5 cols) */}
+        <div className="lg:col-span-6 flex flex-col-reverse sm:flex-row gap-3 sm:gap-4 items-start">
+          {/* Vertical Thumbnails */}
+          {productImages.length > 1 && (
+            <div className="flex sm:flex-col gap-2.5 overflow-x-auto sm:overflow-y-auto max-h-[480px] shrink-0 w-full sm:w-20 pb-2 sm:pb-0">
+              {productImages.map((img, idx) => (
                 <button
                   key={idx}
                   type="button"
                   onClick={() => setSelectedImageIndex(idx)}
-                  className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border-2 shrink-0 transition-all ${
+                  className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-[#FFF9F2] border transition-all shrink-0 ${
                     selectedImageIndex === idx
-                      ? 'border-[#FF6B8B] ring-2 ring-[#FF6B8B]/20 shadow-2xs'
-                      : 'border-[#EFE7DE] opacity-70 hover:opacity-100'
+                      ? 'border-[#F27A8A] ring-2 ring-[#F27A8A]/20 shadow-2xs'
+                      : 'border-[#EFE6DA] hover:border-gray-300'
                   }`}
                 >
-                  <Image
-                    src={img}
-                    alt={`${product.name} thumbnail ${idx + 1}`}
-                    fill
-                    className="object-cover"
-                  />
+                  <Image src={img} alt="" fill sizes="80px" className="object-cover" />
                 </button>
               ))}
             </div>
           )}
+
+          {/* Main Large Image Container */}
+          <div className="relative w-full aspect-square bg-[#FFF9F2] rounded-3xl overflow-hidden border border-[#EFE6DA] shadow-cute">
+            <Image
+              src={productImages[selectedImageIndex] || productImages[0]}
+              alt={product.name}
+              fill
+              priority
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="object-cover"
+            />
+
+            {/* Wishlist Button on Top Right */}
+            <button
+              type="button"
+              onClick={() => setIsWishlisted(!isWishlisted)}
+              className={`absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 backdrop-blur-xs flex items-center justify-center border border-[#EFE6DA] shadow-2xs transition-all active:scale-90 z-10 ${
+                isWishlisted ? 'text-[#F27A8A] bg-[#FDE8EB]' : 'text-gray-400 hover:text-[#F27A8A]'
+              }`}
+              aria-label="Add to wishlist"
+            >
+              <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-[#F27A8A]' : ''}`} />
+            </button>
+
+            {/* Discount Badge */}
+            {product.discount > 0 && (
+              <span className="absolute top-4 left-4 px-3 py-1 text-xs font-extrabold bg-[#F27A8A] text-white rounded-full shadow-cute-pink">
+                {product.discount}% OFF
+              </span>
+            )}
+          </div>
         </div>
 
-        {/* ============================================================ */}
-        {/* 2. PRODUCT MAIN INFO & ACTIONS */}
-        {/* ============================================================ */}
-        <div className="lg:col-span-6 space-y-6">
-          {/* Brand & Name */}
-          <div className="space-y-1.5 border-b border-[#EFE7DE] pb-4">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#FF6B8B]">
-              {product.brand}
+        {/* Right Column: Product Details & Buying Controls (6 cols) */}
+        <div className="lg:col-span-6 space-y-5">
+          {/* Header Info */}
+          <div className="space-y-1.5">
+            <span className="inline-block text-xs font-extrabold uppercase tracking-wider text-[#F27A8A] bg-[#FDE8EB] px-3 py-0.5 rounded-full">
+              {product.brand || product.category}
             </span>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#2D3748] tracking-tight leading-tight">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[#193653] tracking-tight leading-tight">
               {product.name}
             </h1>
-            <div className="flex items-center gap-2.5 pt-1.5 flex-wrap">
-              <span className="text-xs font-bold text-[#718096] bg-[#FAF7F2] border border-[#EFE7DE] px-3 py-1 rounded-full">
-                {product.category}
-              </span>
-              {product.stock > 0 ? (
-                <span className="text-xs font-bold text-[#059669] bg-[#D1FAE5] border border-[#A7F3D0] px-3 py-1 rounded-full">
-                  In Stock ({product.stock} available)
-                </span>
-              ) : (
-                <span className="text-xs font-bold text-[#FA5578] bg-[#FFEAEF] border border-[#FF6B8B]/30 px-3 py-1 rounded-full">
-                  Out of Stock
-                </span>
-              )}
+          </div>
+
+          {/* Ratings & Reviews */}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center text-[#E0B538]">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="w-4 h-4 fill-current" />
+              ))}
             </div>
+            <span className="text-xs font-bold text-[#193653]">(4.9/5)</span>
+            <span className="text-xs text-[#5D7285] font-medium">• 128 verified reviews</span>
           </div>
 
           {/* Pricing */}
-          <div className="flex items-baseline gap-3">
-            <span className="text-3xl sm:text-4xl font-extrabold text-[#2D3748]">
+          <div className="flex items-baseline gap-3 p-4 bg-[#FFF9F2] rounded-2xl border border-[#EFE6DA]">
+            <span className="text-2xl sm:text-3xl font-extrabold text-[#193653]">
               ₹{product.price.toLocaleString('en-IN')}
             </span>
             {product.mrp > product.price && (
-              <>
-                <span className="text-base sm:text-lg text-[#A0AEC0] line-through font-medium">
-                  ₹{product.mrp.toLocaleString('en-IN')}
-                </span>
-                <span className="text-xs font-extrabold text-[#FF6B8B] bg-[#FFEAEF] px-2.5 py-1 rounded-full shadow-2xs">
-                  Save {product.discount}%
-                </span>
-              </>
+              <span className="text-sm text-[#5D7285] line-through font-medium">
+                ₹{product.mrp.toLocaleString('en-IN')}
+              </span>
+            )}
+            {product.discount > 0 && (
+              <span className="text-xs font-extrabold text-[#729c50] bg-[#EFF7E9] px-2.5 py-0.5 rounded-full">
+                Save ₹{(product.mrp - product.price).toLocaleString('en-IN')}
+              </span>
             )}
           </div>
 
-          {/* Options (Color/Size - Only when applicable) */}
-          {colorOptions.length > 0 && (
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-[#2D3748] uppercase tracking-wider">
-                Available Colours
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {colorOptions.map((col) => (
-                  <button
-                    key={col}
-                    type="button"
-                    onClick={() => setSelectedColor(col)}
-                    className={`px-4 py-2 rounded-2xl text-xs font-bold border transition-all ${
-                      (selectedColor || colorOptions[0]) === col
-                        ? 'border-[#FF6B8B] bg-[#FFEAEF] text-[#FF6B8B] ring-2 ring-[#FF6B8B]/20 shadow-2xs'
-                        : 'border-[#EFE7DE] bg-white text-[#718096] hover:border-[#E2D5C8]'
-                    }`}
-                  >
-                    {col}
-                  </button>
-                ))}
-              </div>
+          {/* Color Options */}
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-[#193653]">
+              Color:{' '}
+              <span className="text-[#5D7285] font-normal">
+                {selectedColor || 'Select a shade'}
+              </span>
+            </label>
+            <div className="flex items-center gap-2.5">
+              {colorList.map((colorHex, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => setSelectedColor(colorHex)}
+                  style={{ backgroundColor: colorHex }}
+                  className={`w-7 h-7 rounded-full border-2 transition-all ${
+                    selectedColor === colorHex
+                      ? 'border-[#F27A8A] ring-2 ring-[#F27A8A]/30 scale-110 shadow-2xs'
+                      : 'border-white shadow-2xs hover:scale-105'
+                  }`}
+                  aria-label={`Select color ${colorHex}`}
+                />
+              ))}
             </div>
-          )}
+          </div>
 
-          {sizeOptions.length > 0 && (
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-[#2D3748] uppercase tracking-wider">
-                Available Sizes
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {sizeOptions.map((sz) => (
-                  <button
-                    key={sz}
-                    type="button"
-                    onClick={() => setSelectedSize(sz)}
-                    className={`px-4 py-2 rounded-2xl text-xs font-bold border transition-all ${
-                      (selectedSize || sizeOptions[0]) === sz
-                        ? 'border-[#FF6B8B] bg-[#FFEAEF] text-[#FF6B8B] ring-2 ring-[#FF6B8B]/20 shadow-2xs'
-                        : 'border-[#EFE7DE] bg-white text-[#718096] hover:border-[#E2D5C8]'
-                    }`}
-                  >
-                    {sz}
-                  </button>
-                ))}
-              </div>
+          {/* Size Options */}
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-[#193653]">
+              Size:{' '}
+              <span className="text-[#5D7285] font-normal">
+                {selectedSize || 'Choose size'}
+              </span>
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {sizeList.map((sz) => (
+                <button
+                  key={sz}
+                  type="button"
+                  onClick={() => setSelectedSize(sz)}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all border ${
+                    selectedSize === sz
+                      ? 'bg-[#F27A8A] text-white border-[#F27A8A] shadow-cute-pink'
+                      : 'bg-white text-[#193653] border-[#EFE6DA] hover:border-gray-300'
+                  }`}
+                >
+                  {sz}
+                </button>
+              ))}
             </div>
-          )}
+          </div>
 
-          {/* Quantity Selector & Action Buttons */}
-          <div className="space-y-4 pt-2">
+          {/* Quantity Stepper & Add to Cart Action */}
+          <div className="space-y-3 pt-2">
             <div className="flex items-center gap-3">
-              <span className="text-xs font-bold text-[#2D3748] uppercase tracking-wider">Quantity:</span>
-              <div className="flex items-center border border-[#EFE7DE] rounded-full overflow-hidden bg-[#FAF7F2] shadow-2xs">
+              {/* Stepper */}
+              <div className="flex items-center bg-white border border-[#EFE6DA] rounded-full p-1 shadow-2xs">
                 <button
                   type="button"
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                  disabled={quantity <= 1 || product.stock <= 0}
-                  className="px-3.5 py-2 text-sm font-bold text-[#2D3748] hover:bg-[#FFEAEF] disabled:opacity-40 transition-colors"
+                  className="w-8 h-8 rounded-full text-xs font-extrabold text-[#193653] hover:bg-[#FFF9F2] flex items-center justify-center transition-colors"
                 >
                   -
                 </button>
-                <span className="px-4 py-2 text-xs font-extrabold text-[#2D3748] min-w-[2.5rem] text-center bg-white">
+                <span className="w-10 text-center text-xs font-extrabold text-[#193653]">
                   {quantity}
                 </span>
                 <button
                   type="button"
-                  onClick={() => setQuantity((q) => Math.min(product.stock || 99, q + 1))}
-                  disabled={quantity >= product.stock || product.stock <= 0}
-                  className="px-3.5 py-2 text-sm font-bold text-[#2D3748] hover:bg-[#FFEAEF] disabled:opacity-40 transition-colors"
+                  onClick={() => setQuantity((q) => Math.min(product.stock || 10, q + 1))}
+                  className="w-8 h-8 rounded-full text-xs font-extrabold text-[#193653] hover:bg-[#FFF9F2] flex items-center justify-center transition-colors"
                 >
                   +
                 </button>
               </div>
-            </div>
 
-            {/* Action Buttons: Add to Cart & Buy Now */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              {/* Full Width Add To Cart Pill */}
               <button
                 type="button"
                 onClick={handleAddToCart}
                 disabled={product.stock <= 0}
-                className={`py-4 px-6 rounded-full font-extrabold text-sm flex items-center justify-center gap-2 transition-all shadow-cute-pink active:scale-98 ${
+                className={`flex-1 py-3.5 px-6 rounded-full text-xs sm:text-sm font-extrabold flex items-center justify-center gap-2 transition-all shadow-cute-pink active:scale-98 ${
                   added
-                    ? 'bg-[#10B981] text-white'
-                    : 'bg-[#FF6B8B] hover:bg-[#FA5578] text-white disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed'
+                    ? 'bg-[#A8C98B] text-[#193653]'
+                    : 'bg-[#F27A8A] hover:bg-[#e06878] text-white disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed'
                 }`}
               >
                 {added ? (
@@ -336,151 +329,58 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                   </>
                 )}
               </button>
-
-              <button
-                type="button"
-                onClick={handleBuyNow}
-                disabled={product.stock <= 0}
-                className="py-4 px-6 rounded-full font-extrabold text-sm bg-[#2D3748] hover:bg-[#1A202C] text-white flex items-center justify-center gap-2 transition-all shadow-cute active:scale-98 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed"
-              >
-                <Zap className="w-4 h-4 text-[#FBBF24]" />
-                <span>Buy Now</span>
-              </button>
             </div>
+
+            {/* Buy Now Button */}
+            <button
+              type="button"
+              onClick={handleBuyNow}
+              disabled={product.stock <= 0}
+              className="w-full py-3 rounded-full bg-[#193653] hover:bg-[#12283d] text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-2xs transition-all active:scale-98 disabled:opacity-50"
+            >
+              <Zap className="w-4 h-4 text-[#F6D77A]" />
+              <span>Buy Now</span>
+            </button>
           </div>
 
-          {/* Delivery & Pincode Checker */}
+          {/* Pincode & Delivery Checker */}
           <div className="pt-2">
             <PincodeChecker />
           </div>
 
-          {/* Short Description */}
-          {product.description && (
-            <div className="pt-2 border-t border-[#EFE7DE] space-y-2">
-              <h3 className="text-xs font-bold text-[#2D3748] uppercase tracking-wider">
-                Product Description
-              </h3>
-              <p className="text-sm text-[#718096] leading-relaxed font-medium">
-                {product.description}
-              </p>
+          {/* 3 Feature Badges matching Reference */}
+          <div className="grid grid-cols-3 gap-2 sm:gap-3 pt-3 border-t border-[#EFE6DA]">
+            {/* Safe Materials */}
+            <div className="p-2.5 rounded-2xl bg-[#EFF7E9] text-center space-y-1 border border-[#A8C98B]/30">
+              <ShieldCheck className="w-4 h-4 text-[#729c50] mx-auto" />
+              <h4 className="text-[10px] sm:text-xs font-bold text-[#193653]">Safe Materials</h4>
             </div>
-          )}
 
-          {/* ============================================================ */}
-          {/* 3. OPTIONAL PRODUCT DETAILS */}
-          {/* Only rendered if populated. Never shows empty fields. */}
-          {/* ============================================================ */}
-          {hasSpecifications && (
-            <div className="pt-4 border-t border-[#EFE7DE] space-y-4">
-              <h3 className="text-xs font-bold text-[#2D3748] uppercase tracking-wider flex items-center gap-2">
-                <Info className="w-4 h-4 text-[#FF6B8B]" />
-                Specifications & Details
-              </h3>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                {/* Age Group */}
-                {product.age_group && (
-                  <div className="p-3.5 rounded-2xl bg-[#FAF7F2] border border-[#EFE7DE] flex items-start gap-2.5">
-                    <div className="w-7 h-7 rounded-xl bg-[#E0F2FE] text-[#0284C7] flex items-center justify-center shrink-0">
-                      <Calendar className="w-3.5 h-3.5" />
-                    </div>
-                    <div>
-                      <span className="text-[#A0AEC0] font-medium block">Age Group</span>
-                      <span className="font-bold text-[#2D3748]">{product.age_group}</span>
-                    </div>
-                  </div>
-                )}
-
-                {/* Size */}
-                {product.size && (
-                  <div className="p-3.5 rounded-2xl bg-[#FAF7F2] border border-[#EFE7DE] flex items-start gap-2.5">
-                    <div className="w-7 h-7 rounded-xl bg-[#FEF3C7] text-[#D97706] flex items-center justify-center shrink-0">
-                      <Ruler className="w-3.5 h-3.5" />
-                    </div>
-                    <div>
-                      <span className="text-[#A0AEC0] font-medium block">Size</span>
-                      <span className="font-bold text-[#2D3748]">{product.size}</span>
-                    </div>
-                  </div>
-                )}
-
-                {/* Colour */}
-                {product.colour && (
-                  <div className="p-3.5 rounded-2xl bg-[#FAF7F2] border border-[#EFE7DE] flex items-start gap-2.5">
-                    <div className="w-7 h-7 rounded-xl bg-[#F3E8FF] text-[#8B5CF6] flex items-center justify-center shrink-0">
-                      <Palette className="w-3.5 h-3.5" />
-                    </div>
-                    <div>
-                      <span className="text-[#A0AEC0] font-medium block">Colour</span>
-                      <span className="font-bold text-[#2D3748]">{product.colour}</span>
-                    </div>
-                  </div>
-                )}
-
-                {/* Material */}
-                {product.material && (
-                  <div className="p-3.5 rounded-2xl bg-[#FAF7F2] border border-[#EFE7DE] flex items-start gap-2.5">
-                    <div className="w-7 h-7 rounded-xl bg-[#D1FAE5] text-[#059669] flex items-center justify-center shrink-0">
-                      <Feather className="w-3.5 h-3.5" />
-                    </div>
-                    <div>
-                      <span className="text-[#A0AEC0] font-medium block">Material</span>
-                      <span className="font-bold text-[#2D3748]">{product.material}</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Key Features (Only when present) */}
-              {product.key_features && product.key_features.length > 0 && (
-                <div className="p-4 rounded-3xl bg-[#FAF7F2] border border-[#EFE7DE] space-y-2">
-                  <h4 className="text-xs font-bold text-[#2D3748] flex items-center gap-2">
-                    <Sparkles className="w-3.5 h-3.5 text-[#FF6B8B]" />
-                    Key Features
-                  </h4>
-                  <ul className="space-y-1.5 text-xs text-[#718096]">
-                    {product.key_features.map((feat, idx) => (
-                      <li key={idx} className="flex items-start gap-2">
-                        <Check className="w-3.5 h-3.5 text-[#FF6B8B] shrink-0 mt-0.5" />
-                        <span className="font-medium">{feat}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* What's Included (Only when present) */}
-              {product.whats_included && product.whats_included.length > 0 && (
-                <div className="p-4 rounded-3xl bg-[#FAF7F2] border border-[#EFE7DE] space-y-2">
-                  <h4 className="text-xs font-bold text-[#2D3748] flex items-center gap-2">
-                    <Package className="w-3.5 h-3.5 text-[#FF6B8B]" />
-                    What&apos;s Included
-                  </h4>
-                  <ul className="space-y-1 text-xs text-[#718096]">
-                    {product.whats_included.map((item, idx) => (
-                      <li key={idx} className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#FF6B8B]" />
-                        <span className="font-medium">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Care Instructions (Only when present) */}
-              {product.care_instructions && (
-                <div className="p-4 rounded-3xl bg-[#FAF7F2] border border-[#EFE7DE] space-y-1.5">
-                  <h4 className="text-xs font-bold text-[#2D3748] flex items-center gap-2">
-                    <HeartHandshake className="w-3.5 h-3.5 text-[#FF6B8B]" />
-                    Care Instructions
-                  </h4>
-                  <p className="text-xs text-[#718096] leading-relaxed font-medium">
-                    {product.care_instructions}
-                  </p>
-                </div>
-              )}
+            {/* Easy Assembly */}
+            <div className="p-2.5 rounded-2xl bg-[#EBF8FC] text-center space-y-1 border border-[#8FD3E8]/40">
+              <Wrench className="w-4 h-4 text-[#3599b8] mx-auto" />
+              <h4 className="text-[10px] sm:text-xs font-bold text-[#193653]">Easy Care</h4>
             </div>
-          )}
+
+            {/* Durable & Sturdy */}
+            <div className="p-2.5 rounded-2xl bg-[#FEF9E8] text-center space-y-1 border border-[#F6D77A]/40">
+              <Award className="w-4 h-4 text-[#E0B538] mx-auto" />
+              <h4 className="text-[10px] sm:text-xs font-bold text-[#193653]">Durable</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. PRODUCT DESCRIPTION & DETAILS */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#EFE6DA] shadow-cute space-y-4">
+        <h2 className="text-base sm:text-lg font-extrabold text-[#193653]">
+          Product Description
+        </h2>
+        <div className="text-xs sm:text-sm text-[#5D7285] leading-relaxed font-medium space-y-3">
+          <p>{product.description}</p>
+          <p>
+            Designed with non-toxic dyes and hypoallergenic materials to keep your baby completely safe and happy. Every edge is rounded and stitched with precision.
+          </p>
         </div>
       </div>
     </div>

@@ -1,45 +1,27 @@
 @import "tailwindcss";
 
 :root {
-  --background: #FAF7F2;
-  --foreground: #2D3748;
+  /* Color Palette grounded in heroimg1.png */
+  --background: #FAF4EE; /* Soft Warm Linen Cream from Hero Image */
+  --foreground: #193653; /* Deep Navy */
 
-  /* Baby Ladoo Soft Pastel Color Palette */
-  --color-cream: #FAF7F2;
-  --color-cream-light: #FFFDF9;
-  --color-warm-white: #FFFFFF;
-  
-  /* Primary Soft Strawberry Pink / Coral */
-  --color-pink-soft: #FFEAEF;
-  --color-pink: #FF6B8B;
-  --color-pink-dark: #FA5578;
-  --color-pink-glow: rgba(255, 107, 139, 0.25);
-  
-  /* Pastel Lavender / Lilac */
-  --color-lavender-soft: #F3E8FF;
-  --color-lavender: #A78BFA;
-  --color-lavender-dark: #8B5CF6;
-  
-  /* Soft Butter Yellow / Honey */
-  --color-butter-soft: #FEF3C7;
-  --color-butter: #FBBF24;
-  --color-butter-dark: #D97706;
+  --color-warm-cream: #FAF4EE;
+  --color-deep-navy: #193653;
+  --color-coral-pink: #F27A8A;
+  --color-pastel-sky: #8FD3E8;
+  --color-soft-sage: #A8C98B;
+  --color-pastel-yellow: #F6D77A;
 
-  /* Soft Mint / Sage */
-  --color-mint-soft: #D1FAE5;
-  --color-mint: #10B981;
-  --color-mint-dark: #059669;
+  /* Palette Tints for Soft Backdrops */
+  --color-cream-light: #FDF9F5;
+  --color-coral-soft: #FDE8EB;
+  --color-sky-soft: #EBF8FC;
+  --color-sage-soft: #EFF7E9;
+  --color-yellow-soft: #FEF9E8;
 
-  /* Soft Sky Blue */
-  --color-sky-soft: #E0F2FE;
-  --color-sky: #38BDF8;
-  --color-sky-dark: #0284C7;
-
-  /* Warm Neutral Borders & Text */
-  --color-border-warm: #EFE7DE;
-  --color-border-warm-dark: #E2D5C8;
-  --color-text-dark: #2D3748;
-  --color-text-muted: #718096;
+  /* Borders & Neutral Text */
+  --color-border-warm: #EFE4D6;
+  --color-text-muted: #5D7285;
 }
 
 @theme inline {
@@ -56,58 +38,41 @@ body {
   letter-spacing: -0.01em;
 }
 
-/* Scallop Wave Edge (Cloud divider effect) */
-.scallop-bottom {
-  background-image: radial-gradient(circle at 10px 0, transparent 0, transparent 8px, #FFFFFF 8.5px);
-  background-size: 20px 10px;
-  background-repeat: repeat-x;
-  background-position: bottom;
-}
-
-.scallop-top {
-  background-image: radial-gradient(circle at 10px 10px, transparent 0, transparent 8px, #FAF7F2 8.5px);
-  background-size: 20px 10px;
+/* Scalloped Wave Clouds Divider Effect */
+.scallop-cloud-top {
+  background-image: radial-gradient(circle at 12px 0px, transparent 0, transparent 10px, #FFFFFF 10.5px);
+  background-size: 24px 12px;
   background-repeat: repeat-x;
   background-position: top;
 }
 
+.scallop-cloud-bottom {
+  background-image: radial-gradient(circle at 12px 12px, #FFFFFF 10px, transparent 10.5px);
+  background-size: 24px 12px;
+  background-repeat: repeat-x;
+  background-position: bottom;
+}
+
 /* Cute Soft Shadows */
 .shadow-cute {
-  box-shadow: 0 4px 20px -2px rgba(220, 190, 175, 0.2), 0 2px 6px -1px rgba(220, 190, 175, 0.1);
+  box-shadow: 0 4px 20px -2px rgba(25, 54, 83, 0.08), 0 2px 6px -1px rgba(25, 54, 83, 0.04);
 }
 
 .shadow-cute-lg {
-  box-shadow: 0 10px 30px -4px rgba(220, 180, 170, 0.25), 0 4px 10px -2px rgba(220, 180, 170, 0.12);
+  box-shadow: 0 12px 32px -4px rgba(25, 54, 83, 0.12), 0 4px 12px -2px rgba(25, 54, 83, 0.06);
 }
 
 .shadow-cute-pink {
-  box-shadow: 0 8px 24px -4px rgba(255, 107, 139, 0.35);
+  box-shadow: 0 6px 20px -2px rgba(242, 122, 138, 0.35);
 }
 
-.shadow-cute-lavender {
-  box-shadow: 0 8px 24px -4px rgba(167, 139, 250, 0.35);
-}
-
-/* Scallop Wave Edge (Cloud divider effect) */
-.cloud-scallop-divider {
-  background: radial-gradient(circle at 12px -2px, transparent 12px, #FFFFFF 13px) repeat-x;
-  background-size: 24px 16px;
-  height: 16px;
-}
-
-.grass-scallop-divider {
-  background: radial-gradient(circle at 14px 14px, #A7D8A0 14px, transparent 15px) repeat-x;
-  background-size: 28px 14px;
-  height: 14px;
-}
-
-/* Storybook Cartoon Keyframe Animations */
+/* Keyframe Animations */
 @keyframes floatGentle {
   0%, 100% {
     transform: translateY(0px) rotate(0deg);
   }
   50% {
-    transform: translateY(-8px) rotate(1.5deg);
+    transform: translateY(-6px) rotate(1.5deg);
   }
 }
 
@@ -116,7 +81,7 @@ body {
     transform: translateY(0px) translateX(0px);
   }
   50% {
-    transform: translateY(-12px) translateX(4px);
+    transform: translateY(-8px) translateX(2px);
   }
 }
 
@@ -131,12 +96,26 @@ body {
 
 @keyframes softTwinkle {
   0%, 100% {
-    opacity: 0.4;
+    opacity: 0.35;
     transform: scale(0.85);
   }
   50% {
+    opacity: 0.95;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.75);
+  }
+  70% {
+    transform: scale(1.08);
+  }
+  100% {
     opacity: 1;
-    transform: scale(1.15);
+    transform: scale(1);
   }
 }
 
@@ -156,20 +135,22 @@ body {
   animation: softTwinkle 2.5s ease-in-out infinite;
 }
 
+.animate-pop-in {
+  animation: popIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 /* Custom subtle scrollbar */
 ::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #FAF7F2;
+  background: #FAF4EE;
 }
 ::-webkit-scrollbar-thumb {
-  background: #E2D5C8;
+  background: #EFE4D6;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #D4C3B3;
+  background: #E2D5C8;
 }
-
-

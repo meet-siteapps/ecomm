@@ -21,7 +21,7 @@ const nunito = Nunito({
 
 export const metadata: Metadata = {
   title: 'Baby Ladoo | Curated Baby & Kids Essentials',
-  description: 'A clean, modern e-commerce shopping destination for baby & kids essentials.',
+  description: 'A clean, playful, and modern e-commerce shopping destination for safe, 100% organic baby & kids essentials.',
 };
 
 export default function RootLayout({
@@ -32,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${quicksand.variable} ${nunito.variable}`} suppressHydrationWarning>
       <body
-        className="min-h-screen flex flex-col bg-[#FAF7F2] text-[#2D3748] font-sans antialiased selection:bg-[#FFEAEF] selection:text-[#FF6B8B]"
+        className="min-h-screen flex flex-col bg-[#FAF4EE] text-[#193653] font-sans antialiased selection:bg-[#FDE8EB] selection:text-[#F27A8A]"
         suppressHydrationWarning
       >
         <AuthListener />

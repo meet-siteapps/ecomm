@@ -1,428 +1,303 @@
-'use client';
-
 import React from 'react';
 
-// ============================================================================
-// 1. CUTE TEDDY BEAR LOGO ICON (For Header & Branding)
-// ============================================================================
-export function CuteTeddyLogo({ className = 'w-9 h-9' }: { className?: string }) {
+/**
+ * Brand Logo: Cute smiling Teddy Bear mascot in a playful circle badge
+ */
+export function CuteTeddyLogo({ className = 'w-8 h-8' }: { className?: string }) {
   return (
     <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-      {/* Ears */}
-      <circle cx="22" cy="28" r="16" fill="#D99B6A" stroke="#2D3748" strokeWidth="3.5" />
-      <circle cx="22" cy="28" r="9" fill="#FFCCD7" />
-      <circle cx="78" cy="28" r="16" fill="#D99B6A" stroke="#2D3748" strokeWidth="3.5" />
-      <circle cx="78" cy="28" r="9" fill="#FFCCD7" />
-      
-      {/* Head */}
-      <circle cx="50" cy="52" r="38" fill="#E8B07D" stroke="#2D3748" strokeWidth="3.5" />
-      
-      {/* Cheeks */}
-      <ellipse cx="28" cy="62" rx="7" ry="4.5" fill="#FF8DA1" opacity="0.6" />
-      <ellipse cx="72" cy="62" rx="7" ry="4.5" fill="#FF8DA1" opacity="0.6" />
-      
+      <circle cx="50" cy="50" r="46" fill="#FDE8EB" stroke="#F27A8A" strokeWidth="4" />
+      {/* Left Ear */}
+      <circle cx="28" cy="28" r="14" fill="#D49B6A" stroke="#B87B4A" strokeWidth="2.5" />
+      <circle cx="28" cy="28" r="7" fill="#FDE8EB" />
+      {/* Right Ear */}
+      <circle cx="72" cy="28" r="14" fill="#D49B6A" stroke="#B87B4A" strokeWidth="2.5" />
+      <circle cx="72" cy="28" r="7" fill="#FDE8EB" />
+      {/* Bear Head */}
+      <ellipse cx="50" cy="54" rx="30" ry="26" fill="#E2AA76" stroke="#B87B4A" strokeWidth="3" />
       {/* Snout */}
-      <ellipse cx="50" cy="64" rx="16" ry="12" fill="#FDF3E7" stroke="#2D3748" strokeWidth="2.5" />
-      <path d="M44 59 Q50 54 56 59 Q50 66 44 59 Z" fill="#4A3427" />
-      <path d="M50 63 L50 69" stroke="#4A3427" strokeWidth="2.5" strokeLinecap="round" />
-      <path d="M45 68 Q50 72 55 68" stroke="#4A3427" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-      
+      <ellipse cx="50" cy="61" rx="13" ry="10" fill="#FFF9F2" />
+      {/* Nose */}
+      <ellipse cx="50" cy="56" rx="5" ry="3.5" fill="#193653" />
+      {/* Mouth */}
+      <path d="M46 62 Q 50 67 54 62" stroke="#193653" strokeWidth="2" strokeLinecap="round" fill="none" />
       {/* Eyes */}
-      <ellipse cx="36" cy="48" rx="4.5" ry="6" fill="#2D3748" />
-      <circle cx="34.5" cy="46" r="2" fill="#FFFFFF" />
-      <ellipse cx="64" cy="48" rx="4.5" ry="6" fill="#2D3748" />
-      <circle cx="62.5" cy="46" r="2" fill="#FFFFFF" />
-      
-      {/* Cute Head Tuft / Hair */}
-      <path d="M46 16 Q50 11 54 16" stroke="#D99B6A" strokeWidth="3.5" strokeLinecap="round" />
+      <circle cx="40" cy="48" r="3.5" fill="#193653" />
+      <circle cx="41.5" cy="46.5" r="1.2" fill="#FFFFFF" />
+      <circle cx="60" cy="48" r="3.5" fill="#193653" />
+      <circle cx="61.5" cy="46.5" r="1.2" fill="#FFFFFF" />
+      {/* Cheeks */}
+      <circle cx="34" cy="56" r="4" fill="#F27A8A" fillOpacity="0.45" />
+      <circle cx="66" cy="56" r="4" fill="#F27A8A" fillOpacity="0.45" />
     </svg>
   );
 }
 
-// ============================================================================
-// 2. HERO CARTOON: TEDDY BEAR & PENGUIN UNDER PASTEL RAINBOW WITH SIGN
-// ============================================================================
+/**
+ * Reference Hero Illustration: Plush 3D-styled Teddy Bear in Teal/Sage dungarees,
+ * Pastel 5-Ring Rainbow Arc, Fluffy White Clouds, Toy Ball, Stacking Toy, Smiling Star & Foliage
+ */
 export function HeroCharactersIllustration({ className = 'w-full max-w-lg' }: { className?: string }) {
   return (
-    <div className={`relative ${className}`}>
-      <svg viewBox="0 0 600 480" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto drop-shadow-sm">
-        <defs>
-          <filter id="softGlow" x="-10%" y="-10%" width="120%" height="120%">
-            <feGaussianBlur stdDeviation="3" result="blur" />
-            <feComposite in="SourceGraphic" in2="blur" operator="over" />
-          </filter>
-        </defs>
+    <svg
+      viewBox="0 0 600 480"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={`${className} drop-shadow-md select-none`}
+    >
+      <defs>
+        {/* Soft Drop Shadow Filter */}
+        <filter id="soft-shadow" x="-10%" y="-10%" width="120%" height="120%" filterUnits="userSpaceOnUse">
+          <feDropShadow dx="0" dy="8" stdDeviation="10" floodColor="#193653" floodOpacity="0.08" />
+        </filter>
 
-        {/* ----------------- PASTEL RAINBOW ----------------- */}
-        <g opacity="0.92">
-          {/* Lavender Outer Ring */}
-          <path d="M 120 360 A 200 200 0 0 1 520 360" stroke="#DDD6FE" strokeWidth="18" strokeLinecap="round" fill="none" />
-          {/* Sky Blue */}
-          <path d="M 138 360 A 182 182 0 0 1 502 360" stroke="#BAE6FD" strokeWidth="18" strokeLinecap="round" fill="none" />
-          {/* Mint Green */}
-          <path d="M 156 360 A 164 164 0 0 1 484 360" stroke="#A7F3D0" strokeWidth="18" strokeLinecap="round" fill="none" />
-          {/* Butter Yellow */}
-          <path d="M 174 360 A 146 146 0 0 1 466 360" stroke="#FDE68A" strokeWidth="18" strokeLinecap="round" fill="none" />
-          {/* Strawberry Pink Inner */}
-          <path d="M 192 360 A 128 128 0 0 1 448 360" stroke="#FECDD3" strokeWidth="18" strokeLinecap="round" fill="none" />
+        {/* Linear Gradients for 3D depth */}
+        <linearGradient id="bearBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#EBB888" />
+          <stop offset="100%" stopColor="#CE8F58" />
+        </linearGradient>
+
+        <linearGradient id="dungareesGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#A8C98B" />
+          <stop offset="100%" stopColor="#8AB36B" />
+        </linearGradient>
+
+        <linearGradient id="cloudGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="100%" stopColor="#FFF9F2" />
+        </linearGradient>
+      </defs>
+
+      {/* 1. PASTEL RAINBOW ARC (Backdrop) */}
+      <g opacity="0.92">
+        {/* Stripe 1: Soft Sage */}
+        <path d="M 120 370 A 180 180 0 0 1 480 370" stroke="#EFF7E9" strokeWidth="18" strokeLinecap="round" fill="none" />
+        {/* Stripe 2: Pastel Sky Blue */}
+        <path d="M 138 370 A 162 162 0 0 1 462 370" stroke="#8FD3E8" strokeWidth="16" strokeLinecap="round" fill="none" />
+        {/* Stripe 3: Pastel Yellow */}
+        <path d="M 154 370 A 146 146 0 0 1 446 370" stroke="#F6D77A" strokeWidth="15" strokeLinecap="round" fill="none" />
+        {/* Stripe 4: Soft Sage */}
+        <path d="M 169 370 A 131 131 0 0 1 431 370" stroke="#A8C98B" strokeWidth="15" strokeLinecap="round" fill="none" />
+        {/* Stripe 5: Coral Pink */}
+        <path d="M 184 370 A 116 116 0 0 1 416 370" stroke="#F27A8A" strokeWidth="14" strokeLinecap="round" fill="none" />
+      </g>
+
+      {/* 2. BACKGROUND FLUFFY CLOUDS */}
+      <g filter="url(#soft-shadow)">
+        {/* Left Base Cloud */}
+        <g transform="translate(60, 310)">
+          <path
+            d="M 20 50 Q 0 50 0 35 Q 0 18 18 18 Q 28 0 50 5 Q 70 -5 85 15 Q 105 12 105 32 Q 115 50 90 50 Z"
+            fill="url(#cloudGrad)"
+          />
         </g>
-
-        {/* ----------------- CLOUDS AT RAINBOW BASES ----------------- */}
-        {/* Left Rainbow Cloud */}
-        <g fill="#FFFFFF" stroke="#EFE7DE" strokeWidth="2.5">
-          <circle cx="120" cy="350" r="32" />
-          <circle cx="150" cy="335" r="28" />
-          <circle cx="175" cy="355" r="26" />
-          <rect x="100" y="350" width="95" height="25" fill="#FFFFFF" stroke="none" />
+        {/* Right Base Cloud */}
+        <g transform="translate(420, 320)">
+          <path
+            d="M 20 50 Q 0 50 0 35 Q 0 18 18 18 Q 28 0 50 5 Q 70 -5 85 15 Q 105 12 105 32 Q 115 50 90 50 Z"
+            fill="url(#cloudGrad)"
+          />
         </g>
-
-        {/* Right Rainbow Cloud with Star */}
-        <g fill="#FFFFFF" stroke="#EFE7DE" strokeWidth="2.5">
-          <circle cx="475" cy="345" r="34" />
-          <circle cx="510" cy="330" r="30" />
-          <circle cx="540" cy="350" r="28" />
-          <rect x="455" y="345" width="105" height="25" fill="#FFFFFF" stroke="none" />
+        {/* Top Left Floating Cloud */}
+        <g transform="translate(90, 80) scale(0.75)">
+          <path
+            d="M 20 50 Q 0 50 0 35 Q 0 18 18 18 Q 28 0 50 5 Q 70 -5 85 15 Q 105 12 105 32 Q 115 50 90 50 Z"
+            fill="url(#cloudGrad)"
+          />
         </g>
+      </g>
 
-        {/* Smiling Star on Top Right of Rainbow */}
-        <g transform="translate(460, 80)" className="animate-wiggle origin-center">
-          <path d="M25 0 L32 15 L49 17 L36 30 L40 47 L25 38 L9 47 L13 30 L1 17 L17 15 Z" fill="#FDE047" stroke="#EAB308" strokeWidth="2.5" strokeLinejoin="round" />
-          {/* Star Face */}
-          <circle cx="20" cy="22" r="2.2" fill="#2D3748" />
-          <circle cx="30" cy="22" r="2.2" fill="#2D3748" />
-          <ellipse cx="16" cy="27" rx="3" ry="2" fill="#FF8DA1" opacity="0.7" />
-          <ellipse cx="34" cy="27" rx="3" ry="2" fill="#FF8DA1" opacity="0.7" />
-          <path d="M22 28 Q25 33 28 28" stroke="#2D3748" strokeWidth="2" strokeLinecap="round" fill="none" />
-        </g>
+      {/* 3. SMILING YELLOW STAR (Top Right) */}
+      <g transform="translate(450, 70)" className="animate-float">
+        <polygon
+          points="25,2 32,18 49,18 35,29 40,46 25,35 10,46 15,29 1,18 18,18"
+          fill="#F6D77A"
+          stroke="#E0B538"
+          strokeWidth="2.5"
+          strokeLinejoin="round"
+        />
+        {/* Star Eyes & Smile */}
+        <circle cx="21" cy="21" r="2" fill="#193653" />
+        <circle cx="29" cy="21" r="2" fill="#193653" />
+        <path d="M 22 26 Q 25 29 28 26" stroke="#193653" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+        <circle cx="18" cy="24" r="1.5" fill="#F27A8A" />
+        <circle cx="32" cy="24" r="1.5" fill="#F27A8A" />
+      </g>
 
-        {/* ----------------- SOFT GREEN MOUND / GROUND ----------------- */}
-        <path d="M 20 440 Q 300 370 580 440 L 580 480 L 20 480 Z" fill="#E8F5E9" />
-        <path d="M 0 455 Q 300 405 600 455 L 600 480 L 0 480 Z" fill="#D9F0D6" />
+      {/* 4. FOUR-TIER STACKING TOY (Right Side of Bear) */}
+      <g transform="translate(410, 310)">
+        {/* Base Ring 1 (Soft Sage) */}
+        <ellipse cx="40" cy="80" rx="36" ry="12" fill="#A8C98B" stroke="#729c50" strokeWidth="2" />
+        {/* Ring 2 (Pastel Yellow) */}
+        <ellipse cx="40" cy="65" rx="30" ry="10" fill="#F6D77A" stroke="#E0B538" strokeWidth="2" />
+        {/* Ring 3 (Pastel Sky Blue) */}
+        <ellipse cx="40" cy="52" rx="24" ry="9" fill="#8FD3E8" stroke="#3599b8" strokeWidth="2" />
+        {/* Ring 4 (Coral Pink) */}
+        <ellipse cx="40" cy="40" rx="18" ry="8" fill="#F27A8A" stroke="#e06878" strokeWidth="2" />
+        {/* Star Topper */}
+        <polygon
+          points="40,16 43,24 51,24 45,29 47,37 40,32 33,37 35,29 29,24 37,24"
+          fill="#F6D77A"
+          stroke="#E0B538"
+          strokeWidth="1.5"
+        />
+      </g>
 
-        {/* ----------------- TEDDY BEAR (LEFT/CENTER) ----------------- */}
-        <g id="teddy-bear" transform="translate(180, 160)">
-          {/* Left Ear */}
-          <circle cx="35" cy="45" r="24" fill="#D99B6A" stroke="#2D3748" strokeWidth="4" />
-          <circle cx="35" cy="45" r="13" fill="#FFCCD7" />
-          
-          {/* Right Ear */}
-          <circle cx="135" cy="45" r="24" fill="#D99B6A" stroke="#2D3748" strokeWidth="4" />
-          <circle cx="135" cy="45" r="13" fill="#FFCCD7" />
+      {/* 5. COLORFUL TOY BALL (Left Side of Bear) */}
+      <g transform="translate(130, 340)">
+        <circle cx="32" cy="32" r="28" fill="#8FD3E8" stroke="#3599b8" strokeWidth="2" />
+        {/* Ball color stripes */}
+        <path d="M 12 14 Q 32 32 12 50" stroke="#F27A8A" strokeWidth="12" fill="none" />
+        <path d="M 32 4 Q 46 32 32 60" stroke="#F6D77A" strokeWidth="8" fill="none" />
+        <path d="M 52 14 Q 32 32 52 50" stroke="#A8C98B" strokeWidth="8" fill="none" />
+        <circle cx="24" cy="20" r="4" fill="white" opacity="0.6" />
+      </g>
 
-          {/* Body */}
-          <ellipse cx="85" cy="185" rx="55" ry="60" fill="#E8B07D" stroke="#2D3748" strokeWidth="4" />
+      {/* 6. GREEN LEAF SPRIGS (Foliage accents) */}
+      <g transform="translate(480, 270)">
+        <path d="M 10 40 Q 25 20 40 10" stroke="#A8C98B" strokeWidth="3" strokeLinecap="round" fill="none" />
+        <ellipse cx="20" cy="26" rx="8" ry="4" transform="rotate(-30 20 26)" fill="#A8C98B" />
+        <ellipse cx="32" cy="18" rx="8" ry="4" transform="rotate(-15 32 18)" fill="#A8C98B" />
+        <ellipse cx="40" cy="10" rx="7" ry="3.5" transform="rotate(10 40 10)" fill="#A8C98B" />
+      </g>
 
-          {/* Teal Dungarees Pants / Overalls */}
-          <path d="M 40 185 Q 85 175 130 185 L 135 240 Q 85 250 35 240 Z" fill="#4E9F97" stroke="#2D3748" strokeWidth="4" />
-          {/* Straps */}
-          <path d="M 52 145 L 56 195" stroke="#4E9F97" strokeWidth="14" strokeLinecap="round" />
-          <path d="M 52 145 L 56 195" stroke="#2D3748" strokeWidth="3" strokeLinecap="round" fill="none" />
-          <circle cx="56" cy="192" r="4.5" fill="#FEF3C7" stroke="#2D3748" strokeWidth="2" />
+      {/* 7. PLUSH 3D TEDDY BEAR (Centerpiece Hero Mascot) */}
+      <g transform="translate(200, 140)" filter="url(#soft-shadow)">
+        {/* Left Bear Ear */}
+        <circle cx="48" cy="40" r="24" fill="#CE8F58" stroke="#A36B3B" strokeWidth="3" />
+        <circle cx="48" cy="40" r="13" fill="#FDE8EB" />
 
-          <path d="M 118 145 L 114 195" stroke="#4E9F97" strokeWidth="14" strokeLinecap="round" />
-          <path d="M 118 145 L 114 195" stroke="#2D3748" strokeWidth="3" strokeLinecap="round" fill="none" />
-          <circle cx="114" cy="192" r="4.5" fill="#FEF3C7" stroke="#2D3748" strokeWidth="2" />
-          
-          {/* Dungaree Center Pocket */}
-          <rect x="70" y="195" width="30" height="24" rx="6" fill="#3D867F" stroke="#2D3748" strokeWidth="2.5" />
-          <path d="M 78 205 Q 85 210 92 205" stroke="#FEF3C7" strokeWidth="2" strokeLinecap="round" fill="none" />
+        {/* Right Bear Ear */}
+        <circle cx="152" cy="40" r="24" fill="#CE8F58" stroke="#A36B3B" strokeWidth="3" />
+        <circle cx="152" cy="40" r="13" fill="#FDE8EB" />
 
-          {/* Feet/Paws */}
-          <ellipse cx="40" cy="245" rx="22" ry="16" fill="#D99B6A" stroke="#2D3748" strokeWidth="4" />
-          <ellipse cx="40" cy="245" rx="12" ry="8" fill="#FDF3E7" />
-          <ellipse cx="130" cy="245" rx="22" ry="16" fill="#D99B6A" stroke="#2D3748" strokeWidth="4" />
-          <ellipse cx="130" cy="245" rx="12" ry="8" fill="#FDF3E7" />
-
-          {/* Left Waving Arm */}
-          <g className="animate-wiggle origin-bottom-right">
-            <path d="M 35 155 Q 0 135 10 105 Q 25 95 40 120 Z" fill="#E8B07D" stroke="#2D3748" strokeWidth="4" />
-            <ellipse cx="15" cy="110" rx="10" ry="8" fill="#FDF3E7" />
-          </g>
-
-          {/* Right Arm */}
-          <path d="M 130 160 Q 155 180 145 205 Q 130 210 125 185 Z" fill="#E8B07D" stroke="#2D3748" strokeWidth="4" />
-
-          {/* Head */}
-          <circle cx="85" cy="90" r="54" fill="#E8B07D" stroke="#2D3748" strokeWidth="4" />
-
-          {/* Cheeks */}
-          <ellipse cx="50" cy="105" rx="11" ry="7" fill="#FF8DA1" opacity="0.65" />
-          <ellipse cx="120" cy="105" rx="11" ry="7" fill="#FF8DA1" opacity="0.65" />
-
-          {/* Snout */}
-          <ellipse cx="85" cy="106" rx="24" ry="18" fill="#FDF3E7" stroke="#2D3748" strokeWidth="3" />
-          <path d="M 76 98 Q 85 91 94 98 Q 85 108 76 98 Z" fill="#4A3427" />
-          <path d="M 85 104 L 85 113" stroke="#4A3427" strokeWidth="3" strokeLinecap="round" />
-          <path d="M 77 112 Q 85 118 93 112" stroke="#4A3427" strokeWidth="3" strokeLinecap="round" fill="none" />
-
-          {/* Eyes */}
-          <ellipse cx="64" cy="85" rx="6.5" ry="9" fill="#2D3748" />
-          <circle cx="62" cy="82" r="3" fill="#FFFFFF" />
-          <ellipse cx="106" cy="85" rx="6.5" ry="9" fill="#2D3748" />
-          <circle cx="104" cy="82" r="3" fill="#FFFFFF" />
-        </g>
-
-        {/* ----------------- PENGUIN HOLDING PINK HEART (RIGHT/CENTER) ----------------- */}
-        <g id="penguin" transform="translate(355, 200)">
-          {/* Penguin Body (Slate Navy) */}
-          <ellipse cx="70" cy="140" rx="50" ry="65" fill="#334155" stroke="#1E293B" strokeWidth="4" />
-
-          {/* Feet (Orange) */}
-          <ellipse cx="45" cy="205" rx="16" ry="9" fill="#FB923C" stroke="#2D3748" strokeWidth="3" />
-          <ellipse cx="95" cy="205" rx="16" ry="9" fill="#FB923C" stroke="#2D3748" strokeWidth="3" />
-
-          {/* White Belly & Face */}
-          <path d="M 38 120 Q 35 185 70 190 Q 105 185 102 120 Q 105 75 70 75 Q 35 75 38 120 Z" fill="#FFFFFF" stroke="#2D3748" strokeWidth="3" />
-
-          {/* Wings */}
-          <path d="M 22 125 Q 5 150 25 175" fill="#334155" stroke="#1E293B" strokeWidth="4" />
-          <path d="M 118 125 Q 135 150 115 175" fill="#334155" stroke="#1E293B" strokeWidth="4" />
-
-          {/* Eyes (Happy Closed C-curves) */}
-          <path d="M 52 108 Q 58 100 64 108" stroke="#1E293B" strokeWidth="3.5" strokeLinecap="round" fill="none" />
-          <path d="M 76 108 Q 82 100 88 108" stroke="#1E293B" strokeWidth="3.5" strokeLinecap="round" fill="none" />
-
-          {/* Beak */}
-          <path d="M 64 112 Q 70 122 76 112 Z" fill="#F97316" stroke="#2D3748" strokeWidth="2.5" />
-
-          {/* Cheeks */}
-          <ellipse cx="45" cy="116" rx="8" ry="5" fill="#FF8DA1" opacity="0.7" />
-          <ellipse cx="95" cy="116" rx="8" ry="5" fill="#FF8DA1" opacity="0.7" />
-
-          {/* Penguin Holding Big Pink Heart */}
-          <g transform="translate(48, 125) scale(0.9)" className="animate-pulse">
-            <path d="M 25 40 C 25 40 0 24 0 10 C 0 -1 12 -4 25 7 C 38 -4 50 -1 50 10 C 50 24 25 40 25 40 Z" fill="#FF6B8B" stroke="#FA5578" strokeWidth="2.5" />
-            <ellipse cx="14" cy="10" rx="4" ry="7" fill="#FFA5BA" opacity="0.6" transform="rotate(-30 14 10)" />
-          </g>
-        </g>
-
-        {/* ----------------- WOODEN SIGNBOARD "100% ORGANIC & SAFE" ----------------- */}
-        <g id="wooden-sign" transform="translate(435, 255)">
-          {/* Wooden Posts */}
-          <rect x="25" y="65" width="10" height="55" rx="3" fill="#A77A53" stroke="#2D3748" strokeWidth="3" />
-          <rect x="105" y="65" width="10" height="55" rx="3" fill="#A77A53" stroke="#2D3748" strokeWidth="3" />
-
-          {/* Wooden Board */}
-          <rect x="0" y="0" width="140" height="70" rx="14" fill="#E2C19D" stroke="#2D3748" strokeWidth="3.5" />
-          <rect x="6" y="6" width="128" height="58" rx="10" fill="#EAD4BD" stroke="#C49B74" strokeWidth="2" strokeDasharray="4 4" />
-
-          {/* Text inside signboard */}
-          <text x="70" y="32" textAnchor="middle" fill="#2D3748" fontFamily="Quicksand, Nunito, sans-serif" fontWeight="800" fontSize="13.5">
-            100% Organic
-          </text>
-          <text x="70" y="49" textAnchor="middle" fill="#2D3748" fontFamily="Quicksand, Nunito, sans-serif" fontWeight="800" fontSize="13.5">
-            &amp; Safe
-          </text>
-
-          {/* Little green grass around posts */}
-          <path d="M 18 115 Q 22 100 30 115 Q 36 102 42 115" stroke="#10B981" strokeWidth="3.5" strokeLinecap="round" fill="none" />
-          <path d="M 98 115 Q 102 100 110 115 Q 116 102 122 115" stroke="#10B981" strokeWidth="3.5" strokeLinecap="round" fill="none" />
-        </g>
-
-        {/* ----------------- LITTLE FLOWERS ON THE GROUND ----------------- */}
-        {/* Purple flower */}
-        <g transform="translate(90, 395)">
-          <path d="M 10 40 Q 12 25 10 15" stroke="#10B981" strokeWidth="3" fill="none" />
-          <circle cx="10" cy="12" r="6" fill="#C084FC" />
-          <circle cx="10" cy="12" r="2.5" fill="#FEF08A" />
-        </g>
-        {/* Pink flower */}
-        <g transform="translate(135, 415)">
-          <path d="M 10 30 Q 8 20 10 12" stroke="#10B981" strokeWidth="3" fill="none" />
-          <circle cx="10" cy="10" r="5.5" fill="#F472B6" />
-          <circle cx="10" cy="10" r="2.2" fill="#FEF08A" />
-        </g>
-        {/* Yellow flower right */}
-        <g transform="translate(565, 385)">
-          <path d="M 10 35 Q 15 22 12 12" stroke="#10B981" strokeWidth="3" fill="none" />
-          <circle cx="12" cy="10" r="6" fill="#FBBF24" />
-          <circle cx="12" cy="10" r="2.5" fill="#F87171" />
-        </g>
-      </svg>
-    </div>
-  );
-}
-
-// ============================================================================
-// 3. FOOTER CARTOON: PASTEL HOT AIR BALLOON
-// ============================================================================
-export function HotAirBalloonIllustration({ className = 'w-36 h-48' }: { className?: string }) {
-  return (
-    <div className={`relative animate-float-slow ${className}`}>
-      <svg viewBox="0 0 160 220" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
-        {/* Balloon Body */}
+        {/* Bear Feet / Paws */}
         <g>
-          {/* Background shape */}
-          <path d="M 80 10 C 25 10 15 65 35 110 C 45 130 65 145 80 145 C 95 145 115 130 125 110 C 145 65 135 10 80 10 Z" fill="#FFEAEF" stroke="#2D3748" strokeWidth="3.5" />
-          
-          {/* Vertical Stripes */}
-          {/* Mint stripe */}
-          <path d="M 80 10 C 55 10 45 65 58 110 C 65 130 75 145 80 145 C 75 145 65 130 58 110 C 45 65 55 10 80 10 Z" fill="#D1FAE5" />
-          {/* Butter Yellow center */}
-          <path d="M 80 10 C 70 10 65 65 72 110 C 75 130 78 145 80 145 C 82 145 85 130 88 110 C 95 65 90 10 80 10 Z" fill="#FEF3C7" />
-          {/* Sky Blue right stripe */}
-          <path d="M 80 10 C 105 10 115 65 102 110 C 95 130 85 145 80 145 C 85 145 95 130 102 110 C 115 65 105 10 80 10 Z" fill="#E0F2FE" />
-          
-          {/* Outer stroke detail */}
-          <path d="M 80 10 C 25 10 15 65 35 110 C 45 130 65 145 80 145 C 95 145 115 130 125 110 C 145 65 135 10 80 10 Z" stroke="#2D3748" strokeWidth="3.5" fill="none" />
+          {/* Left Foot */}
+          <ellipse cx="50" cy="255" rx="24" ry="18" fill="#CE8F58" stroke="#A36B3B" strokeWidth="3" />
+          <ellipse cx="50" cy="255" rx="14" ry="10" fill="#FFF9F2" />
+          {/* Right Foot */}
+          <ellipse cx="150" cy="255" rx="24" ry="18" fill="#CE8F58" stroke="#A36B3B" strokeWidth="3" />
+          <ellipse cx="150" cy="255" rx="14" ry="10" fill="#FFF9F2" />
         </g>
 
-        {/* Ropes */}
-        <line x1="52" y1="145" x2="62" y2="175" stroke="#2D3748" strokeWidth="2.5" />
-        <line x1="108" y1="145" x2="98" y2="175" stroke="#2D3748" strokeWidth="2.5" />
-        <line x1="80" y1="145" x2="80" y2="175" stroke="#2D3748" strokeWidth="2" />
+        {/* Bear Body */}
+        <ellipse cx="100" cy="180" rx="66" ry="68" fill="url(#bearBodyGrad)" stroke="#A36B3B" strokeWidth="3.5" />
 
-        {/* Basket */}
-        <rect x="58" y="175" width="44" height="32" rx="7" fill="#E2C19D" stroke="#2D3748" strokeWidth="3" />
-        <line x1="58" y1="185" x2="102" y2="185" stroke="#C49B74" strokeWidth="2" />
-        <line x1="58" y1="195" x2="102" y2="195" stroke="#C49B74" strokeWidth="2" />
+        {/* Bear Dungarees (Soft Sage Overalls) */}
+        <g>
+          {/* Main Overalls Body */}
+          <path
+            d="M 46 170 Q 100 155 154 170 L 158 235 Q 100 250 42 235 Z"
+            fill="url(#dungareesGrad)"
+            stroke="#729c50"
+            strokeWidth="3"
+          />
+          {/* Left Strap */}
+          <rect x="58" y="130" width="16" height="50" rx="5" fill="#A8C98B" stroke="#729c50" strokeWidth="2.5" />
+          <circle cx="66" cy="170" r="4.5" fill="#F6D77A" stroke="#E0B538" strokeWidth="1.5" />
 
-        {/* Cute Baby Bear peeking out of basket */}
-        <g transform="translate(68, 160)">
-          {/* Ears */}
-          <circle cx="7" cy="6" r="4.5" fill="#D99B6A" stroke="#2D3748" strokeWidth="1.5" />
-          <circle cx="17" cy="6" r="4.5" fill="#D99B6A" stroke="#2D3748" strokeWidth="1.5" />
-          {/* Head */}
-          <circle cx="12" cy="14" r="9" fill="#E8B07D" stroke="#2D3748" strokeWidth="2" />
-          {/* Cheeks */}
-          <circle cx="7" cy="16" r="1.8" fill="#FF8DA1" />
-          <circle cx="17" cy="16" r="1.8" fill="#FF8DA1" />
-          {/* Eyes */}
-          <circle cx="9.5" cy="13" r="1.2" fill="#2D3748" />
-          <circle cx="14.5" cy="13" r="1.2" fill="#2D3748" />
-          {/* Snout */}
-          <ellipse cx="12" cy="16" rx="3.5" ry="2.5" fill="#FDF3E7" />
-          <circle cx="12" cy="15.2" r="1" fill="#4A3427" />
+          {/* Right Strap */}
+          <rect x="126" y="130" width="16" height="50" rx="5" fill="#A8C98B" stroke="#729c50" strokeWidth="2.5" />
+          <circle cx="134" cy="170" r="4.5" fill="#F6D77A" stroke="#E0B538" strokeWidth="1.5" />
+
+          {/* Front Center Pocket with Heart */}
+          <rect x="80" y="180" width="40" height="32" rx="8" fill="#EFF7E9" stroke="#729c50" strokeWidth="2" />
+          <path d="M 100 198 L 96 193 A 3 3 0 0 1 100 189 A 3 3 0 0 1 104 193 Z" fill="#F27A8A" />
         </g>
 
-        {/* Tiny Cloud at bottom */}
-        <g fill="#FFFFFF" opacity="0.9">
-          <circle cx="35" cy="195" r="12" />
-          <circle cx="48" cy="190" r="10" />
-          <circle cx="58" cy="197" r="8" />
-        </g>
-      </svg>
-    </div>
+        {/* Bear Arms / Hands */}
+        {/* Left Arm */}
+        <ellipse cx="36" cy="170" rx="18" ry="32" transform="rotate(25 36 170)" fill="#CE8F58" stroke="#A36B3B" strokeWidth="3" />
+        {/* Right Arm waving */}
+        <ellipse cx="164" cy="160" rx="18" ry="32" transform="rotate(-35 164 160)" fill="#CE8F58" stroke="#A36B3B" strokeWidth="3" />
+
+        {/* Bear Head */}
+        <ellipse cx="100" cy="85" rx="60" ry="52" fill="url(#bearBodyGrad)" stroke="#A36B3B" strokeWidth="3.5" />
+
+        {/* Snout */}
+        <ellipse cx="100" cy="98" rx="26" ry="20" fill="#FFF9F2" stroke="#EFE6DA" strokeWidth="2" />
+        {/* Nose */}
+        <ellipse cx="100" cy="88" rx="10" ry="7" fill="#193653" />
+        {/* Mouth */}
+        <path d="M 92 100 Q 100 110 108 100" stroke="#193653" strokeWidth="3" strokeLinecap="round" fill="none" />
+        <line x1="100" y1="95" x2="100" y2="102" stroke="#193653" strokeWidth="2.5" />
+
+        {/* Eyes (Cute black glossy circles) */}
+        <circle cx="76" cy="74" r="7" fill="#193653" />
+        <circle cx="79" cy="71" r="2.5" fill="#FFFFFF" />
+        <circle cx="124" cy="74" r="7" fill="#193653" />
+        <circle cx="127" cy="71" r="2.5" fill="#FFFFFF" />
+
+        {/* Rosy Cheeks */}
+        <ellipse cx="64" cy="90" rx="9" ry="6" fill="#F27A8A" fillOpacity="0.5" />
+        <ellipse cx="136" cy="90" rx="9" ry="6" fill="#F27A8A" fillOpacity="0.5" />
+      </g>
+    </svg>
   );
 }
 
-// ============================================================================
-// 4. FOOTER CARTOON: FRIENDLY BABY GIRAFFE
-// ============================================================================
-export function BabyGiraffeIllustration({ className = 'w-32 h-52' }: { className?: string }) {
+/**
+ * Hot Air Balloon Mascot for Footer
+ */
+export function HotAirBalloonIllustration({ className = 'w-24 h-36' }: { className?: string }) {
   return (
-    <div className={`relative animate-wiggle origin-bottom ${className}`}>
-      <svg viewBox="0 0 160 260" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
-        {/* Giraffe Body */}
-        <ellipse cx="75" cy="205" rx="38" ry="32" fill="#FCD34D" stroke="#2D3748" strokeWidth="3.5" />
+    <svg viewBox="0 0 100 140" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${className} animate-float`}>
+      {/* Balloon Envelope */}
+      <path
+        d="M 50 10 C 20 10 10 35 15 65 C 20 85 42 100 46 102 L 54 102 C 58 100 80 85 85 65 C 90 35 80 10 50 10 Z"
+        fill="#FDE8EB"
+        stroke="#F27A8A"
+        strokeWidth="2.5"
+      />
+      {/* Vertical Stripes */}
+      <path d="M 50 10 C 36 30 36 80 48 102" stroke="#8FD3E8" strokeWidth="8" fill="none" />
+      <path d="M 50 10 C 64 30 64 80 52 102" stroke="#F6D77A" strokeWidth="8" fill="none" />
+      <path d="M 50 10 L 50 102" stroke="#F27A8A" strokeWidth="3" fill="none" />
 
-        {/* Legs */}
-        <rect x="52" y="215" width="10" height="40" rx="5" fill="#FCD34D" stroke="#2D3748" strokeWidth="3" />
-        <rect x="52" y="248" width="10" height="7" rx="2" fill="#78350F" />
-        <rect x="88" y="215" width="10" height="40" rx="5" fill="#FCD34D" stroke="#2D3748" strokeWidth="3" />
-        <rect x="88" y="248" width="10" height="7" rx="2" fill="#78350F" />
+      {/* Ropes */}
+      <line x1="42" y1="102" x2="40" y2="114" stroke="#193653" strokeWidth="1.5" />
+      <line x1="58" y1="102" x2="60" y2="114" stroke="#193653" strokeWidth="1.5" />
 
-        {/* Tail */}
-        <path d="M 112 205 Q 130 215 125 235" stroke="#FCD34D" strokeWidth="5" strokeLinecap="round" fill="none" />
-        <ellipse cx="125" cy="235" rx="6" ry="8" fill="#78350F" />
-
-        {/* Long Neck */}
-        <path d="M 58 200 L 72 80 L 92 80 L 86 200 Z" fill="#FCD34D" stroke="#2D3748" strokeWidth="3.5" />
-
-        {/* Giraffe Spots on Neck and Body */}
-        <ellipse cx="80" cy="110" rx="7" ry="5" fill="#B45309" opacity="0.85" />
-        <ellipse cx="78" cy="140" rx="8" ry="6" fill="#B45309" opacity="0.85" />
-        <ellipse cx="82" cy="175" rx="9" ry="7" fill="#B45309" opacity="0.85" />
-        <ellipse cx="65" cy="205" rx="8" ry="6" fill="#B45309" opacity="0.85" />
-        <ellipse cx="95" cy="210" rx="9" ry="7" fill="#B45309" opacity="0.85" />
-
-        {/* Giraffe Mane */}
-        <path d="M 88 85 L 94 92 L 88 100 L 94 110 L 88 120 L 94 130 L 88 140 L 94 150 L 88 160" stroke="#78350F" strokeWidth="4" strokeLinecap="round" />
-
-        {/* Head */}
-        <g transform="translate(48, 25)">
-          {/* Horns / Ossicones */}
-          <line x1="28" y1="20" x2="22" y2="4" stroke="#2D3748" strokeWidth="3" />
-          <circle cx="21" cy="4" r="5" fill="#78350F" stroke="#2D3748" strokeWidth="2" />
-          
-          <line x1="42" y1="20" x2="48" y2="4" stroke="#2D3748" strokeWidth="3" />
-          <circle cx="49" cy="4" r="5" fill="#78350F" stroke="#2D3748" strokeWidth="2" />
-
-          {/* Ears */}
-          <ellipse cx="14" cy="28" rx="10" ry="6" fill="#FCD34D" stroke="#2D3748" strokeWidth="2.5" transform="rotate(-25 14 28)" />
-          <ellipse cx="14" cy="28" rx="5" ry="3" fill="#FFCCD7" transform="rotate(-25 14 28)" />
-
-          <ellipse cx="56" cy="28" rx="10" ry="6" fill="#FCD34D" stroke="#2D3748" strokeWidth="2.5" transform="rotate(25 56 28)" />
-          <ellipse cx="56" cy="28" rx="5" ry="3" fill="#FFCCD7" transform="rotate(25 56 28)" />
-
-          {/* Head Shape */}
-          <ellipse cx="35" cy="42" rx="24" ry="26" fill="#FCD34D" stroke="#2D3748" strokeWidth="3.5" />
-          
-          {/* Snout */}
-          <ellipse cx="35" cy="55" rx="18" ry="13" fill="#FEF3C7" stroke="#2D3748" strokeWidth="2.5" />
-          <circle cx="29" cy="52" r="2" fill="#78350F" />
-          <circle cx="41" cy="52" r="2" fill="#78350F" />
-          <path d="M 30 58 Q 35 63 40 58" stroke="#78350F" strokeWidth="2" strokeLinecap="round" fill="none" />
-
-          {/* Eyes (Gentle, Sweet Smile) */}
-          <path d="M 23 35 Q 28 30 32 35" stroke="#2D3748" strokeWidth="3" strokeLinecap="round" fill="none" />
-          <path d="M 38 35 Q 43 30 47 35" stroke="#2D3748" strokeWidth="3" strokeLinecap="round" fill="none" />
-
-          {/* Rosy Cheeks */}
-          <ellipse cx="18" cy="45" rx="5" ry="3.5" fill="#FF8DA1" opacity="0.75" />
-          <ellipse cx="52" cy="45" rx="5" ry="3.5" fill="#FF8DA1" opacity="0.75" />
-        </g>
-      </svg>
-    </div>
+      {/* Basket */}
+      <rect x="36" y="114" width="28" height="18" rx="4" fill="#A8C98B" stroke="#729c50" strokeWidth="2" />
+      {/* Smiling Teddy Inside Basket */}
+      <circle cx="50" cy="112" r="7" fill="#E2AA76" />
+      <circle cx="48" cy="111" r="1" fill="#193653" />
+      <circle cx="52" cy="111" r="1" fill="#193653" />
+    </svg>
   );
 }
 
-// ============================================================================
-// 5. FLOATING DECORATIVE PASTEL ELEMENTS (Stars, Hearts, Sparkles, Clouds)
-// ============================================================================
+/**
+ * Floating Kawaii Decorative Shapes (Stars, Dots, Hearts)
+ */
 export function FloatingPastelDecorations() {
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
-      {/* Floating Kawaii Star 1 (Top Left) */}
-      <div className="absolute top-10 left-[8%] animate-float">
-        <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
-          <path d="M20 0 L25 12 L38 14 L28 24 L31 38 L20 30 L9 38 L12 24 L2 14 L15 12 Z" fill="#FEF08A" stroke="#EAB308" strokeWidth="2" />
-          <circle cx="16" cy="18" r="1.5" fill="#2D3748" />
-          <circle cx="24" cy="18" r="1.5" fill="#2D3748" />
-          <path d="M18 22 Q20 25 22 22" stroke="#2D3748" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+    <div className="absolute inset-0 pointer-events-none overflow-hidden select-none" aria-hidden="true">
+      {/* Top Left Yellow Star */}
+      <div className="absolute top-10 left-[8%] animate-twinkle">
+        <svg viewBox="0 0 24 24" fill="#F6D77A" className="w-5 h-5 opacity-75">
+          <path d="M12 2l2.4 7.4h7.6l-6.2 4.5 2.4 7.4-6.2-4.5-6.2 4.5 2.4-7.4-6.2-4.5h7.6z" />
         </svg>
       </div>
 
-      {/* Floating Pink Heart (Top Center) */}
-      <div className="absolute top-14 left-[48%] animate-twinkle">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="#FF6B8B" stroke="#FA5578" strokeWidth="1.5" opacity="0.75">
+      {/* Top Right Coral Heart */}
+      <div className="absolute top-14 right-[12%] animate-float">
+        <svg viewBox="0 0 24 24" fill="#F27A8A" className="w-4 h-4 opacity-60">
           <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
         </svg>
       </div>
 
-      {/* Floating Lavender Sparkle (Top Right) */}
-      <div className="absolute top-20 right-[12%] animate-float-slow">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="#DDD6FE">
-          <path d="M12 0 L14.5 9.5 L24 12 L14.5 14.5 L12 24 L9.5 14.5 L0 12 L9.5 9.5 Z" />
+      {/* Mid Left Sky Blue Sparkle */}
+      <div className="absolute top-1/2 left-[4%] animate-twinkle">
+        <svg viewBox="0 0 24 24" fill="#8FD3E8" className="w-4 h-4 opacity-70">
+          <path d="M12 0l3 9 9 3-9 3-3 9-3-9-9-3 9-3z" />
         </svg>
       </div>
 
-      {/* Floating Sky Blue Cloud (Middle Left) */}
-      <div className="absolute top-[42%] left-[3%] opacity-60 animate-float-slow">
-        <svg width="54" height="32" viewBox="0 0 64 36" fill="#E0F2FE">
-          <circle cx="20" cy="22" r="14" />
-          <circle cx="36" cy="16" r="16" />
-          <circle cx="50" cy="24" r="12" />
-          <rect x="15" y="22" width="40" height="14" />
-        </svg>
-      </div>
-
-      {/* Floating Mint Leaf Sparkle (Middle Right) */}
-      <div className="absolute top-[52%] right-[5%] animate-twinkle">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="#A7F3D0">
-          <path d="M12 0 C12 12 24 12 24 12 C12 12 12 24 12 24 C12 12 0 12 0 12 C12 12 12 0 12 0 Z" />
-        </svg>
-      </div>
+      {/* Bottom Right Sage Green Dot */}
+      <div className="absolute bottom-16 right-[6%] w-3 h-3 rounded-full bg-[#A8C98B] opacity-60 animate-float-slow" />
     </div>
   );
 }

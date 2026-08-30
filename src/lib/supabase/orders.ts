@@ -22,26 +22,74 @@ export interface CheckoutPayload {
   shipping: number;
   total: number;
   cartItems: CartItem[];
+  paymentMethod?: string;
 }
 
 /**
- * Validates current stock and creates a pending order in Supabase
+ * Validates current stock and creates a pending order in Supabase.
+ * Supports both unified CheckoutPayload object or positional parameters.
  */
 export async function validateStockAndCreatePendingOrder(
-  payload: CheckoutPayload
-): Promise<{ success: boolean; order?: Order; error?: string }> {
+  payloadOrItems: CheckoutPayload | CartItem[],
+  argShippingAddress?: ShippingAddress,
+  argPaymentMethod?: string,
+  argUserId?: string | null,
+  argEmail?: string
+): Promise<{ success: boolean; order?: Order; orderNumber?: string; orderId?: string; error?: string }> {
   try {
     const supabase = createClient();
 
+    let items: CartItem[] = [];
+    let userId: string | null = null;
+    let customerName = '';
+    let customerEmail = '';
+    let customerPhone = '';
+    let shippingAddress: ShippingAddress;
+    let subtotal = 0;
+    let discount = 0;
+    let shipping = 0;
+    let total = 0;
+    let paymentMethod = 'cod';
+
+    if (Array.isArray(payloadOrItems)) {
+      items = payloadOrItems;
+      shippingAddress = argShippingAddress!;
+      customerName = shippingAddress?.full_name || '';
+      customerPhone = shippingAddress?.phone || '';
+      customerEmail = argEmail || '';
+      userId = argUserId || null;
+      paymentMethod = argPaymentMethod || 'cod';
+
+      subtotal = items.reduce((sum, i) => sum + i.product.price * i.quantity, 0);
+      shipping = subtotal >= 999 ? 0 : 99;
+      total = subtotal + shipping;
+    } else {
+      items = payloadOrItems.cartItems;
+      userId = payloadOrItems.userId || null;
+      customerName = payloadOrItems.customerName;
+      customerEmail = payloadOrItems.customerEmail;
+      customerPhone = payloadOrItems.customerPhone;
+      shippingAddress = payloadOrItems.shippingAddress;
+      subtotal = payloadOrItems.subtotal;
+      discount = payloadOrItems.discount || 0;
+      shipping = payloadOrItems.shipping;
+      total = payloadOrItems.total;
+      paymentMethod = payloadOrItems.paymentMethod || 'cod';
+    }
+
+    if (!items || items.length === 0) {
+      return { success: false, error: 'Your shopping cart is empty.' };
+    }
+
     // 1. Stock Check against live database
-    const productIds = payload.cartItems.map((item) => item.product.id);
+    const productIds = items.map((item) => item.product.id);
     const { data: dbProducts, error: prodError } = await supabase
       .from('products')
       .select('id, name, stock, is_active, price')
       .in('id', productIds);
 
     if (!prodError && dbProducts && dbProducts.length > 0) {
-      for (const item of payload.cartItems) {
+      for (const item of items) {
         const dbProd = dbProducts.find((p) => p.id === item.product.id);
         if (dbProd) {
           if (!dbProd.is_active) {
@@ -63,21 +111,21 @@ export async function validateStockAndCreatePendingOrder(
     // 2. Prepare Order Data
     const orderNumber = generateOrderNumber();
     const orderToInsert = {
-      user_id: payload.userId || null,
+      user_id: userId || null,
       order_number: orderNumber,
-      customer_name: payload.customerName.trim(),
-      customer_email: payload.customerEmail.trim(),
-      customer_phone: payload.customerPhone.trim(),
-      shipping_address: payload.shippingAddress,
-      subtotal: payload.subtotal,
-      discount: payload.discount || 0,
-      shipping: payload.shipping,
-      total: payload.total,
+      customer_name: customerName.trim(),
+      customer_email: customerEmail.trim(),
+      customer_phone: customerPhone.trim(),
+      shipping_address: shippingAddress,
+      subtotal,
+      discount,
+      shipping,
+      total,
       payment_status: 'pending' as PaymentStatus,
       order_status: 'pending' as OrderStatus,
     };
 
-    // 3. Insert main Order
+    // 3. Insert main Order into Supabase
     const { data: createdOrder, error: orderErr } = await supabase
       .from('orders')
       .insert([orderToInsert])
@@ -85,12 +133,12 @@ export async function validateStockAndCreatePendingOrder(
       .single();
 
     if (orderErr) {
-      console.error('Failed to create pending order:', orderErr);
-      return { success: false, error: orderErr.message || 'Failed to place order.' };
+      console.error('Failed to create pending order in Supabase:', orderErr);
+      return { success: false, error: orderErr.message || 'Failed to place order in database.' };
     }
 
-    // 4. Insert Order Items (Preserving exact purchase snapshots)
-    const itemsToInsert = payload.cartItems.map((item) => ({
+    // 4. Insert Order Items (Preserving purchase snapshots)
+    const itemsToInsert = items.map((item) => ({
       order_id: createdOrder.id,
       product_id: item.product.id,
       product_name: item.product.name,
@@ -108,11 +156,11 @@ export async function validateStockAndCreatePendingOrder(
       .insert(itemsToInsert);
 
     if (itemsErr) {
-      console.error('Failed to insert order items:', itemsErr);
+      console.error('Failed to insert order items into Supabase:', itemsErr);
     }
 
-    // 5. Decrement product stock in database
-    for (const item of payload.cartItems) {
+    // 5. Decrement product stock in live Supabase database
+    for (const item of items) {
       const currentStock = item.product.stock;
       if (typeof currentStock === 'number' && currentStock >= item.quantity) {
         await supabase
@@ -125,6 +173,8 @@ export async function validateStockAndCreatePendingOrder(
     return {
       success: true,
       order: createdOrder as Order,
+      orderNumber: createdOrder.order_number || orderNumber,
+      orderId: createdOrder.id,
     };
   } catch (err: any) {
     console.error('Checkout processing error:', err);
@@ -136,7 +186,7 @@ export async function validateStockAndCreatePendingOrder(
 }
 
 /**
- * Fetch all orders for a specific customer
+ * Fetch all orders for a specific customer from Supabase
  */
 export async function getUserOrders(userId: string): Promise<Order[]> {
   try {
@@ -151,7 +201,7 @@ export async function getUserOrders(userId: string): Promise<Order[]> {
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.warn('Error fetching customer orders:', error.message);
+      console.error('Error fetching customer orders from Supabase:', error.message);
       return [];
     }
 
@@ -166,7 +216,7 @@ export async function getUserOrders(userId: string): Promise<Order[]> {
 }
 
 /**
- * Fetch all orders for Admin Management
+ * Fetch all orders for Admin Management from Supabase
  */
 export async function getAllOrdersAdmin(): Promise<Order[]> {
   try {
@@ -180,7 +230,7 @@ export async function getAllOrdersAdmin(): Promise<Order[]> {
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.warn('Error fetching admin orders:', error.message);
+      console.error('Error fetching admin orders from Supabase:', error.message);
       return [];
     }
 
@@ -195,7 +245,7 @@ export async function getAllOrdersAdmin(): Promise<Order[]> {
 }
 
 /**
- * Fetch a single order by ID or order number
+ * Fetch a single order by ID or order number from Supabase
  */
 export async function getOrderDetails(orderId: string): Promise<Order | null> {
   try {
@@ -224,7 +274,7 @@ export async function getOrderDetails(orderId: string): Promise<Order | null> {
 }
 
 /**
- * Update order status (Admin)
+ * Update order status in Supabase (Admin)
  */
 export async function updateOrderStatus(
   orderId: string,
@@ -247,7 +297,7 @@ export async function updateOrderStatus(
     .eq('id', orderId);
 
   if (error) {
-    console.error('Failed to update order status:', error);
+    console.error('Failed to update order status in Supabase:', error);
     throw new Error(error.message);
   }
 
