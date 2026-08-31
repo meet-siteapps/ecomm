@@ -1,9 +1,18 @@
 'use client';
 
-import { useState, useSyncExternalStore } from 'react';
+import { useState, useRef, useEffect, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { ShoppingBag, Search, User, X, Shield, LogOut } from 'lucide-react';
+import {
+  ShoppingBag,
+  User,
+  Shield,
+  LogOut,
+  LogIn,
+  Package,
+  Heart,
+  ChevronDown,
+} from 'lucide-react';
 import { MobileMenu } from './MobileMenu';
 import { useCartStore } from '@/store/useCartStore';
 import { useAuthStore } from '@/store/useAuthStore';
@@ -12,8 +21,9 @@ import { CuteTeddyLogo } from '@/components/common/CartoonIllustrations';
 const emptySubscribe = () => () => {};
 
 export function Header() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+
   const router = useRouter();
   const pathname = usePathname();
 
@@ -27,31 +37,42 @@ export function Header() {
   const cartCount = mounted ? totalCartItems : 0;
   const isAuthenticated = mounted && Boolean(user);
   const isAdmin = mounted && profile?.role === 'admin';
+  const userName = profile?.name || user?.user_metadata?.name || user?.email?.split('@')[0] || 'Account';
+  const userInitial = (userName || 'U').charAt(0).toUpperCase();
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
-      setIsMobileSearchOpen(false);
+  // Close user dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setIsUserMenuOpen(false);
+      }
     }
-  };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Close dropdown on route change
+  useEffect(() => {
+    setIsUserMenuOpen(false);
+  }, [pathname]);
 
   const handleSignOut = async () => {
+    setIsUserMenuOpen(false);
     await signOut();
     router.push('/login');
   };
 
   return (
     <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-[#EFE4D6] shadow-[0_2px_15px_-3px_rgba(25,54,83,0.06)] transition-all">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2 sm:gap-4">
-        {/* 1. BRAND LOGO WITH COLORFUL PLAYFUL LETTERS */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-4">
+        {/* 1. BRAND LOGO (Directs to Main Page) */}
         <div className="flex items-center gap-3">
           <Link
             href="/"
             className="flex items-center gap-2 sm:gap-2.5 shrink-0 group select-none py-1 focus:outline-none"
             aria-label="Baby Ladoo Home"
           >
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-2xl bg-[#FDE8EB] p-1 flex items-center justify-center border border-[#F27A8A]/30 shadow-2xs transition-all duration-300 group-hover:scale-105 group-hover:rotate-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-2xl bg-[#FFD6E0] p-1 flex items-center justify-center border border-[#F27A8A]/30 shadow-2xs transition-all duration-300 group-hover:scale-105 group-hover:rotate-3">
               <CuteTeddyLogo className="w-full h-full" />
             </div>
 
@@ -71,13 +92,13 @@ export function Header() {
           </Link>
         </div>
 
-        {/* 2. DESKTOP NAVIGATION PILLS */}
+        {/* 2. DESKTOP NAVIGATION PILLS (VISIBLE ONLY ON DESKTOP) */}
         <nav className="hidden md:flex items-center gap-1.5 lg:gap-3">
           <Link
             href="/"
             className={`px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold transition-all duration-200 ${
               pathname === '/'
-                ? 'bg-[#F27A8A] text-white shadow-cute-pink'
+                ? 'bg-[#FFD6E0] text-[#F27A8A] shadow-2xs font-extrabold'
                 : 'text-[#193653] hover:text-[#F27A8A] hover:bg-[#FDE8EB]/60'
             }`}
           >
@@ -88,7 +109,7 @@ export function Header() {
             href="/products"
             className={`px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold transition-all duration-200 ${
               pathname.startsWith('/products')
-                ? 'bg-[#F27A8A] text-white shadow-cute-pink'
+                ? 'bg-[#FFD6E0] text-[#F27A8A] shadow-2xs font-extrabold'
                 : 'text-[#193653] hover:text-[#F27A8A] hover:bg-[#FDE8EB]/60'
             }`}
           >
@@ -99,7 +120,7 @@ export function Header() {
             href="/about"
             className={`px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold transition-all duration-200 ${
               pathname === '/about'
-                ? 'bg-[#F27A8A] text-white shadow-cute-pink'
+                ? 'bg-[#FFD6E0] text-[#F27A8A] shadow-2xs font-extrabold'
                 : 'text-[#193653] hover:text-[#F27A8A] hover:bg-[#FDE8EB]/60'
             }`}
           >
@@ -110,7 +131,7 @@ export function Header() {
             href="/contact"
             className={`px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold transition-all duration-200 ${
               pathname === '/contact'
-                ? 'bg-[#F27A8A] text-white shadow-cute-pink'
+                ? 'bg-[#FFD6E0] text-[#F27A8A] shadow-2xs font-extrabold'
                 : 'text-[#193653] hover:text-[#F27A8A] hover:bg-[#FDE8EB]/60'
             }`}
           >
@@ -120,9 +141,9 @@ export function Header() {
           {isAdmin && (
             <Link
               href="/admin"
-              className={`inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-full transition-all duration-200 ${
+              className={`inline-flex items-center gap-1 text-xs font-extrabold px-3 py-1.5 rounded-full transition-all duration-200 ${
                 pathname.startsWith('/admin')
-                  ? 'bg-[#8FD3E8] text-[#193653] shadow-2xs font-extrabold'
+                  ? 'bg-[#8FD3E8] text-[#193653] shadow-2xs'
                   : 'bg-[#EBF8FC] text-[#193653] hover:bg-[#8FD3E8]/40 border border-[#8FD3E8]/40'
               }`}
             >
@@ -132,48 +153,9 @@ export function Header() {
           )}
         </nav>
 
-        {/* 3. RIGHT ACTION ICONS */}
-        <div className="flex items-center gap-1.5 sm:gap-2.5">
-          <div className="hidden lg:block relative w-44 xl:w-56">
-            <form onSubmit={handleSearch} className="w-full relative group">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search products..."
-                className="w-full bg-[#FAF4EE] hover:bg-[#FAF4EE]/90 focus:bg-white text-xs font-medium text-[#193653] placeholder-[#5D7285]/70 rounded-full pl-8 pr-7 py-1.5 border border-[#EFE4D6] focus:border-[#F27A8A] focus:outline-none focus:ring-2 focus:ring-[#F27A8A]/15 transition-all shadow-2xs"
-              />
-              <Search className="w-3.5 h-3.5 text-[#5D7285] group-focus-within:text-[#F27A8A] absolute left-2.5 top-1/2 -translate-y-1/2 transition-colors pointer-events-none" />
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded-full text-gray-400 hover:text-gray-600"
-                  aria-label="Clear search"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              )}
-            </form>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
-            className="lg:hidden p-2 rounded-full text-[#193653] hover:bg-[#FDE8EB] hover:text-[#F27A8A] active:scale-95 transition-all focus:outline-none"
-            aria-label="Toggle search"
-          >
-            {isMobileSearchOpen ? <X className="w-5 h-5" /> : <Search className="w-5 h-5" />}
-          </button>
-
-          <Link
-            href={isAuthenticated ? '/account' : '/login'}
-            className="p-2 sm:p-2.5 rounded-full text-[#193653] hover:bg-[#FDE8EB] hover:text-[#F27A8A] active:scale-95 transition-all focus:outline-none"
-            aria-label="User Account"
-          >
-            <User className="w-5 h-5" />
-          </Link>
-
+        {/* 3. RIGHT ACTIONS: CART & AUTH BUTTONS */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Shopping Cart Button with Dynamic Badge */}
           <Link
             href="/cart"
             className="relative p-2 sm:p-2.5 rounded-full text-[#193653] hover:bg-[#FDE8EB] hover:text-[#F27A8A] active:scale-95 transition-all focus:outline-none group"
@@ -187,45 +169,106 @@ export function Header() {
             )}
           </Link>
 
-          {isAuthenticated && (
-            <button
-              type="button"
-              onClick={handleSignOut}
-              className="hidden sm:inline-flex p-2 rounded-full text-[#5D7285] hover:text-red-600 hover:bg-red-50 transition-all"
-              title="Sign Out"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
+          {/* ======================================================== */}
+          {/* DESKTOP AUTH BUTTONS & PROFILE DROPDOWN                  */}
+          {/* ======================================================== */}
+          {isAuthenticated ? (
+            <div className="relative hidden md:block" ref={userMenuRef}>
+              <button
+                type="button"
+                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                className="flex items-center gap-2 py-1 px-3 rounded-full border border-[#EFE4D6] hover:border-[#F27A8A]/40 bg-[#FAF4EE]/70 hover:bg-[#FDE8EB]/40 transition-all focus:outline-none active:scale-98"
+                aria-expanded={isUserMenuOpen}
+                aria-haspopup="true"
+              >
+                <div className="w-6 h-6 rounded-full bg-[#FFD6E0] text-[#F27A8A] text-[11px] font-extrabold flex items-center justify-center shadow-2xs">
+                  {userInitial}
+                </div>
+                <span className="text-xs font-bold text-[#193653] max-w-[110px] truncate">
+                  {userName}
+                </span>
+                <ChevronDown className="w-3.5 h-3.5 text-[#5D7285]" />
+              </button>
+
+              {/* Profile Dropdown Menu */}
+              {isUserMenuOpen && (
+                <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-[#EFE4D6] py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                  <div className="px-4 py-2 border-b border-[#EFE4D6]">
+                    <p className="text-xs font-extrabold text-[#193653] truncate">{userName}</p>
+                    <p className="text-[11px] text-[#5D7285] truncate">{user?.email}</p>
+                  </div>
+
+                  <div className="py-1">
+                    <Link
+                      href="/account"
+                      className="flex items-center gap-2.5 px-4 py-2 text-xs font-bold text-[#193653] hover:bg-[#FDE8EB]/60 hover:text-[#F27A8A] transition-colors"
+                    >
+                      <User className="w-4 h-4 text-[#F27A8A]" />
+                      <span>My Profile</span>
+                    </Link>
+
+                    <Link
+                      href="/account"
+                      className="flex items-center gap-2.5 px-4 py-2 text-xs font-bold text-[#193653] hover:bg-[#FDE8EB]/60 hover:text-[#F27A8A] transition-colors"
+                    >
+                      <Package className="w-4 h-4 text-[#D99A26]" />
+                      <span>My Orders</span>
+                    </Link>
+
+                    <Link
+                      href="/wishlist"
+                      className="flex items-center gap-2.5 px-4 py-2 text-xs font-bold text-[#193653] hover:bg-[#FDE8EB]/60 hover:text-[#F27A8A] transition-colors"
+                    >
+                      <Heart className="w-4 h-4 text-[#F27A8A]" />
+                      <span>My Wishlist</span>
+                    </Link>
+
+                    {isAdmin && (
+                      <Link
+                        href="/admin"
+                        className="flex items-center gap-2.5 px-4 py-2 text-xs font-bold text-[#193653] bg-[#EBF8FC] hover:bg-[#8FD3E8]/30 transition-colors"
+                      >
+                        <Shield className="w-4 h-4 text-[#1F95B5]" />
+                        <span>Admin Dashboard</span>
+                      </Link>
+                    )}
+                  </div>
+
+                  <div className="pt-1 border-t border-[#EFE4D6]">
+                    <button
+                      type="button"
+                      onClick={handleSignOut}
+                      className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-50 transition-colors"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="hidden md:flex items-center gap-2">
+              <Link
+                href="/login"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#F27A8A] hover:bg-[#e06878] text-white text-xs font-extrabold shadow-cute-pink active:scale-98 transition-all"
+              >
+                <LogIn className="w-3.5 h-3.5" />
+                <span>Sign In</span>
+              </Link>
+              <Link
+                href="/register"
+                className="inline-flex items-center px-3.5 py-2 rounded-full border border-[#EFE4D6] hover:border-[#F27A8A]/40 bg-[#FAF4EE] hover:bg-[#FDE8EB]/40 text-[#193653] hover:text-[#F27A8A] text-xs font-bold active:scale-98 transition-all"
+              >
+                <span>Register</span>
+              </Link>
+            </div>
           )}
 
+          {/* Mobile Drawer Trigger (Hidden on Desktop: md:hidden) */}
           <MobileMenu cartCount={cartCount} />
         </div>
       </div>
-
-      {isMobileSearchOpen && (
-        <div className="lg:hidden px-4 py-2.5 bg-[#FAF4EE]/95 backdrop-blur-sm border-t border-[#EFE4D6] animate-in slide-in-from-top-2 duration-200">
-          <form onSubmit={handleSearch} className="relative flex items-center">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search products..."
-              autoFocus
-              className="w-full bg-white text-xs text-[#193653] placeholder-[#5D7285]/70 rounded-full pl-9 pr-8 py-2 border border-[#EFE4D6] focus:border-[#F27A8A] focus:outline-none focus:ring-2 focus:ring-[#F27A8A]/20 shadow-2xs"
-            />
-            <Search className="w-4 h-4 text-[#5D7285] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 text-gray-400 hover:text-gray-600"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            )}
-          </form>
-        </div>
-      )}
     </header>
   );
 }

@@ -301,3 +301,111 @@ export function FloatingPastelDecorations() {
     </div>
   );
 }
+
+/**
+ * Cute Sitting Teddy Bear with Pink Bow Tie for Nav & Drawer Menus
+ */
+export function CuteSittingTeddyIllustration({ className = 'w-28 h-28' }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 160 160"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={`${className} select-none`}
+    >
+      <defs>
+        <linearGradient id="teddyWarmGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#F5D0A9" />
+          <stop offset="100%" stopColor="#DE9E66" />
+        </linearGradient>
+        <linearGradient id="grassGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#A8C98B" />
+          <stop offset="100%" stopColor="#82AD60" />
+        </linearGradient>
+      </defs>
+
+      {/* Grassy floor base with sprouts */}
+      <ellipse cx="80" cy="148" rx="65" ry="10" fill="#E8F4E1" />
+      <g transform="translate(10, 130)">
+        <path d="M 12 18 Q 16 6 22 2 Q 22 10 18 20 Z" fill="url(#grassGrad)" />
+        <path d="M 20 19 Q 28 8 36 6 Q 32 14 26 21 Z" fill="url(#grassGrad)" />
+        <circle cx="28" cy="8" r="2.5" fill="#F27A8A" />
+      </g>
+      <g transform="translate(115, 132)">
+        <path d="M 8 16 Q 16 4 22 2 Q 19 12 14 18 Z" fill="url(#grassGrad)" />
+        <circle cx="22" cy="4" r="2" fill="#F6D77A" />
+      </g>
+
+      {/* Bear Back / Body */}
+      {/* Left Foot */}
+      <g>
+        <ellipse cx="44" cy="132" rx="18" ry="13" transform="rotate(-15 44 132)" fill="#DE9E66" stroke="#B87B4A" strokeWidth="2" />
+        <ellipse cx="44" cy="132" rx="11" ry="8" transform="rotate(-15 44 132)" fill="#FFF5EB" />
+        <circle cx="39" cy="125" r="2" fill="#DE9E66" />
+        <circle cx="45" cy="123" r="2" fill="#DE9E66" />
+        <circle cx="51" cy="125" r="2" fill="#DE9E66" />
+      </g>
+
+      {/* Right Foot */}
+      <g>
+        <ellipse cx="116" cy="132" rx="18" ry="13" transform="rotate(15 116 132)" fill="#DE9E66" stroke="#B87B4A" strokeWidth="2" />
+        <ellipse cx="116" cy="132" rx="11" ry="8" transform="rotate(15 116 132)" fill="#FFF5EB" />
+        <circle cx="121" cy="125" r="2" fill="#DE9E66" />
+        <circle cx="115" cy="123" r="2" fill="#DE9E66" />
+        <circle cx="109" cy="125" r="2" fill="#DE9E66" />
+      </g>
+
+      {/* Bear Tummy */}
+      <ellipse cx="80" cy="106" rx="34" ry="32" fill="url(#teddyWarmGrad)" stroke="#B87B4A" strokeWidth="2.5" />
+      <ellipse cx="80" cy="108" rx="20" ry="20" fill="#FFF5EB" />
+
+      {/* Bear Left Paw */}
+      <ellipse cx="52" cy="104" rx="10" ry="16" transform="rotate(25 52 104)" fill="#DE9E66" stroke="#B87B4A" strokeWidth="2" />
+      {/* Bear Right Paw */}
+      <ellipse cx="108" cy="104" rx="10" ry="16" transform="rotate(-25 108 104)" fill="#DE9E66" stroke="#B87B4A" strokeWidth="2" />
+
+      {/* Left Ear */}
+      <circle cx="48" cy="38" r="16" fill="#DE9E66" stroke="#B87B4A" strokeWidth="2" />
+      <circle cx="48" cy="38" r="9" fill="#FFD6E0" />
+
+      {/* Right Ear */}
+      <circle cx="112" cy="38" r="16" fill="#DE9E66" stroke="#B87B4A" strokeWidth="2" />
+      <circle cx="112" cy="38" r="9" fill="#FFD6E0" />
+
+      {/* Bear Head */}
+      <ellipse cx="80" cy="62" rx="40" ry="34" fill="url(#teddyWarmGrad)" stroke="#B87B4A" strokeWidth="2.5" />
+
+      {/* Snout */}
+      <ellipse cx="80" cy="71" rx="17" ry="13" fill="#FFF8F0" stroke="#EFE4D6" strokeWidth="1.5" />
+      {/* Nose */}
+      <ellipse cx="80" cy="65" rx="6" ry="4" fill="#2E2016" />
+      {/* Mouth */}
+      <path d="M 74 72 Q 80 77 86 72" stroke="#2E2016" strokeWidth="2" strokeLinecap="round" fill="none" />
+      <line x1="80" y1="69" x2="80" y2="73" stroke="#2E2016" strokeWidth="1.5" />
+
+      {/* Eyes */}
+      <circle cx="63" cy="56" r="4.5" fill="#2E2016" />
+      <circle cx="65" cy="54" r="1.5" fill="#FFFFFF" />
+      <circle cx="97" cy="56" r="4.5" fill="#2E2016" />
+      <circle cx="99" cy="54" r="1.5" fill="#FFFFFF" />
+
+      {/* Rosy Cheeks */}
+      <circle cx="56" cy="67" r="5.5" fill="#F27A8A" fillOpacity="0.45" />
+      <circle cx="104" cy="67" r="5.5" fill="#F27A8A" fillOpacity="0.45" />
+
+      {/* Cute Pink Ribbon Bow Tie at Neck */}
+      <g transform="translate(80, 87)">
+        {/* Left Bow Loop */}
+        <path d="M 0 0 C -8 -6 -14 -4 -12 2 C -10 7 -4 3 0 0 Z" fill="#F27A8A" stroke="#E05B6E" strokeWidth="1.2" />
+        {/* Right Bow Loop */}
+        <path d="M 0 0 C 8 -6 14 -4 12 2 C 10 7 4 3 0 0 Z" fill="#F27A8A" stroke="#E05B6E" strokeWidth="1.2" />
+        {/* Bow Center Knot */}
+        <circle cx="0" cy="0" r="3" fill="#F8A3AF" stroke="#E05B6E" strokeWidth="1.2" />
+        {/* Ribbon Tails */}
+        <path d="M -2 2 L -5 8 L -2 7 L 0 3" fill="#F27A8A" />
+        <path d="M 2 2 L 5 8 L 2 7 L 0 3" fill="#F27A8A" />
+      </g>
+    </svg>
+  );
+}
+

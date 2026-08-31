@@ -3,12 +3,15 @@
 import { useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useWishlistStore } from '@/store/useWishlistStore';
 
 export function AuthListener() {
   const setUser = useAuthStore((state) => state.setUser);
   const setProfile = useAuthStore((state) => state.setProfile);
   const setLoading = useAuthStore((state) => state.setLoading);
   const fetchProfile = useAuthStore((state) => state.fetchProfile);
+  const fetchWishlist = useWishlistStore((state) => state.fetchWishlist);
+  const clearWishlist = useWishlistStore((state) => state.clearWishlist);
 
   useEffect(() => {
     const supabase = createClient();
@@ -18,9 +21,11 @@ export function AuthListener() {
       if (session?.user) {
         setUser(session.user);
         fetchProfile(session.user.id).finally(() => setLoading(false));
+        fetchWishlist(session.user.id);
       } else {
         setUser(null);
         setProfile(null);
+        clearWishlist();
         setLoading(false);
       }
     });
@@ -32,9 +37,11 @@ export function AuthListener() {
       if (session?.user) {
         setUser(session.user);
         await fetchProfile(session.user.id);
+        fetchWishlist(session.user.id);
       } else {
         setUser(null);
         setProfile(null);
+        clearWishlist();
       }
       setLoading(false);
     });
@@ -42,7 +49,7 @@ export function AuthListener() {
     return () => {
       subscription.unsubscribe();
     };
-  }, [setUser, setProfile, setLoading, fetchProfile]);
+  }, [setUser, setProfile, setLoading, fetchProfile, fetchWishlist, clearWishlist]);
 
   return null;
 }

@@ -23,11 +23,13 @@ export interface CheckoutPayload {
   total: number;
   cartItems: CartItem[];
   paymentMethod?: string;
+  guestToken?: string;
 }
 
 /**
- * Validates current stock and creates a pending order in Supabase.
- * Supports both unified CheckoutPayload object or positional parameters.
+ * Securely validates stock and creates an order in Supabase.
+ * Primary: Uses atomic PostgreSQL RPC `create_checkout_order` with transaction safety.
+ * Fallback: Uses standard Supabase inserts strictly adhering to secure RLS rules.
  */
 export async function validateStockAndCreatePendingOrder(
   payloadOrItems: CheckoutPayload | CartItem[],
@@ -35,7 +37,7 @@ export async function validateStockAndCreatePendingOrder(
   argPaymentMethod?: string,
   argUserId?: string | null,
   argEmail?: string
-): Promise<{ success: boolean; order?: Order; orderNumber?: string; orderId?: string; error?: string }> {
+): Promise<{ success: boolean; order?: Order; orderNumber?: string; orderId?: string; guestToken?: string; error?: string }> {
   try {
     const supabase = createClient();
 
@@ -50,6 +52,7 @@ export async function validateStockAndCreatePendingOrder(
     let shipping = 0;
     let total = 0;
     let paymentMethod = 'cod';
+    let guestToken: string | undefined;
 
     if (Array.isArray(payloadOrItems)) {
       items = payloadOrItems;
@@ -75,13 +78,83 @@ export async function validateStockAndCreatePendingOrder(
       shipping = payloadOrItems.shipping;
       total = payloadOrItems.total;
       paymentMethod = payloadOrItems.paymentMethod || 'cod';
+      guestToken = payloadOrItems.guestToken;
     }
 
     if (!items || items.length === 0) {
       return { success: false, error: 'Your shopping cart is empty.' };
     }
 
-    // 1. Stock Check against live database
+    const secureGuestToken = !userId
+      ? guestToken || (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `gst_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`)
+      : undefined;
+
+    // Prepared JSON items payload for RPC or direct insert
+    const preparedItems = items.map((item) => ({
+      product_id: item.product.id,
+      product_name: item.product.name,
+      product_image: item.product.images && item.product.images.length > 0 ? item.product.images[0] : '',
+      selected_size: item.selectedSize || '',
+      selected_colour: item.selectedColor || '',
+      purchase_price: item.product.price,
+      quantity: item.quantity,
+    }));
+
+    // =========================================================================
+    // METHOD 1: ATOMIC RPC (create_checkout_order)
+    // =========================================================================
+    try {
+      const { data: rpcResult, error: rpcError } = await supabase.rpc('create_checkout_order', {
+        p_customer_name: customerName.trim(),
+        p_customer_email: customerEmail.trim(),
+        p_customer_phone: customerPhone.trim(),
+        p_shipping_address: shippingAddress,
+        p_subtotal: subtotal,
+        p_discount: discount,
+        p_shipping: shipping,
+        p_total: total,
+        p_items: preparedItems,
+        p_payment_method: paymentMethod,
+        p_guest_token: secureGuestToken || null,
+      });
+
+      if (!rpcError && rpcResult) {
+        if (rpcResult.success) {
+          return {
+            success: true,
+            orderId: rpcResult.order_id,
+            orderNumber: rpcResult.order_number,
+            guestToken: rpcResult.guest_token || secureGuestToken,
+            order: {
+              id: rpcResult.order_id,
+              user_id: userId,
+              order_number: rpcResult.order_number,
+              customer_name: customerName.trim(),
+              customer_email: customerEmail.trim(),
+              customer_phone: customerPhone.trim(),
+              shipping_address: shippingAddress,
+              subtotal,
+              discount,
+              shipping,
+              total,
+              payment_status: 'pending',
+              order_status: 'pending',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            },
+          };
+        } else if (rpcResult.error) {
+          return { success: false, error: rpcResult.error };
+        }
+      }
+    } catch (rpcEx: any) {
+      console.warn('RPC create_checkout_order not active, using direct RLS path:', rpcEx?.message || rpcEx);
+    }
+
+    // =========================================================================
+    // METHOD 2: DIRECT RLS-COMPLIANT INSERT (Fallback)
+    // =========================================================================
+    // 1. Stock Check against live products
     const productIds = items.map((item) => item.product.id);
     const { data: dbProducts, error: prodError } = await supabase
       .from('products')
@@ -109,9 +182,11 @@ export async function validateStockAndCreatePendingOrder(
     }
 
     // 2. Prepare Order Data
+    const orderId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `ord_${Date.now()}`;
     const orderNumber = generateOrderNumber();
-    const orderToInsert = {
-      user_id: userId || null,
+    const orderToInsert: any = {
+      id: orderId,
+      user_id: userId || null, // Guest: null, Authenticated: userId
       order_number: orderNumber,
       customer_name: customerName.trim(),
       customer_email: customerEmail.trim(),
@@ -123,27 +198,27 @@ export async function validateStockAndCreatePendingOrder(
       total,
       payment_status: 'pending' as PaymentStatus,
       order_status: 'pending' as OrderStatus,
+      guest_token: secureGuestToken || null,
     };
 
-    // 3. Insert main Order into Supabase
-    const { data: createdOrder, error: orderErr } = await supabase
+    // 3. Insert Master Order
+    // Note: We do not do .select().single() to avoid guest SELECT RLS rejections
+    const { error: orderErr } = await supabase
       .from('orders')
-      .insert([orderToInsert])
-      .select()
-      .single();
+      .insert([orderToInsert]);
 
     if (orderErr) {
-      console.error('Failed to create pending order in Supabase:', orderErr);
+      console.error('Failed to insert order in Supabase:', orderErr);
       return { success: false, error: orderErr.message || 'Failed to place order in database.' };
     }
 
-    // 4. Insert Order Items (Preserving purchase snapshots)
+    // 4. Insert Order Items
     const itemsToInsert = items.map((item) => ({
-      order_id: createdOrder.id,
+      id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : undefined,
+      order_id: orderId,
       product_id: item.product.id,
       product_name: item.product.name,
-      product_image:
-        item.product.images && item.product.images.length > 0 ? item.product.images[0] : '',
+      product_image: item.product.images && item.product.images.length > 0 ? item.product.images[0] : '',
       selected_size: item.selectedSize || '',
       selected_colour: item.selectedColor || '',
       purchase_price: item.product.price,
@@ -159,22 +234,27 @@ export async function validateStockAndCreatePendingOrder(
       console.error('Failed to insert order items into Supabase:', itemsErr);
     }
 
-    // 5. Decrement product stock in live Supabase database
+    // 5. Decrement product stock if authorized
     for (const item of items) {
-      const currentStock = item.product.stock;
-      if (typeof currentStock === 'number' && currentStock >= item.quantity) {
-        await supabase
-          .from('products')
-          .update({ stock: Math.max(0, currentStock - item.quantity) })
-          .eq('id', item.product.id);
+      try {
+        const currentStock = item.product.stock;
+        if (typeof currentStock === 'number' && currentStock >= item.quantity) {
+          await supabase
+            .from('products')
+            .update({ stock: Math.max(0, currentStock - item.quantity) })
+            .eq('id', item.product.id);
+        }
+      } catch {
+        // Handled silently if client cannot update products table directly
       }
     }
 
     return {
       success: true,
-      order: createdOrder as Order,
-      orderNumber: createdOrder.order_number || orderNumber,
-      orderId: createdOrder.id,
+      order: { ...orderToInsert, id: orderId } as Order,
+      orderNumber,
+      orderId,
+      guestToken: secureGuestToken,
     };
   } catch (err: any) {
     console.error('Checkout processing error:', err);
@@ -186,10 +266,11 @@ export async function validateStockAndCreatePendingOrder(
 }
 
 /**
- * Fetch all orders for a specific customer from Supabase
+ * Fetch all orders for a specific authenticated customer from Supabase
  */
 export async function getUserOrders(userId: string): Promise<Order[]> {
   try {
+    if (!userId) return [];
     const supabase = createClient();
     const { data, error } = await supabase
       .from('orders')
@@ -212,6 +293,35 @@ export async function getUserOrders(userId: string): Promise<Order[]> {
   } catch (err) {
     console.error('Error in getUserOrders:', err);
     return [];
+  }
+}
+
+/**
+ * Securely fetch guest order details by matching order ID + secret guest token
+ */
+export async function getGuestOrderDetails(orderId: string, guestToken: string): Promise<Order | null> {
+  try {
+    if (!orderId || !guestToken) return null;
+    const supabase = createClient();
+
+    // 1. Try secure RPC
+    try {
+      const { data: rpcData, error: rpcErr } = await supabase.rpc('get_guest_order_by_token', {
+        p_order_id: orderId,
+        p_guest_token: guestToken,
+      });
+
+      if (!rpcErr && rpcData) {
+        return rpcData as Order;
+      }
+    } catch {
+      // Fallback
+    }
+
+    return null;
+  } catch (err) {
+    console.error('Error in getGuestOrderDetails:', err);
+    return null;
   }
 }
 
@@ -245,7 +355,7 @@ export async function getAllOrdersAdmin(): Promise<Order[]> {
 }
 
 /**
- * Fetch a single order by ID or order number from Supabase
+ * Fetch a single order by ID or order number (Authenticated / Admin)
  */
 export async function getOrderDetails(orderId: string): Promise<Order | null> {
   try {

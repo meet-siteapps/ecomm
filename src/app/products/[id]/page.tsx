@@ -27,6 +27,8 @@ import {
 import { getProductById } from '@/lib/supabase/products';
 import { Product } from '@/types/product';
 import { useCartStore } from '@/store/useCartStore';
+import { useAuthStore } from '@/store/useAuthStore';
+import { useWishlistStore } from '@/store/useWishlistStore';
 import { PincodeChecker } from '@/components/products/PincodeChecker';
 
 interface ProductDetailPageProps {
@@ -37,6 +39,10 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   const { id } = use(params);
   const router = useRouter();
   const addItem = useCartStore((state) => state.addItem);
+  const user = useAuthStore((state) => state.user);
+
+  const isWishlisted = useWishlistStore((state) => state.isInWishlist(id));
+  const toggleWishlist = useWishlistStore((state) => state.toggleWishlist);
 
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -45,7 +51,6 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState<string>('');
   const [selectedSize, setSelectedSize] = useState<string>('');
-  const [isWishlisted, setIsWishlisted] = useState(false);
   const [added, setAdded] = useState(false);
 
   useEffect(() => {
@@ -176,16 +181,24 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
               className="object-cover"
             />
 
-            {/* Wishlist Button on Top Right */}
+            {/* Persistent Supabase Wishlist Button on Top Right */}
             <button
               type="button"
-              onClick={() => setIsWishlisted(!isWishlisted)}
-              className={`absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 backdrop-blur-xs flex items-center justify-center border border-[#EFE6DA] shadow-2xs transition-all active:scale-90 z-10 ${
-                isWishlisted ? 'text-[#F27A8A] bg-[#FDE8EB]' : 'text-gray-400 hover:text-[#F27A8A]'
+              onClick={async () => {
+                if (!product) return;
+                if (!user) {
+                  router.push(`/login?redirect=/products/${id}`);
+                  return;
+                }
+                await toggleWishlist(product, user.id);
+              }}
+              className={`absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 backdrop-blur-xs flex items-center justify-center border border-[#EFE6DA] shadow-2xs transition-all duration-200 active:scale-90 z-10 hover:shadow-cute ${
+                isWishlisted ? 'text-[#F27A8A] bg-[#FDE8EB] border-[#F27A8A]/30' : 'text-gray-400 hover:text-[#F27A8A]'
               }`}
-              aria-label="Add to wishlist"
+              aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+              title={isWishlisted ? 'Saved in Wishlist' : 'Add to Wishlist'}
             >
-              <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-[#F27A8A]' : ''}`} />
+              <Heart className={`w-5 h-5 transition-transform duration-200 ${isWishlisted ? 'fill-[#F27A8A] scale-110' : ''}`} />
             </button>
 
             {/* Discount Badge */}

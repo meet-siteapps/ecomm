@@ -123,20 +123,20 @@ function ProductsContent() {
     search !== '' || selectedCategory !== 'all' || selectedAges.length > 0 || maxPrice < 4000;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 animate-fade-in">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* LEFT FILTER SIDEBAR */}
-        <aside className="hidden lg:block lg:col-span-3 space-y-6 sticky top-24">
+        <aside className="hidden lg:block lg:col-span-3 space-y-6 sticky top-24 bg-white/60 backdrop-blur-xs p-5 rounded-3xl border border-[#EFE6DA] shadow-2xs">
           <div className="space-y-3">
             <h3 className="text-sm font-extrabold text-[#193653]">Categories</h3>
             <div className="space-y-1 text-xs">
               <button
                 type="button"
                 onClick={() => setSelectedCategory('all')}
-                className={`block w-full text-left py-1.5 font-medium transition-colors ${
+                className={`block w-full text-left px-3 py-2 rounded-xl font-bold transition-all duration-200 ${
                   selectedCategory === 'all'
-                    ? 'text-[#F27A8A] font-bold'
-                    : 'text-[#5D7285] hover:text-[#193653]'
+                    ? 'bg-[#FFD6E0] text-[#F27A8A] shadow-2xs'
+                    : 'text-[#5D7285] hover:text-[#193653] hover:bg-[#FAF4EE]'
                 }`}
               >
                 All Categories
@@ -146,10 +146,10 @@ function ProductsContent() {
                   key={cat.id}
                   type="button"
                   onClick={() => setSelectedCategory(cat.name)}
-                  className={`block w-full text-left py-1.5 font-medium transition-colors ${
+                  className={`block w-full text-left px-3 py-2 rounded-xl font-bold transition-all duration-200 ${
                     selectedCategory.toLowerCase() === cat.name.toLowerCase()
-                      ? 'text-[#F27A8A] font-bold'
-                      : 'text-[#5D7285] hover:text-[#193653]'
+                      ? 'bg-[#FFD6E0] text-[#F27A8A] shadow-2xs'
+                      : 'text-[#5D7285] hover:text-[#193653] hover:bg-[#FAF4EE]'
                   }`}
                 >
                   {cat.name}
@@ -165,7 +165,7 @@ function ProductsContent() {
                 <button
                   type="button"
                   onClick={clearFilters}
-                  className="text-xs text-[#F27A8A] hover:underline font-bold"
+                  className="text-xs text-[#F27A8A] hover:underline font-bold transition-colors"
                 >
                   Reset
                 </button>
@@ -180,13 +180,13 @@ function ProductsContent() {
                   return (
                     <label
                       key={age}
-                      className="flex items-center gap-2 text-xs text-[#5D7285] cursor-pointer hover:text-[#193653] select-none"
+                      className="flex items-center gap-2 text-xs text-[#5D7285] cursor-pointer hover:text-[#193653] select-none transition-colors"
                     >
                       <input
                         type="checkbox"
                         checked={isChecked}
                         onChange={() => toggleAge(age)}
-                        className="w-4 h-4 rounded-md border-[#EFE6DA] text-[#F27A8A] focus:ring-[#F27A8A]/20 accent-[#F27A8A] cursor-pointer"
+                        className="w-4 h-4 rounded-md border-[#EFE6DA] text-[#F27A8A] focus:ring-[#F27A8A]/20 accent-[#F27A8A] cursor-pointer transition-transform duration-150 active:scale-90"
                       />
                       <span>{age}</span>
                     </label>
@@ -221,7 +221,7 @@ function ProductsContent() {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full appearance-none bg-white text-xs font-semibold text-[#193653] rounded-xl pl-3.5 pr-8 py-2 border border-[#EFE6DA] focus:border-[#F27A8A] focus:outline-none cursor-pointer"
+                  className="w-full appearance-none bg-white text-xs font-semibold text-[#193653] rounded-xl pl-3.5 pr-8 py-2 border border-[#EFE6DA] focus:border-[#F27A8A] focus:outline-none cursor-pointer transition-colors shadow-2xs"
                 >
                   {SORT_OPTIONS.map((opt) => (
                     <option key={opt.value} value={opt.value}>
@@ -247,7 +247,7 @@ function ProductsContent() {
             <button
               type="button"
               onClick={() => setIsMobileFilterOpen(true)}
-              className="lg:hidden inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white border border-[#EFE6DA] text-xs font-bold text-[#193653] shadow-2xs"
+              className="lg:hidden inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white border border-[#EFE6DA] text-xs font-bold text-[#193653] shadow-2xs hover:border-[#F27A8A]/40 active:scale-95 transition-all"
             >
               <SlidersHorizontal className="w-3.5 h-3.5 text-[#F27A8A]" />
               <span>Filters</span>
@@ -260,7 +260,7 @@ function ProductsContent() {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="appearance-none bg-white text-xs font-semibold text-[#193653] rounded-full pl-3.5 pr-8 py-1.5 border border-[#EFE6DA] focus:border-[#F27A8A] focus:outline-none cursor-pointer shadow-2xs"
+                  className="appearance-none bg-white text-xs font-semibold text-[#193653] rounded-full pl-3.5 pr-8 py-1.5 border border-[#EFE6DA] focus:border-[#F27A8A] focus:outline-none cursor-pointer shadow-2xs hover:border-[#F27A8A]/40 transition-colors"
                 >
                   {SORT_OPTIONS.map((opt) => (
                     <option key={opt.value} value={opt.value}>
@@ -285,8 +285,8 @@ function ProductsContent() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-16 px-4 bg-white rounded-3xl border border-[#EFE6DA] shadow-cute space-y-4">
-              <div className="w-14 h-14 rounded-2xl bg-[#FDE8EB] text-[#F27A8A] flex items-center justify-center mx-auto">
+            <div className="text-center py-16 px-4 bg-white rounded-3xl border border-[#EFE6DA] shadow-cute space-y-4 animate-fade-up">
+              <div className="w-14 h-14 rounded-2xl bg-[#FDE8EB] text-[#F27A8A] flex items-center justify-center mx-auto shadow-2xs">
                 <Search className="w-6 h-6" />
               </div>
               <h3 className="text-base font-extrabold text-[#193653]">No products found</h3>
@@ -296,7 +296,7 @@ function ProductsContent() {
               <button
                 type="button"
                 onClick={clearFilters}
-                className="px-6 py-2.5 text-xs font-bold bg-[#F27A8A] text-white rounded-full hover:bg-[#e06878] transition-all shadow-cute-pink active:scale-95"
+                className="px-6 py-2.5 text-xs font-bold bg-[#F27A8A] text-white rounded-full hover:bg-[#e06878] transition-all shadow-cute-pink active:scale-95 hover:shadow-cute-pink-hover"
               >
                 Clear all filters
               </button>
@@ -310,7 +310,7 @@ function ProductsContent() {
                   key={page}
                   type="button"
                   onClick={() => setCurrentPage(page)}
-                  className={`w-8 h-8 rounded-full text-xs font-bold transition-all ${
+                  className={`w-8 h-8 rounded-full text-xs font-bold transition-all duration-200 active:scale-90 ${
                     currentPage === page
                       ? 'bg-[#F27A8A] text-white shadow-cute-pink'
                       : 'bg-white text-[#5D7285] hover:bg-[#FDE8EB] hover:text-[#F27A8A] border border-[#EFE6DA]'
@@ -323,7 +323,7 @@ function ProductsContent() {
               <button
                 type="button"
                 onClick={() => setCurrentPage(10)}
-                className={`w-8 h-8 rounded-full text-xs font-bold transition-all ${
+                className={`w-8 h-8 rounded-full text-xs font-bold transition-all duration-200 active:scale-90 ${
                   currentPage === 10
                     ? 'bg-[#F27A8A] text-white shadow-cute-pink'
                     : 'bg-white text-[#5D7285] hover:bg-[#FDE8EB] hover:text-[#F27A8A] border border-[#EFE6DA]'
@@ -334,7 +334,7 @@ function ProductsContent() {
               <button
                 type="button"
                 onClick={() => setCurrentPage((p) => Math.min(10, p + 1))}
-                className="w-8 h-8 rounded-full text-xs font-bold bg-white text-[#5D7285] hover:bg-[#FDE8EB] hover:text-[#F27A8A] border border-[#EFE6DA] flex items-center justify-center transition-all"
+                className="w-8 h-8 rounded-full text-xs font-bold bg-white text-[#5D7285] hover:bg-[#FDE8EB] hover:text-[#F27A8A] border border-[#EFE6DA] flex items-center justify-center transition-all active:scale-90"
                 aria-label="Next page"
               >
                 &gt;
@@ -348,12 +348,12 @@ function ProductsContent() {
       {isMobileFilterOpen && (
         <div className="fixed inset-0 z-50 lg:hidden flex justify-end">
           <div
-            className="fixed inset-0 bg-black/40 backdrop-blur-xs"
+            className="fixed inset-0 bg-[#193653]/40 backdrop-blur-xs transition-opacity duration-300 animate-in fade-in"
             onClick={() => setIsMobileFilterOpen(false)}
           />
-          <div className="relative z-10 w-full max-w-xs h-full bg-[#FFF9F2] shadow-2xl flex flex-col justify-between overflow-y-auto animate-in slide-in-from-right duration-200">
+          <div className="relative z-10 w-full max-w-xs h-full bg-[#FFF9F2] shadow-2xl flex flex-col justify-between overflow-y-auto animate-in slide-in-from-right duration-300 ease-out">
             <div className="p-5 space-y-6">
-              <div className="flex items-center justify-between border-b border-[#EFE6DA] pb-3 bg-white p-3 rounded-2xl">
+              <div className="flex items-center justify-between border-b border-[#EFE6DA] pb-3 bg-white p-3 rounded-2xl shadow-2xs">
                 <h3 className="font-extrabold text-base text-[#193653] flex items-center gap-2">
                   <SlidersHorizontal className="w-4 h-4 text-[#F27A8A]" />
                   Filters
@@ -361,9 +361,9 @@ function ProductsContent() {
                 <button
                   type="button"
                   onClick={() => setIsMobileFilterOpen(false)}
-                  className="p-1 text-gray-500 hover:bg-[#FDE8EB] hover:text-[#F27A8A] rounded-full"
+                  className="p-1.5 text-gray-500 hover:bg-[#FDE8EB] hover:text-[#F27A8A] rounded-full transition-all active:scale-90"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-4 h-4" />
                 </button>
               </div>
 
@@ -374,7 +374,7 @@ function ProductsContent() {
                     type="button"
                     onClick={() => setSelectedCategory('all')}
                     className={`w-full text-left px-4 py-2.5 rounded-2xl text-xs font-bold transition-all ${
-                      selectedCategory === 'all' ? 'bg-[#FDE8EB] text-[#F27A8A]' : 'text-[#5D7285] bg-white'
+                      selectedCategory === 'all' ? 'bg-[#FFD6E0] text-[#F27A8A] shadow-2xs' : 'text-[#5D7285] bg-white hover:bg-[#FAF4EE]'
                     }`}
                   >
                     All Categories
@@ -386,8 +386,8 @@ function ProductsContent() {
                       onClick={() => setSelectedCategory(cat.name)}
                       className={`w-full text-left px-4 py-2.5 rounded-2xl text-xs font-bold transition-all ${
                         selectedCategory.toLowerCase() === cat.name.toLowerCase()
-                          ? 'bg-[#FDE8EB] text-[#F27A8A]'
-                          : 'text-[#5D7285] bg-white'
+                          ? 'bg-[#FFD6E0] text-[#F27A8A] shadow-2xs'
+                          : 'text-[#5D7285] bg-white hover:bg-[#FAF4EE]'
                       }`}
                     >
                       {cat.name}
@@ -398,9 +398,9 @@ function ProductsContent() {
 
               <div className="space-y-2">
                 <label className="text-xs font-bold text-[#193653]">Age</label>
-                <div className="space-y-2 bg-white p-3 rounded-2xl border border-[#EFE6DA]">
+                <div className="space-y-2 bg-white p-3 rounded-2xl border border-[#EFE6DA] shadow-2xs">
                   {AGE_RANGES.map((age) => (
-                    <label key={age} className="flex items-center gap-2 text-xs text-[#5D7285]">
+                    <label key={age} className="flex items-center gap-2 text-xs text-[#5D7285] cursor-pointer hover:text-[#193653] transition-colors">
                       <input
                         type="checkbox"
                         checked={selectedAges.includes(age)}
@@ -413,7 +413,7 @@ function ProductsContent() {
                 </div>
               </div>
 
-              <div className="space-y-2 bg-white p-4 rounded-2xl border border-[#EFE6DA]">
+              <div className="space-y-2 bg-white p-4 rounded-2xl border border-[#EFE6DA] shadow-2xs">
                 <div className="flex items-center justify-between text-xs font-bold text-[#193653]">
                   <span>Max Price</span>
                   <span className="text-[#F27A8A] font-extrabold">₹{maxPrice.toLocaleString('en-IN')}</span>
@@ -434,14 +434,14 @@ function ProductsContent() {
               <button
                 type="button"
                 onClick={clearFilters}
-                className="flex-1 py-3 rounded-full border border-[#EFE6DA] text-xs font-bold text-[#5D7285] bg-[#FFF9F2]"
+                className="flex-1 py-3 rounded-full border border-[#EFE6DA] text-xs font-bold text-[#5D7285] bg-[#FFF9F2] hover:bg-[#FAF4EE] active:scale-95 transition-all"
               >
                 Reset
               </button>
               <button
                 type="button"
                 onClick={() => setIsMobileFilterOpen(false)}
-                className="flex-1 py-3 rounded-full bg-[#F27A8A] text-white text-xs font-extrabold shadow-cute-pink"
+                className="flex-1 py-3 rounded-full bg-[#F27A8A] text-white text-xs font-extrabold shadow-cute-pink active:scale-95 transition-all"
               >
                 Apply
               </button>

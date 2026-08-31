@@ -38,7 +38,11 @@ function LoginForm() {
       });
 
       if (authError) {
-        setError(authError.message || 'Invalid email or password.');
+        if (authError.message?.toLowerCase().includes('invalid login credentials')) {
+          setError('Invalid email or password. Please check your credentials or create an account.');
+        } else {
+          setError(authError.message || 'Invalid email or password.');
+        }
         setIsLoading(false);
         return;
       }

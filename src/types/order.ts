@@ -41,6 +41,7 @@ export interface Order {
   total: number;
   payment_status: PaymentStatus;
   order_status: OrderStatus;
+  guest_token?: string;
   razorpay_order_id?: string;
   razorpay_payment_id?: string;
   razorpay_signature?: string;
