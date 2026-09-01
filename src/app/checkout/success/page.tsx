@@ -15,10 +15,10 @@ import {
   ExternalLink,
   Loader2
 } from 'lucide-react';
-import { getOrderDetails } from '@/lib/supabase/orders';
-import { Order } from '@/types/order';
+import { getOrderDetails } from '@/backend/orders/orders';
+import { Order } from '@/frontend/types/order';
 
-import { CuteTeddyLogo, HotAirBalloonIllustration } from '@/components/common/CartoonIllustrations';
+import { CuteTeddyLogo, HotAirBalloonIllustration } from '@/frontend/components/common/CartoonIllustrations';
 
 function CheckoutSuccessContent() {
   const searchParams = useSearchParams();

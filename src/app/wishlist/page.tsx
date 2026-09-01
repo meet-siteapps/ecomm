@@ -3,10 +3,10 @@
 import { useEffect, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { Heart, ShoppingBag, ArrowRight, Loader2, LogIn } from 'lucide-react';
-import { ProductCard } from '@/components/products/ProductCard';
-import { useWishlistStore } from '@/store/useWishlistStore';
-import { useAuthStore } from '@/store/useAuthStore';
-import { useCartStore } from '@/store/useCartStore';
+import { ProductCard } from '@/frontend/components/products/ProductCard';
+import { useWishlistStore } from '@/frontend/store/useWishlistStore';
+import { useAuthStore } from '@/frontend/store/useAuthStore';
+import { useCartStore } from '@/frontend/store/useCartStore';
 
 const emptySubscribe = () => () => {};
 

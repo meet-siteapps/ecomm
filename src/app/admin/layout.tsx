@@ -12,7 +12,7 @@ import {
   ExternalLink,
   ShieldCheck,
 } from 'lucide-react';
-import { AdminGuard } from '@/components/admin/AdminGuard';
+import { AdminGuard } from '@/frontend/components/admin/AdminGuard';
 
 interface AdminLayoutProps {
   children: ReactNode;

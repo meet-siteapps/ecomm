@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import { Quicksand, Nunito } from 'next/font/google';
 import './globals.css';
-import { Header } from '@/components/layout/Header';
-import { Footer } from '@/components/layout/Footer';
-import { AuthListener } from '@/components/auth/AuthListener';
+import { Header } from '@/frontend/components/layout/Header';
+import { Footer } from '@/frontend/components/layout/Footer';
+import { AuthListener } from '@/frontend/components/auth/AuthListener';
 
 const quicksand = Quicksand({
   subsets: ['latin'],

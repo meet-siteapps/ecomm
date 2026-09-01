@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, ShieldCheck, Truck, HeartHandshake, Leaf, Sparkles } from 'lucide-react';
-import { ProductCard } from '@/components/products/ProductCard';
-import { getProducts } from '@/lib/supabase/products';
-import { FloatingPastelDecorations } from '@/components/common/CartoonIllustrations';
+import { ProductCard } from '@/frontend/components/products/ProductCard';
+import { getProducts } from '@/backend/products/products';
+import { FloatingPastelDecorations } from '@/frontend/components/common/CartoonIllustrations';
 
 export const revalidate = 60; // Revalidate every 60s for fresh real products from Supabase
 

@@ -19,6 +19,8 @@
       }
     ],
     "paths": {
+      "@/frontend/*": ["./src/frontend/*", "./frontend/*"],
+      "@/backend/*": ["./src/backend/*", "./backend/*"],
       "@/*": ["./src/*"]
     }
   },

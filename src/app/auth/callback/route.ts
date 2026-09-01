@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { getServerSupabaseClient } from '@/backend/services/supabase';
 import type { EmailOtpType } from '@supabase/supabase-js';
 
 export async function GET(request: Request) {
@@ -21,7 +21,7 @@ export async function GET(request: Request) {
     ? `https://${forwardedHost}`
     : origin;
 
-  const supabase = await createClient();
+  const supabase = await getServerSupabaseClient();
 
   // Handle PKCE auth code exchange
   if (code) {

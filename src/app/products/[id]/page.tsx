@@ -24,12 +24,12 @@ import {
   HeartHandshake,
   Loader2
 } from 'lucide-react';
-import { getProductById } from '@/lib/supabase/products';
-import { Product } from '@/types/product';
-import { useCartStore } from '@/store/useCartStore';
-import { useAuthStore } from '@/store/useAuthStore';
-import { useWishlistStore } from '@/store/useWishlistStore';
-import { PincodeChecker } from '@/components/products/PincodeChecker';
+import { getProductById } from '@/backend/products/products';
+import { Product } from '@/frontend/types/product';
+import { useCartStore } from '@/frontend/store/useCartStore';
+import { useAuthStore } from '@/frontend/store/useAuthStore';
+import { useWishlistStore } from '@/frontend/store/useWishlistStore';
+import { PincodeChecker } from '@/frontend/components/products/PincodeChecker';
 
 interface ProductDetailPageProps {
   params: Promise<{ id: string }>;
@@ -103,15 +103,13 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   }
 
   // Parse color and size options safely
-  const parsedColors = product.colour
+  const colorList = product.colour
     ? product.colour.split(',').map((c: string) => c.trim()).filter(Boolean)
     : [];
-  const colorList: string[] = parsedColors.length > 0 ? parsedColors : ['#FFE5EC', '#E5F3FE', '#E8F5E9'];
 
-  const parsedSizes = product.size
+  const sizeList = product.size
     ? product.size.split(',').map((s: string) => s.trim()).filter(Boolean)
     : [];
-  const sizeList: string[] = parsedSizes.length > 0 ? parsedSizes : ['0-3M', '3-6M', '6-12M'];
 
   const handleAddToCart = () => {
     addItem(product, quantity);
@@ -250,57 +248,61 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
             )}
           </div>
 
-          {/* Color Options */}
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-[#193653]">
-              Color:{' '}
-              <span className="text-[#5D7285] font-normal">
-                {selectedColor || 'Select a shade'}
-              </span>
-            </label>
-            <div className="flex items-center gap-2.5">
-              {colorList.map((colorHex: string, idx: number) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => setSelectedColor(colorHex)}
-                  style={{ backgroundColor: colorHex }}
-                  className={`w-7 h-7 rounded-full border-2 transition-all ${
-                    selectedColor === colorHex
-                      ? 'border-[#F27A8A] ring-2 ring-[#F27A8A]/30 scale-110 shadow-2xs'
-                      : 'border-white shadow-2xs hover:scale-105'
-                  }`}
-                  aria-label={`Select color ${colorHex}`}
-                />
-              ))}
+          {/* Color Options - Only show if product has colors */}
+          {colorList.length > 0 && (
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-[#193653]">
+                Color:{' '}
+                <span className="text-[#5D7285] font-normal">
+                  {selectedColor || 'Select a shade'}
+                </span>
+              </label>
+              <div className="flex items-center gap-2.5">
+                {colorList.map((colorHex: string, idx: number) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => setSelectedColor(colorHex)}
+                    style={{ backgroundColor: colorHex }}
+                    className={`w-7 h-7 rounded-full border-2 transition-all ${
+                      selectedColor === colorHex
+                        ? 'border-[#F27A8A] ring-2 ring-[#F27A8A]/30 scale-110 shadow-2xs'
+                        : 'border-white shadow-2xs hover:scale-105'
+                    }`}
+                    aria-label={`Select color ${colorHex}`}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Size Options */}
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-[#193653]">
-              Size:{' '}
-              <span className="text-[#5D7285] font-normal">
-                {selectedSize || 'Choose size'}
-              </span>
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {sizeList.map((sz: string) => (
-                <button
-                  key={sz}
-                  type="button"
-                  onClick={() => setSelectedSize(sz)}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all border ${
-                    selectedSize === sz
-                      ? 'bg-[#F27A8A] text-white border-[#F27A8A] shadow-cute-pink'
-                      : 'bg-white text-[#193653] border-[#EFE6DA] hover:border-gray-300'
-                  }`}
-                >
-                  {sz}
-                </button>
-              ))}
+          {/* Size Options - Only show if product has sizes */}
+          {sizeList.length > 0 && (
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-[#193653]">
+                Size:{' '}
+                <span className="text-[#5D7285] font-normal">
+                  {selectedSize || 'Choose size'}
+                </span>
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {sizeList.map((sz: string) => (
+                  <button
+                    key={sz}
+                    type="button"
+                    onClick={() => setSelectedSize(sz)}
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all border ${
+                      selectedSize === sz
+                        ? 'bg-[#F27A8A] text-white border-[#F27A8A] shadow-cute-pink'
+                        : 'bg-white text-[#193653] border-[#EFE6DA] hover:border-gray-300'
+                    }`}
+                  >
+                    {sz}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Quantity Stepper & Add to Cart Action */}
           <div className="space-y-3 pt-2">
@@ -376,7 +378,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
               <h4 className="text-[10px] sm:text-xs font-bold text-[#193653]">Safe Materials</h4>
             </div>
 
-            {/* Easy Assembly */}
+            {/* Easy Care */}
             <div className="p-2.5 rounded-2xl bg-[#EBF8FC] text-center space-y-1 border border-[#8FD3E8]/40">
               <Wrench className="w-4 h-4 text-[#3599b8] mx-auto" />
               <h4 className="text-[10px] sm:text-xs font-bold text-[#193653]">Easy Care</h4>
@@ -391,17 +393,107 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
         </div>
       </div>
 
-      {/* 3. PRODUCT DESCRIPTION & DETAILS */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#EFE6DA] shadow-cute space-y-4">
-        <h2 className="text-base sm:text-lg font-extrabold text-[#193653]">
-          Product Description
-        </h2>
-        <div className="text-xs sm:text-sm text-[#5D7285] leading-relaxed font-medium space-y-3">
-          <p>{product.description}</p>
-          <p>
-            Designed with non-toxic dyes and hypoallergenic materials to keep your baby completely safe and happy. Every edge is rounded and stitched with precision.
-          </p>
-        </div>
+      {/* 3. PRODUCT DESCRIPTION & DYNAMIC SPECIFICATIONS */}
+      <div className="space-y-6">
+        {/* Description Section (Only if present) */}
+        {product.description && product.description.trim().length > 0 && (
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#EFE6DA] shadow-cute space-y-3">
+            <h2 className="text-base sm:text-lg font-extrabold text-[#193653]">
+              Product Description
+            </h2>
+            <div className="text-xs sm:text-sm text-[#5D7285] leading-relaxed font-medium space-y-2">
+              <p>{product.description}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Dynamic Attributes & Specifications (Only render if any attribute exists) */}
+        {(product.age_group || product.material || product.category || product.brand || product.stock !== undefined) && (
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#EFE6DA] shadow-cute space-y-4">
+            <h3 className="text-base sm:text-lg font-extrabold text-[#193653]">
+              Specifications & Details
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {product.age_group && (
+                <div className="p-3.5 bg-[#FFF9F2] rounded-2xl border border-[#EFE6DA] space-y-1">
+                  <span className="text-[11px] font-bold text-[#5D7285] uppercase tracking-wider block">Age Group</span>
+                  <span className="text-xs sm:text-sm font-extrabold text-[#193653]">{product.age_group}</span>
+                </div>
+              )}
+              {product.material && (
+                <div className="p-3.5 bg-[#FFF9F2] rounded-2xl border border-[#EFE6DA] space-y-1">
+                  <span className="text-[11px] font-bold text-[#5D7285] uppercase tracking-wider block">Material</span>
+                  <span className="text-xs sm:text-sm font-extrabold text-[#193653]">{product.material}</span>
+                </div>
+              )}
+              {product.category && (
+                <div className="p-3.5 bg-[#FFF9F2] rounded-2xl border border-[#EFE6DA] space-y-1">
+                  <span className="text-[11px] font-bold text-[#5D7285] uppercase tracking-wider block">Category</span>
+                  <span className="text-xs sm:text-sm font-extrabold text-[#193653]">{product.category}</span>
+                </div>
+              )}
+              {product.brand && (
+                <div className="p-3.5 bg-[#FFF9F2] rounded-2xl border border-[#EFE6DA] space-y-1">
+                  <span className="text-[11px] font-bold text-[#5D7285] uppercase tracking-wider block">Brand</span>
+                  <span className="text-xs sm:text-sm font-extrabold text-[#193653]">{product.brand}</span>
+                </div>
+              )}
+              {product.stock !== undefined && (
+                <div className="p-3.5 bg-[#FFF9F2] rounded-2xl border border-[#EFE6DA] space-y-1">
+                  <span className="text-[11px] font-bold text-[#5D7285] uppercase tracking-wider block">Availability</span>
+                  <span className={`text-xs sm:text-sm font-extrabold ${product.stock > 0 ? 'text-[#729c50]' : 'text-red-500'}`}>
+                    {product.stock > 0 ? `${product.stock} in stock` : 'Out of Stock'}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Key Features (Only if provided) */}
+        {product.key_features && Array.isArray(product.key_features) && product.key_features.filter(Boolean).length > 0 && (
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#EFE6DA] shadow-cute space-y-3">
+            <h3 className="text-base sm:text-lg font-extrabold text-[#193653]">
+              Key Features
+            </h3>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              {product.key_features.filter(Boolean).map((feat, idx) => (
+                <li key={idx} className="flex items-start gap-2 text-xs sm:text-sm text-[#5D7285] font-medium">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#F27A8A] shrink-0 mt-1.5" />
+                  <span>{feat}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* What's Included (Only if provided) */}
+        {product.whats_included && Array.isArray(product.whats_included) && product.whats_included.filter(Boolean).length > 0 && (
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#EFE6DA] shadow-cute space-y-3">
+            <h3 className="text-base sm:text-lg font-extrabold text-[#193653]">
+              What&apos;s Included in the Box
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {product.whats_included.filter(Boolean).map((inc, idx) => (
+                <span key={idx} className="px-3.5 py-1.5 rounded-xl bg-[#FFF9F2] border border-[#EFE6DA] text-xs font-bold text-[#193653]">
+                  {inc}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Care Instructions (Only if provided) */}
+        {product.care_instructions && product.care_instructions.trim().length > 0 && (
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#EFE6DA] shadow-cute space-y-3">
+            <h3 className="text-base sm:text-lg font-extrabold text-[#193653]">
+              Care & Washing Instructions
+            </h3>
+            <p className="text-xs sm:text-sm text-[#5D7285] font-medium leading-relaxed">
+              {product.care_instructions}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

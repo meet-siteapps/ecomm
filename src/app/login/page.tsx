@@ -4,8 +4,8 @@ import { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ShoppingBag, Lock, Mail, AlertCircle, ArrowRight, Loader2 } from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
-import { useAuthStore } from '@/store/useAuthStore';
+import { createClient } from '@/frontend/lib/supabase/client';
+import { useAuthStore } from '@/frontend/store/useAuthStore';
 
 function LoginForm() {
   const router = useRouter();
@@ -160,7 +160,10 @@ function LoginForm() {
         {/* Footer info */}
         <div className="pt-4 border-t border-[#EFE7DE] text-center text-xs text-[#718096] font-medium">
           Don&apos;t have an account?{' '}
-          <Link href="/register" className="font-extrabold text-[#FF6B8B] hover:underline">
+          <Link
+            href={redirectTo ? `/register?redirect=${encodeURIComponent(redirectTo)}` : '/register'}
+            className="font-extrabold text-[#FF6B8B] hover:underline"
+          >
             Create an Account
           </Link>
         </div>

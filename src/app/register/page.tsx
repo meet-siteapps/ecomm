@@ -1,13 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { ShoppingBag, Lock, Mail, User, Phone, AlertCircle, ArrowRight, Loader2, CheckCircle2 } from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
-import { useAuthStore } from '@/store/useAuthStore';
+import { createClient } from '@/frontend/lib/supabase/client';
+import { useAuthStore } from '@/frontend/store/useAuthStore';
 
-export default function RegisterPage() {
+function RegisterForm() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('redirect');
+
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -16,7 +20,6 @@ export default function RegisterPage() {
   const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const router = useRouter();
   const fetchProfile = useAuthStore((state) => state.fetchProfile);
   const setUser = useAuthStore((state) => state.setUser);
 
@@ -34,6 +37,8 @@ export default function RegisterPage() {
     try {
       const supabase = createClient();
       const origin = typeof window !== 'undefined' ? window.location.origin : '';
+      const nextParam = redirectTo ? encodeURIComponent(redirectTo) : '/account';
+      
       const { data, error: signUpError } = await supabase.auth.signUp({
         email: email.trim(),
         password,
@@ -43,7 +48,7 @@ export default function RegisterPage() {
             phone: phone.trim(),
             role: 'customer',
           },
-          emailRedirectTo: origin ? `${origin}/auth/callback?next=/account` : undefined,
+          emailRedirectTo: origin ? `${origin}/auth/callback?next=${nextParam}` : undefined,
         },
       });
 
@@ -62,7 +67,7 @@ export default function RegisterPage() {
       }
 
       if (data.user) {
-        // In Supabase Auth (Email Enumeration Protection), existing accounts return an empty identities array []
+        // In Supabase Auth, existing accounts return an empty identities array []
         if (data.user.identities && data.user.identities.length === 0) {
           setError('An account with this email already exists. Please log in instead.');
           setIsLoading(false);
@@ -74,7 +79,7 @@ export default function RegisterPage() {
         if (data.session) {
           // Auto signed in (Email confirmation disabled)
           await fetchProfile(data.user.id);
-          router.push('/account');
+          router.push(redirectTo || '/account');
         } else {
           // Email confirmation required for new account
           setSuccess(true);
@@ -113,7 +118,10 @@ export default function RegisterPage() {
             </div>
             <p>
               Please check your email to confirm your account, then{' '}
-              <Link href="/login" className="font-bold underline text-[#065F46]">
+              <Link
+                href={redirectTo ? `/login?redirect=${encodeURIComponent(redirectTo)}` : '/login'}
+                className="font-bold underline text-[#065F46]"
+              >
                 sign in here
               </Link>.
             </p>
@@ -230,11 +238,28 @@ export default function RegisterPage() {
         {/* Footer */}
         <div className="pt-4 border-t border-[#EFE7DE] text-center text-xs text-[#718096] font-medium">
           Already have an account?{' '}
-          <Link href="/login" className="font-extrabold text-[#FF6B8B] hover:underline">
+          <Link
+            href={redirectTo ? `/login?redirect=${encodeURIComponent(redirectTo)}` : '/login'}
+            className="font-extrabold text-[#FF6B8B] hover:underline"
+          >
             Sign In
           </Link>
         </div>
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-[75vh] flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-[#FF6B8B]" />
+        </div>
+      }
+    >
+      <RegisterForm />
+    </Suspense>
   );
 }

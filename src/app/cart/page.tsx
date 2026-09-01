@@ -12,7 +12,7 @@ import {
   ShieldCheck,
   Sparkles,
 } from 'lucide-react';
-import { useCartStore } from '@/store/useCartStore';
+import { useCartStore } from '@/frontend/store/useCartStore';
 
 const emptySubscribe = () => () => {};
 

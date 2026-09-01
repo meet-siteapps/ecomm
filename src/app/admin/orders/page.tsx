@@ -23,8 +23,8 @@ import {
   Phone,
   Check
 } from 'lucide-react';
-import { Order, OrderStatus, PaymentStatus } from '@/types/order';
-import { getAllOrdersAdmin, updateOrderStatus } from '@/lib/supabase/orders';
+import { Order, OrderStatus, PaymentStatus } from '@/frontend/types/order';
+import { getAllOrdersAdmin, updateOrderStatus } from '@/backend/orders/orders';
 
 const STATUS_BADGES: Record<OrderStatus, { label: string; bg: string; text: string; border: string }> = {
   pending: { label: 'Pending', bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200' },

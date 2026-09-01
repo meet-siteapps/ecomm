@@ -15,7 +15,7 @@ import {
   Loader2,
   ExternalLink
 } from 'lucide-react';
-import { getAdminDashboardStats } from '@/lib/supabase/products';
+import { getAdminDashboardStats } from '@/backend/products/products';
 
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState({

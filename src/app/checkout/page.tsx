@@ -23,9 +23,9 @@ import {
   CreditCard,
   CheckCircle2
 } from 'lucide-react';
-import { useCartStore } from '@/store/useCartStore';
-import { useAuthStore } from '@/store/useAuthStore';
-import { validateStockAndCreatePendingOrder } from '@/lib/supabase/orders';
+import { useCartStore } from '@/frontend/store/useCartStore';
+import { useAuthStore } from '@/frontend/store/useAuthStore';
+import { validateStockAndCreatePendingOrder } from '@/backend/orders/orders';
 
 const emptySubscribe = () => () => {};
 
@@ -80,10 +80,52 @@ export default function CheckoutPage() {
     }
   }, [profile, user]);
 
-  if (!mounted) {
+  const isAuthLoading = useAuthStore((state) => state.isLoading);
+
+  // Require Login for Checkout
+  useEffect(() => {
+    if (mounted && !isAuthLoading && !user && !isSuccess) {
+      router.push('/login?redirect=/checkout');
+    }
+  }, [mounted, isAuthLoading, user, isSuccess, router]);
+
+  if (!mounted || isAuthLoading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center text-sm text-gray-500">
-        Loading checkout...
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center space-y-3">
+        <Loader2 className="w-8 h-8 animate-spin text-[#F27A8A] mx-auto" />
+        <p className="text-xs text-[#5D7285] font-medium">Verifying your secure session...</p>
+      </div>
+    );
+  }
+
+  // If not logged in and not finished with an order, prompt login
+  if (!user && !isSuccess) {
+    return (
+      <div className="max-w-md mx-auto px-4 py-20 text-center space-y-5">
+        <div className="w-16 h-16 rounded-3xl bg-[#FDE8EB] text-[#F27A8A] flex items-center justify-center mx-auto shadow-cute-pink">
+          <Lock className="w-8 h-8" />
+        </div>
+        <div className="space-y-1.5">
+          <h2 className="text-2xl font-extrabold text-[#193653]">Sign In to Checkout</h2>
+          <p className="text-xs sm:text-sm text-[#5D7285] font-medium">
+            Please log in or create an account to proceed with your order. Your cart items will be saved!
+          </p>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-3 pt-2">
+          <Link
+            href="/login?redirect=/checkout"
+            className="flex-1 py-3 px-6 rounded-full bg-[#F27A8A] hover:bg-[#e06878] text-white text-xs sm:text-sm font-extrabold flex items-center justify-center gap-2 shadow-cute-pink transition-all active:scale-98"
+          >
+            <span>Log In</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+          <Link
+            href="/register?redirect=/checkout"
+            className="flex-1 py-3 px-6 rounded-full bg-white hover:bg-gray-50 text-[#193653] border border-[#EFE6DA] text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-2xs transition-all active:scale-98"
+          >
+            <span>Create Account</span>
+          </Link>
+        </div>
       </div>
     );
   }

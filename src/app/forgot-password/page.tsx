@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { ShoppingBag, Mail, AlertCircle, ArrowRight, Loader2, CheckCircle2, ChevronLeft, UserPlus } from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
+import { createClient } from '@/frontend/lib/supabase/client';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');

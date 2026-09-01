@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { Users, Mail, Phone, Calendar, Shield, Loader2, Search, ShoppingBag, RefreshCw } from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
-import { UserProfile } from '@/types/user';
+import { createClient } from '@/frontend/lib/supabase/client';
+import { UserProfile } from '@/frontend/types/user';
 
 interface CustomerWithStats extends UserProfile {
   order_count?: number;
