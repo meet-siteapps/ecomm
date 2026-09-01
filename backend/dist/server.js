@@ -7,6 +7,7 @@ require("dotenv/config");
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const health_js_1 = __importDefault(require("./routes/health.js"));
+const products_js_1 = __importDefault(require("./routes/products.js"));
 const errorHandler_js_1 = require("./middleware/errorHandler.js");
 const notFound_js_1 = require("./middleware/notFound.js");
 const app = (0, express_1.default)();
@@ -20,6 +21,7 @@ app.use((0, cors_1.default)({
 app.use(express_1.default.json({ limit: '1mb' }));
 app.use(express_1.default.urlencoded({ extended: true, limit: '1mb' }));
 app.use('/health', health_js_1.default);
+app.use('/api/products', products_js_1.default);
 app.use(notFound_js_1.notFound);
 app.use(errorHandler_js_1.errorHandler);
 const PORT = Number(process.env['PORT'] ?? 5000);
@@ -27,7 +29,8 @@ app.listen(PORT, () => {
     const env = process.env['NODE_ENV'] ?? 'development';
     console.log(`[server] Running in ${env} mode`);
     console.log(`[server] Listening on http://localhost:${PORT}`);
-    console.log(`[server] Health check: http://localhost:${PORT}/health`);
+    console.log(`[server] Health check:    http://localhost:${PORT}/health`);
+    console.log(`[server] Products list:   http://localhost:${PORT}/api/products`);
 });
 exports.default = app;
 //# sourceMappingURL=server.js.map

@@ -1,0 +1,1 @@
+{"version":3,"file":"productService.d.ts","sourceRoot":"","sources":["../../src/services/productService.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,OAAO,EAAE,gBAAgB,EAAE,mBAAmB,EAAE,MAAM,qBAAqB,CAAC;AAWrF,wBAAsB,WAAW,CAC/B,OAAO,GAAE,gBAAqB,GAC7B,OAAO,CAAC,mBAAmB,CAAC,CAiE9B;AAQD,wBAAsB,cAAc,CAAC,EAAE,EAAE,MAAM,GAAG,OAAO,CAAC,OAAO,GAAG,IAAI,CAAC,CAcxE"}
