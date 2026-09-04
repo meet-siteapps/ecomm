@@ -9,12 +9,22 @@
  *   { status: 'ok', data: { products: Product[], total: number } }  — list
  *   { status: 'ok', data: Product }                                  — detail
  *   { status: 'error', message: string, code: string }               — error
+ *
+ * Environment variable priority (all are NEXT_PUBLIC_ so they are inlined at
+ * build time by Next.js):
+ *   1. NEXT_PUBLIC_API_URL        — preferred name set in Vercel dashboard
+ *   2. NEXT_PUBLIC_BACKEND_URL    — legacy name used in .env.local
+ *   3. Hard-coded Render URL      — production fallback so deploys never break
  */
 
 import { Product } from '@/frontend/types/product';
 
+const PRODUCTION_URL = 'https://ecomm-backend-u88t.onrender.com';
+
 const BASE_URL =
-  process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:5000';
+  process.env.NEXT_PUBLIC_API_URL ??
+  process.env.NEXT_PUBLIC_BACKEND_URL ??
+  PRODUCTION_URL;
 
 // ─── Types mirroring the backend response envelope ───────────────────────────
 
