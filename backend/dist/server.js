@@ -11,9 +11,23 @@ const products_js_1 = __importDefault(require("./routes/products.js"));
 const errorHandler_js_1 = require("./middleware/errorHandler.js");
 const notFound_js_1 = require("./middleware/notFound.js");
 const app = (0, express_1.default)();
-const allowedOrigin = process.env['CORS_ORIGIN'] ?? 'http://localhost:3000';
+const DEFAULT_ORIGINS = [
+    'http://localhost:3000',
+    'https://ecommerce-site-dun-phi.vercel.app',
+];
+const rawOrigins = process.env['CORS_ORIGIN'];
+const allowedOrigins = rawOrigins
+    ? rawOrigins.split(',').map((o) => o.trim()).filter(Boolean)
+    : DEFAULT_ORIGINS;
 app.use((0, cors_1.default)({
-    origin: allowedOrigin,
+    origin: (incomingOrigin, callback) => {
+        if (!incomingOrigin || allowedOrigins.includes(incomingOrigin)) {
+            callback(null, true);
+        }
+        else {
+            callback(new Error(`CORS: origin '${incomingOrigin}' not allowed`));
+        }
+    },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,

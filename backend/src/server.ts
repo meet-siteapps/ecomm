@@ -13,12 +13,29 @@ const app = express();
 
 // ─── Global middleware ────────────────────────────────────────────────────────
 
-// CORS — restrict to the configured origin in production
-const allowedOrigin = process.env['CORS_ORIGIN'] ?? 'http://localhost:3000';
+// CORS — explicit allowlist, no wildcards.
+// CORS_ORIGIN env var can be a comma-separated list of origins.
+// Defaults cover local dev + the production Vercel deployment.
+const DEFAULT_ORIGINS = [
+  'http://localhost:3000',
+  'https://ecommerce-site-dun-phi.vercel.app',
+];
+
+const rawOrigins = process.env['CORS_ORIGIN'];
+const allowedOrigins: string[] = rawOrigins
+  ? rawOrigins.split(',').map((o) => o.trim()).filter(Boolean)
+  : DEFAULT_ORIGINS;
 
 app.use(
   cors({
-    origin: allowedOrigin,
+    origin: (incomingOrigin, callback) => {
+      // Allow server-to-server requests (no Origin header) and listed origins
+      if (!incomingOrigin || allowedOrigins.includes(incomingOrigin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS: origin '${incomingOrigin}' not allowed`));
+      }
+    },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,

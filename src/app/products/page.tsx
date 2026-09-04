@@ -3,7 +3,9 @@
 import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { ProductCard } from '@/frontend/components/products/ProductCard';
-import { getProducts } from '@/backend/products/products';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { getProducts } from '@/backend/products/products'; // kept as fallback — do not delete
+import { fetchProducts } from '@/frontend/lib/api/products';
 import { Product } from '@/frontend/types/product';
 import { SAMPLE_CATEGORIES } from '@/frontend/lib/constants';
 import { Search, SlidersHorizontal, X, ChevronDown, Loader2 } from 'lucide-react';
@@ -46,12 +48,12 @@ function ProductsContent() {
     async function load() {
       setIsLoading(true);
       try {
-        const data = await getProducts();
+        const data = await fetchProducts();
         if (isMounted) {
           setProducts(data);
         }
       } catch (err) {
-        console.error('Failed to load products:', err);
+        console.error('Failed to load products from backend API:', err);
       } finally {
         if (isMounted) {
           setIsLoading(false);
