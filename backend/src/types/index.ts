@@ -1,5 +1,22 @@
 import { Request, Response, NextFunction } from 'express';
 
+// ─── Authenticated request ────────────────────────────────────────────────────
+
+/**
+ * Shape of the verified Supabase user attached to req.user by requireAuth.
+ * Only what the Express backend actually needs — not the full Supabase User object.
+ */
+export interface AuthUser {
+  id: string;
+  email: string;
+  role: 'customer' | 'admin';
+}
+
+/** Express Request extended with the verified user, set by requireAuth middleware. */
+export interface AuthenticatedRequest extends Request {
+  user?: AuthUser;
+}
+
 // ─── Standard API response shapes ───────────────────────────────────────────
 
 export interface ApiSuccess<T = unknown> {
@@ -38,4 +55,9 @@ export interface Env {
   CORS_ORIGIN: string;
   SUPABASE_URL: string;
   SUPABASE_ANON_KEY: string;
+  SUPABASE_SERVICE_ROLE_KEY?: string;
+  RAZORPAY_KEY_ID?: string;
+  RAZORPAY_KEY_SECRET?: string;
 }
+
+

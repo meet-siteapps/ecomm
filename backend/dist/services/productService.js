@@ -2,7 +2,14 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getProducts = getProducts;
 exports.getProductById = getProductById;
+exports.getAllProductsAdmin = getAllProductsAdmin;
+exports.createProduct = createProduct;
+exports.updateProduct = updateProduct;
+exports.deleteProduct = deleteProduct;
+exports.toggleProductStatus = toggleProductStatus;
 const supabase_js_1 = require("./supabase.js");
+const supabaseAdmin_js_1 = require("./supabaseAdmin.js");
+const errorHandler_js_1 = require("../middleware/errorHandler.js");
 async function getProducts(options = {}) {
     const supabase = (0, supabase_js_1.getSupabaseClient)();
     let query = supabase
@@ -59,5 +66,69 @@ async function getProductById(id) {
         throw new Error(`Supabase error fetching product ${id}: ${error.message}`);
     }
     return data ?? null;
+}
+async function getAllProductsAdmin() {
+    const supabase = (0, supabaseAdmin_js_1.getSupabaseAdminClient)();
+    const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
+    if (error) {
+        throw new Error(`Supabase error fetching admin products: ${error.message}`);
+    }
+    return data ?? [];
+}
+async function createProduct(input) {
+    const supabase = (0, supabaseAdmin_js_1.getSupabaseAdminClient)();
+    const { data, error } = await supabase
+        .from('products')
+        .insert([input])
+        .select()
+        .single();
+    if (error) {
+        throw new errorHandler_js_1.AppError(`Failed to create product: ${error.message}`, 500, 'PRODUCT_CREATE_FAILED');
+    }
+    return data;
+}
+async function updateProduct(id, input) {
+    const supabase = (0, supabaseAdmin_js_1.getSupabaseAdminClient)();
+    const { data, error } = await supabase
+        .from('products')
+        .update({
+        ...input,
+        updated_at: new Date().toISOString(),
+    })
+        .eq('id', id)
+        .select()
+        .maybeSingle();
+    if (error) {
+        throw new errorHandler_js_1.AppError(`Failed to update product ${id}: ${error.message}`, 500, 'PRODUCT_UPDATE_FAILED');
+    }
+    if (!data) {
+        throw new errorHandler_js_1.AppError(`Product not found: ${id}`, 404, 'PRODUCT_NOT_FOUND');
+    }
+    return data;
+}
+async function deleteProduct(id) {
+    const supabase = (0, supabaseAdmin_js_1.getSupabaseAdminClient)();
+    const { data, error } = await supabase
+        .from('products')
+        .update({
+        is_active: false,
+        updated_at: new Date().toISOString(),
+    })
+        .eq('id', id)
+        .select()
+        .maybeSingle();
+    if (error) {
+        throw new errorHandler_js_1.AppError(`Failed to delete product ${id}: ${error.message}`, 500, 'PRODUCT_DELETE_FAILED');
+    }
+    if (!data) {
+        throw new errorHandler_js_1.AppError(`Product not found: ${id}`, 404, 'PRODUCT_NOT_FOUND');
+    }
+    return data;
+}
+async function toggleProductStatus(id, isActive) {
+    return updateProduct(id, { is_active: isActive });
 }
 //# sourceMappingURL=productService.js.map

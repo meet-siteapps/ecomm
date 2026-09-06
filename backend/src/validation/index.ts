@@ -1,4 +1,4 @@
-import { z, ZodSchema } from 'zod';
+import { z, ZodType, ZodTypeDef } from 'zod';
 import { Request, Response, NextFunction } from 'express';
 
 // ─── Validation middleware factory ───────────────────────────────────────────
@@ -7,15 +7,16 @@ type ValidationTarget = 'body' | 'query' | 'params';
 
 /**
  * Returns an Express middleware that validates req[target] against the given
- * Zod schema. On success, the parsed (coerced) value is written back to the
+ * Zod schema. On success, the parsed (coerced/transformed) value is written back to the
  * same property so downstream handlers receive typed data.
  *
  * Errors are forwarded to the centralized error handler via next(err).
  */
-export function validate<T>(
-  schema: ZodSchema<T>,
+export function validate<T = unknown>(
+  schema: ZodType<T, ZodTypeDef, unknown>,
   target: ValidationTarget = 'body',
 ) {
+
   return (req: Request, _res: Response, next: NextFunction): void => {
     const result = schema.safeParse(req[target]);
     if (!result.success) {

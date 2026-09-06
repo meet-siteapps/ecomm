@@ -42,3 +42,53 @@ export interface ProductListResponse {
   products: Product[];
   total: number;
 }
+
+/** Input payload for creating a new product */
+export interface CreateProductInput {
+  name: string;
+  brand?: string;
+  category: string;
+  subcategory?: string;
+  images?: string[];
+  mrp: number;
+  price: number;
+  discount?: number;
+  age_group?: string;
+  size?: string;
+  colour?: string;
+  material?: string;
+  description?: string;
+  whats_included?: string[];
+  key_features?: string[];
+  care_instructions?: string;
+  stock?: number;
+  is_active?: boolean;
+}
+
+/** Input payload for updating an existing product (all fields optional) */
+export interface UpdateProductInput {
+  name?: string;
+  brand?: string;
+  category?: string;
+  subcategory?: string;
+  images?: string[];
+  mrp?: number;
+  price?: number;
+  discount?: number;
+  age_group?: string;
+  size?: string;
+  colour?: string;
+  material?: string;
+  description?: string;
+  whats_included?: string[];
+  key_features?: string[];
+  care_instructions?: string;
+  stock?: number;
+  is_active?: boolean;
+}
+
+/** Input payload for toggling product active/inactive status */
+export interface ToggleProductStatusInput {
+  is_active: boolean;
+}
+

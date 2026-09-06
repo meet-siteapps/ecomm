@@ -4,6 +4,10 @@ import cors from 'cors';
 
 import healthRouter from './routes/health.js';
 import productsRouter from './routes/products.js';
+import adminProductsRouter from './routes/adminProducts.js';
+import authRouter from './routes/auth.js';
+import ordersRouter from './routes/orders.js';
+import paymentsRouter from './routes/payments.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { notFound } from './middleware/notFound.js';
 
@@ -49,10 +53,11 @@ app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
 app.use('/health', healthRouter);
 app.use('/api/products', productsRouter);
+app.use('/api/admin/products', adminProductsRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/orders', ordersRouter);
+app.use('/api/payments', paymentsRouter);
 
-// Future route groups:
-// app.use('/api/orders',   ordersRouter);
-// app.use('/api/auth',     authRouter);
 
 // ─── 404 & error handling ─────────────────────────────────────────────────────
 

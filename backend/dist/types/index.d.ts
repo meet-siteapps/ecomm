@@ -1,4 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
+export interface AuthUser {
+    id: string;
+    email: string;
+    role: 'customer' | 'admin';
+}
+export interface AuthenticatedRequest extends Request {
+    user?: AuthUser;
+}
 export interface ApiSuccess<T = unknown> {
     status: 'ok';
     data: T;
@@ -23,5 +31,8 @@ export interface Env {
     CORS_ORIGIN: string;
     SUPABASE_URL: string;
     SUPABASE_ANON_KEY: string;
+    SUPABASE_SERVICE_ROLE_KEY?: string;
+    RAZORPAY_KEY_ID?: string;
+    RAZORPAY_KEY_SECRET?: string;
 }
 //# sourceMappingURL=index.d.ts.map

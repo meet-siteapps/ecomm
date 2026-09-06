@@ -1,5 +1,13 @@
 import { getSupabaseClient } from './supabase.js';
-import { Product, ProductListQuery, ProductListResponse } from '../types/product.js';
+import { getSupabaseAdminClient } from './supabaseAdmin.js';
+import {
+  Product,
+  ProductListQuery,
+  ProductListResponse,
+  CreateProductInput,
+  UpdateProductInput,
+} from '../types/product.js';
+import { AppError } from '../middleware/errorHandler.js';
 
 /**
  * Fetch all active products with optional filtering, sorting and search.
@@ -80,7 +88,7 @@ export async function getProducts(
 }
 
 /**
- * Fetch a single active product by UUID.
+ * Fetch a single product by UUID.
  * Returns null when not found (callers should respond 404).
  * Note: does NOT filter by is_active so direct links to inactive products
  * return the product — consistent with the existing Next.js behaviour.
@@ -100,3 +108,145 @@ export async function getProductById(id: string): Promise<Product | null> {
 
   return (data as Product) ?? null;
 }
+
+/**
+ * Fetch all products (both active and inactive) for admin inventory management.
+ */
+export async function getAllProductsAdmin(): Promise<Product[]> {
+  const supabase = getSupabaseAdminClient();
+
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    throw new Error(`Supabase error fetching admin products: ${error.message}`);
+  }
+
+  return (data as Product[]) ?? [];
+}
+
+/**
+ * Create a new product in Supabase using the service-role admin client.
+ *
+ * @param input Validated product payload
+ * @returns The newly created Product record
+ */
+export async function createProduct(
+  input: CreateProductInput,
+): Promise<Product> {
+  const supabase = getSupabaseAdminClient();
+
+  const { data, error } = await supabase
+    .from('products')
+    .insert([input])
+    .select()
+    .single();
+
+  if (error) {
+    throw new AppError(
+      `Failed to create product: ${error.message}`,
+      500,
+      'PRODUCT_CREATE_FAILED',
+    );
+  }
+
+  return data as Product;
+}
+
+/**
+ * Partially or fully update an existing product by UUID.
+ *
+ * @param id The product UUID
+ * @param input Partial product updates
+ * @returns The updated Product record
+ */
+export async function updateProduct(
+  id: string,
+  input: UpdateProductInput,
+): Promise<Product> {
+  const supabase = getSupabaseAdminClient();
+
+  const { data, error } = await supabase
+    .from('products')
+    .update({
+      ...input,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', id)
+    .select()
+    .maybeSingle();
+
+  if (error) {
+    throw new AppError(
+      `Failed to update product ${id}: ${error.message}`,
+      500,
+      'PRODUCT_UPDATE_FAILED',
+    );
+  }
+
+  if (!data) {
+    throw new AppError(
+      `Product not found: ${id}`,
+      404,
+      'PRODUCT_NOT_FOUND',
+    );
+  }
+
+  return data as Product;
+}
+
+/**
+ * Soft delete a product by UUID (sets is_active to false).
+ * Products are never hard-deleted to preserve order history integrity.
+ *
+ * @param id The product UUID
+ * @returns The soft-deleted Product record
+ */
+export async function deleteProduct(id: string): Promise<Product> {
+  const supabase = getSupabaseAdminClient();
+
+  const { data, error } = await supabase
+    .from('products')
+    .update({
+      is_active: false,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', id)
+    .select()
+    .maybeSingle();
+
+  if (error) {
+    throw new AppError(
+      `Failed to delete product ${id}: ${error.message}`,
+      500,
+      'PRODUCT_DELETE_FAILED',
+    );
+  }
+
+  if (!data) {
+    throw new AppError(
+      `Product not found: ${id}`,
+      404,
+      'PRODUCT_NOT_FOUND',
+    );
+  }
+
+  return data as Product;
+}
+
+/**
+ * Quick toggle of product active/inactive status.
+ *
+ * @param id The product UUID
+ * @param isActive Target boolean active status
+ * @returns The updated Product record
+ */
+export async function toggleProductStatus(
+  id: string,
+  isActive: boolean,
+): Promise<Product> {
+  return updateProduct(id, { is_active: isActive });
+}
+
