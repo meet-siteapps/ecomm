@@ -8,6 +8,7 @@ import adminProductsRouter from './routes/adminProducts.js';
 import authRouter from './routes/auth.js';
 import ordersRouter from './routes/orders.js';
 import paymentsRouter from './routes/payments.js';
+import settingsRouter from './routes/settings.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { notFound } from './middleware/notFound.js';
 
@@ -57,6 +58,8 @@ app.use('/api/admin/products', adminProductsRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/orders', ordersRouter);
 app.use('/api/payments', paymentsRouter);
+app.use('/api/settings', settingsRouter);
+app.use('/api/admin/settings', settingsRouter);
 
 
 // ─── 404 & error handling ─────────────────────────────────────────────────────

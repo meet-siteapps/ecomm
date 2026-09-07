@@ -1,0 +1,1 @@
+{"version":3,"file":"settingsService.d.ts","sourceRoot":"","sources":["../../src/services/settingsService.ts"],"names":[],"mappings":"AACA,OAAO,EACL,aAAa,EACb,mBAAmB,EAEpB,MAAM,sBAAsB,CAAC;AAS9B,wBAAsB,WAAW,IAAI,OAAO,CAAC,aAAa,CAAC,CA8C1D;AASD,wBAAsB,cAAc,CAClC,KAAK,EAAE,mBAAmB,GACzB,OAAO,CAAC,aAAa,CAAC,CAgExB"}
