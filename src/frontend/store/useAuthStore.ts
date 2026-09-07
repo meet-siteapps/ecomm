@@ -4,6 +4,7 @@ import { create } from 'zustand';
 import { User } from '@supabase/supabase-js';
 import { UserProfile } from '@/frontend/types/user';
 import { createClient } from '@/frontend/lib/supabase/client';
+import { fetchMyProfile, ensureProfile } from '@/frontend/lib/api/auth';
 
 interface AuthState {
   user: User | null;
@@ -16,7 +17,7 @@ interface AuthState {
   fetchProfile: (userId: string) => Promise<UserProfile | null>;
 }
 
-export const useAuthStore = create<AuthState>((set, get) => ({
+export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   profile: null,
   isLoading: true,
@@ -28,68 +29,56 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   fetchProfile: async (userId: string) => {
     try {
       const supabase = createClient();
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .maybeSingle();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
-      if (error) {
-        console.warn('Note: Profile table lookup returned:', error.message);
+      if (!session?.access_token) {
+        return null;
       }
 
-      if (data) {
-        set({ profile: data as UserProfile });
-        return data as UserProfile;
-      }
+      try {
+        const profile = await fetchMyProfile(session.access_token);
+        set({ profile });
+        return profile;
+      } catch (err: any) {
+        const msg = (err?.message || '').toLowerCase();
+        const code = err?.code || '';
+        const status = err?.status;
+        const isNotFound =
+          status === 404 ||
+          code === 'PROFILE_NOT_FOUND' ||
+          msg.includes('not found') ||
+          msg.includes('404');
 
-      // Fallback to user metadata if database profile row is not created yet
-      const currentUser = get().user;
-      let targetUser = currentUser && currentUser.id === userId ? currentUser : null;
-      if (!targetUser) {
-        const { data: authData } = await supabase.auth.getUser();
-        if (authData?.user && authData.user.id === userId) {
-          targetUser = authData.user;
-        }
-      }
+        if (isNotFound && session.user) {
+          try {
+            const meta = session.user.user_metadata || {};
+            const name =
+              meta.name ||
+              meta.full_name ||
+              session.user.email?.split('@')[0] ||
+              'User';
+            const phone = meta.phone || undefined;
 
-      if (targetUser && targetUser.id === userId) {
-        const meta = targetUser.user_metadata || {};
-        const fallbackProfile: UserProfile = {
-          id: userId,
-          name: meta.name || meta.full_name || targetUser.email?.split('@')[0] || 'User',
-          email: targetUser.email || '',
-          phone: meta.phone || '',
-          role: (meta.role as any) || 'customer',
-        };
+            await ensureProfile(session.access_token, {
+              email: session.user.email || '',
+              name,
+              phone,
+            });
 
-        // Try to auto-create missing profile in database
-        try {
-          const { data: insertedData } = await supabase
-            .from('profiles')
-            .upsert({
-              id: userId,
-              name: fallbackProfile.name,
-              email: fallbackProfile.email,
-              phone: fallbackProfile.phone,
-              role: fallbackProfile.role,
-            })
-            .select()
-            .maybeSingle();
-
-          if (insertedData) {
-            set({ profile: insertedData as UserProfile });
-            return insertedData as UserProfile;
+            const retryProfile = await fetchMyProfile(session.access_token);
+            set({ profile: retryProfile });
+            return retryProfile;
+          } catch (ensureErr) {
+            console.error('Failed to auto-provision and refetch user profile:', ensureErr);
+            return null;
           }
-        } catch {
-          // In-memory fallback if upsert is restricted
         }
 
-        set({ profile: fallbackProfile });
-        return fallbackProfile;
+        console.error('Error fetching profile from Express backend:', err);
+        return null;
       }
-
-      return null;
     } catch (err) {
       console.error('Error in fetchProfile:', err);
       return null;
@@ -107,3 +96,4 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 }));
+
