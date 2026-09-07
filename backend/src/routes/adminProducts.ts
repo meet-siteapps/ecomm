@@ -8,6 +8,7 @@ import {
 } from '../controllers/productController.js';
 import { requireAuth } from '../middleware/requireAuth.js';
 import { requireAdmin } from '../middleware/requireAdmin.js';
+import { writeLimiter } from '../middleware/rateLimiter.js';
 import { validate } from '../validation/index.js';
 import {
   createProductSchema,
@@ -35,6 +36,7 @@ router.get('/', listAllProductsAdmin);
  */
 router.post(
   '/',
+  writeLimiter,
   validate(createProductSchema, 'body'),
   createProduct,
 );
@@ -46,6 +48,7 @@ router.post(
  */
 router.put(
   '/:id',
+  writeLimiter,
   validate(productIdParamSchema, 'params'),
   validate(updateProductSchema, 'body'),
   updateProduct,
@@ -58,6 +61,7 @@ router.put(
  */
 router.delete(
   '/:id',
+  writeLimiter,
   validate(productIdParamSchema, 'params'),
   deleteProduct,
 );
@@ -69,6 +73,7 @@ router.delete(
  */
 router.patch(
   '/:id/status',
+  writeLimiter,
   validate(productIdParamSchema, 'params'),
   validate(toggleProductStatusSchema, 'body'),
   toggleStatus,

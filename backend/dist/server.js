@@ -13,9 +13,11 @@ const auth_js_1 = __importDefault(require("./routes/auth.js"));
 const orders_js_1 = __importDefault(require("./routes/orders.js"));
 const payments_js_1 = __importDefault(require("./routes/payments.js"));
 const settings_js_1 = __importDefault(require("./routes/settings.js"));
+const rateLimiter_js_1 = require("./middleware/rateLimiter.js");
 const errorHandler_js_1 = require("./middleware/errorHandler.js");
 const notFound_js_1 = require("./middleware/notFound.js");
 const app = (0, express_1.default)();
+app.use(rateLimiter_js_1.generalLimiter);
 const DEFAULT_ORIGINS = [
     'http://localhost:3000',
     'https://ecommerce-site-dun-phi.vercel.app',

@@ -5,9 +5,9 @@ import { z } from 'zod';
  * Ensures profile existence right after signup or OAuth authentication.
  */
 export const ensureProfileSchema = z.object({
-  email: z.string().trim().email('Invalid email address'),
-  name: z.string().trim().min(1, 'Name is required'),
-  phone: z.string().trim().optional(),
+  email: z.string().trim().email('Invalid email address').max(255, 'Email cannot exceed 255 characters'),
+  name: z.string().trim().min(1, 'Name is required').max(200, 'Name cannot exceed 200 characters'),
+  phone: z.string().trim().max(20, 'Phone cannot exceed 20 characters').optional(),
 });
 
 export type EnsureProfileSchemaInput = z.infer<typeof ensureProfileSchema>;
@@ -19,8 +19,8 @@ export type EnsureProfileSchemaInput = z.infer<typeof ensureProfileSchema>;
  */
 export const updateProfileSchema = z
   .object({
-    name: z.string().trim().min(1, 'Name cannot be empty').optional(),
-    phone: z.string().trim().optional(),
+    name: z.string().trim().min(1, 'Name cannot be empty').max(200, 'Name cannot exceed 200 characters').optional(),
+    phone: z.string().trim().max(20, 'Phone cannot exceed 20 characters').optional(),
   })
   .refine(
     (data) => data.name !== undefined || data.phone !== undefined,

@@ -5,6 +5,7 @@ import {
   getOrder,
 } from '../controllers/orderController.js';
 import { requireAuth } from '../middleware/requireAuth.js';
+import { writeLimiter } from '../middleware/rateLimiter.js';
 import { validate } from '../validation/index.js';
 import {
   createOrderSchema,
@@ -20,6 +21,7 @@ const router = Router();
  */
 router.post(
   '/',
+  writeLimiter,
   requireAuth,
   validate(createOrderSchema, 'body'),
   createOrder,

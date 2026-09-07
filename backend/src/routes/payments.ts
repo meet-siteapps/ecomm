@@ -4,6 +4,7 @@ import {
   verifyPayment,
 } from '../controllers/paymentController.js';
 import { requireAuth } from '../middleware/requireAuth.js';
+import { writeLimiter } from '../middleware/rateLimiter.js';
 import { validate } from '../validation/index.js';
 import {
   createPaymentOrderSchema,
@@ -19,6 +20,7 @@ const router = Router();
  */
 router.post(
   '/create-order',
+  writeLimiter,
   requireAuth,
   validate(createPaymentOrderSchema, 'body'),
   createPaymentOrder,
@@ -31,6 +33,7 @@ router.post(
  */
 router.post(
   '/verify',
+  writeLimiter,
   requireAuth,
   validate(verifyPaymentSchema, 'body'),
   verifyPayment,

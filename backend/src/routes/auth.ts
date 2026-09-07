@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { requireAuth } from '../middleware/requireAuth.js';
+import { authLimiter } from '../middleware/rateLimiter.js';
 import {
   getMe,
   ensureProfile,
@@ -27,6 +28,7 @@ router.get('/me', requireAuth, getMe);
  */
 router.post(
   '/ensure-profile',
+  authLimiter,
   requireAuth,
   validate(ensureProfileSchema, 'body'),
   ensureProfile,
@@ -39,6 +41,7 @@ router.post(
  */
 router.put(
   '/profile',
+  authLimiter,
   requireAuth,
   validate(updateProfileSchema, 'body'),
   updateProfile,

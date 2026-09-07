@@ -5,6 +5,7 @@ import {
 } from '../controllers/settingsController.js';
 import { requireAuth } from '../middleware/requireAuth.js';
 import { requireAdmin } from '../middleware/requireAdmin.js';
+import { writeLimiter } from '../middleware/rateLimiter.js';
 import { validate } from '../validation/index.js';
 import { updateSettingsSchema } from '../validation/settings.js';
 
@@ -25,6 +26,7 @@ router.get('/settings', getSettings);
  */
 router.put(
   '/',
+  writeLimiter,
   requireAuth,
   requireAdmin,
   validate(updateSettingsSchema, 'body'),
@@ -32,6 +34,7 @@ router.put(
 );
 router.put(
   '/admin/settings',
+  writeLimiter,
   requireAuth,
   requireAdmin,
   validate(updateSettingsSchema, 'body'),

@@ -9,6 +9,7 @@ import authRouter from './routes/auth.js';
 import ordersRouter from './routes/orders.js';
 import paymentsRouter from './routes/payments.js';
 import settingsRouter from './routes/settings.js';
+import { generalLimiter } from './middleware/rateLimiter.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { notFound } from './middleware/notFound.js';
 
@@ -18,7 +19,10 @@ const app = express();
 
 // ─── Global middleware ────────────────────────────────────────────────────────
 
-// CORS — explicit allowlist, no wildcards.
+// 1. Global rate limiter (100 requests / 15 mins per IP)
+app.use(generalLimiter);
+
+// 2. CORS — explicit allowlist, no wildcards.
 // CORS_ORIGIN env var can be a comma-separated list of origins.
 // Defaults cover local dev + the production Vercel deployment.
 const DEFAULT_ORIGINS = [
@@ -47,6 +51,7 @@ app.use(
   }),
 );
 
+// 3. Body size limits (prevents payload flood abuse)
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 

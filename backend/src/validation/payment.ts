@@ -17,15 +17,18 @@ export const verifyPaymentSchema = z.object({
   razorpayOrderId: z
     .string()
     .trim()
-    .min(1, 'razorpayOrderId is required'),
+    .min(1, 'razorpayOrderId is required')
+    .max(255, 'razorpayOrderId cannot exceed 255 characters'),
   razorpayPaymentId: z
     .string()
     .trim()
-    .min(1, 'razorpayPaymentId is required'),
+    .min(1, 'razorpayPaymentId is required')
+    .max(255, 'razorpayPaymentId cannot exceed 255 characters'),
   razorpaySignature: z
     .string()
     .trim()
-    .min(1, 'razorpaySignature is required'),
+    .min(1, 'razorpaySignature is required')
+    .max(512, 'razorpaySignature cannot exceed 512 characters'),
 });
 
 export type VerifyPaymentInput = z.infer<typeof verifyPaymentSchema>;
