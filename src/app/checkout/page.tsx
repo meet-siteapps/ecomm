@@ -431,30 +431,32 @@ export default function CheckoutPage() {
                 </div>
               </label>
 
-              {/* Online Payment / Razorpay */}
-              <label
-                className={`p-4 rounded-2xl border-2 flex items-center gap-3 cursor-pointer transition-all ${
-                  paymentMethod === 'razorpay'
-                    ? 'border-[#F27A8A] bg-[#FDE8EB]/40'
-                    : 'border-[#EFE6DA] hover:border-gray-300 bg-white'
-                }`}
+              {/* Online Payment / Razorpay (Coming Soon / Disabled) */}
+              <div
+                className="p-4 rounded-2xl border-2 border-dashed border-[#EFE6DA] bg-[#FFF9F2]/60 opacity-70 cursor-not-allowed flex items-center justify-between gap-3 select-none relative"
+                title="Online payments via UPI, Debit/Credit Cards & NetBanking will be available soon. Please select Cash on Delivery for now."
               >
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value="razorpay"
-                  checked={paymentMethod === 'razorpay'}
-                  onChange={() => setPaymentMethod('razorpay')}
-                  className="accent-[#F27A8A] w-4 h-4 cursor-pointer"
-                />
-                <div className="space-y-0.5">
-                  <div className="flex items-center gap-1.5 font-bold text-xs text-[#193653]">
-                    <CreditCard className="w-4 h-4 text-[#3599b8]" />
-                    <span>UPI, Cards, NetBanking</span>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="razorpay"
+                    disabled
+                    checked={false}
+                    className="accent-gray-400 w-4 h-4 cursor-not-allowed"
+                  />
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-1.5 font-bold text-xs text-gray-500">
+                      <CreditCard className="w-4 h-4 text-gray-400" />
+                      <span>UPI, Cards, NetBanking</span>
+                    </div>
+                    <p className="text-[10px] text-gray-400">Online payment gateway integration in progress</p>
                   </div>
-                  <p className="text-[10px] text-[#5D7285]">Instant &amp; secure payment</p>
                 </div>
-              </label>
+                <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200 shrink-0">
+                  Coming Soon
+                </span>
+              </div>
             </div>
           </div>
         </div>

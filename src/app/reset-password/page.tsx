@@ -4,11 +4,18 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ShoppingBag, Lock, AlertCircle, ArrowRight, Loader2, CheckCircle2 } from 'lucide-react';
+import { z } from 'zod';
 import { createClient } from '@/frontend/lib/supabase/client';
+
+const passwordSchema = z
+  .string()
+  .min(8, 'Password must be at least 8 characters')
+  .regex(/[0-9]|[^a-zA-Z0-9]/, 'Password must include at least one number or symbol');
 
 export default function ResetPasswordPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -17,9 +24,11 @@ export default function ResetPasswordPage() {
   const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setPasswordError(null);
 
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters.');
+    const passwordValidation = passwordSchema.safeParse(password);
+    if (!passwordValidation.success) {
+      setPasswordError(passwordValidation.error.issues[0]?.message || 'Invalid password');
       return;
     }
 
@@ -94,14 +103,30 @@ export default function ResetPasswordPage() {
                 <input
                   type="password"
                   required
-                  minLength={6}
+                  minLength={8}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="At least 6 characters"
-                  className="w-full bg-[#FAF7F2] text-sm text-[#2D3748] placeholder-gray-400 rounded-2xl pl-10 pr-4 py-3 border border-[#EFE7DE] focus:border-[#FF6B8B] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FF6B8B]/20 font-medium"
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (passwordError) setPasswordError(null);
+                  }}
+                  placeholder="At least 8 characters"
+                  className={`w-full bg-[#FAF7F2] text-sm text-[#2D3748] placeholder-gray-400 rounded-2xl pl-10 pr-4 py-3 border focus:bg-white focus:outline-none focus:ring-2 font-medium ${
+                    passwordError
+                      ? 'border-[#FF6B8B] focus:border-[#FF6B8B] focus:ring-[#FF6B8B]/20'
+                      : 'border-[#EFE7DE] focus:border-[#FF6B8B] focus:ring-[#FF6B8B]/20'
+                  }`}
                 />
                 <Lock className="w-4 h-4 text-[#A0AEC0] absolute left-3.5 top-1/2 -translate-y-1/2" />
               </div>
+              <p className="text-[11px] text-[#718096] font-medium">
+                At least 8 characters, with a number or symbol
+              </p>
+              {passwordError && (
+                <div className="p-2.5 rounded-xl bg-[#FFEAEF] border border-[#FF6B8B]/30 text-[#E11D48] text-xs font-bold flex items-center gap-2 animate-in fade-in-50">
+                  <AlertCircle className="w-3.5 h-3.5 shrink-0 text-[#FF6B8B]" />
+                  <span>{passwordError}</span>
+                </div>
+              )}
             </div>
 
             <div className="space-y-1.5">
@@ -112,7 +137,7 @@ export default function ResetPasswordPage() {
                 <input
                   type="password"
                   required
-                  minLength={6}
+                  minLength={8}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Repeat new password"
