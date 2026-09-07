@@ -24,7 +24,7 @@ import {
   Check
 } from 'lucide-react';
 import { Order, OrderStatus, PaymentStatus } from '@/frontend/types/order';
-import { getAllOrdersAdmin, updateOrderStatus } from '@/backend/orders/orders';
+import { fetchAllOrdersAdmin, updateOrderStatusAdmin } from '@/frontend/lib/api/orders';
 
 const STATUS_BADGES: Record<OrderStatus, { label: string; bg: string; text: string; border: string }> = {
   pending: { label: 'Pending', bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200' },
@@ -54,7 +54,7 @@ export default function AdminOrdersPage() {
   const loadOrders = async () => {
     setIsLoading(true);
     try {
-      const data = await getAllOrdersAdmin();
+      const data = await fetchAllOrdersAdmin();
       setOrders(data);
     } catch (err) {
       console.error('Failed to load admin orders:', err);
@@ -70,12 +70,12 @@ export default function AdminOrdersPage() {
   const handleStatusChange = async (orderId: string, newStatus: OrderStatus) => {
     setUpdatingId(orderId);
     try {
-      await updateOrderStatus(orderId, newStatus);
+      await updateOrderStatusAdmin(orderId, newStatus);
       setOrders((prev) =>
         prev.map((o) => (o.id === orderId ? { ...o, order_status: newStatus } : o))
       );
       if (selectedOrder && selectedOrder.id === orderId) {
-        setSelectedOrder((prev) => prev ? { ...prev, order_status: newStatus } : null);
+        setSelectedOrder((prev) => (prev ? { ...prev, order_status: newStatus } : null));
       }
       setFeedback({ type: 'success', message: `Order status updated to ${newStatus}.` });
       setTimeout(() => setFeedback(null), 3000);
@@ -89,14 +89,12 @@ export default function AdminOrdersPage() {
   const handlePaymentStatusChange = async (orderId: string, newPaymentStatus: PaymentStatus) => {
     setUpdatingId(orderId);
     try {
-      const targetOrder = orders.find((o) => o.id === orderId);
-      if (!targetOrder) return;
-      await updateOrderStatus(orderId, targetOrder.order_status, newPaymentStatus);
+      await updateOrderStatusAdmin(orderId, undefined, newPaymentStatus);
       setOrders((prev) =>
         prev.map((o) => (o.id === orderId ? { ...o, payment_status: newPaymentStatus } : o))
       );
       if (selectedOrder && selectedOrder.id === orderId) {
-        setSelectedOrder((prev) => prev ? { ...prev, payment_status: newPaymentStatus } : null);
+        setSelectedOrder((prev) => (prev ? { ...prev, payment_status: newPaymentStatus } : null));
       }
       setFeedback({ type: 'success', message: `Payment status updated to ${newPaymentStatus}.` });
       setTimeout(() => setFeedback(null), 3000);

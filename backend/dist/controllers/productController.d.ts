@@ -9,4 +9,7 @@ export declare function createProduct(req: Request<Record<string, string>, unkno
 export declare function updateProduct(req: Request<ProductIdParamInput, unknown, UpdateProductSchemaInput>, res: Response<ApiSuccess<Product>>, next: NextFunction): Promise<void>;
 export declare function deleteProduct(req: Request<ProductIdParamInput>, res: Response<ApiSuccess<Product>>, next: NextFunction): Promise<void>;
 export declare function toggleStatus(req: Request<ProductIdParamInput, unknown, ToggleProductStatusSchemaInput>, res: Response<ApiSuccess<Product>>, next: NextFunction): Promise<void>;
+export declare function permanentDeleteProduct(req: Request<ProductIdParamInput>, res: Response<ApiSuccess<{
+    id: string;
+}>>, next: NextFunction): Promise<void>;
 //# sourceMappingURL=productController.d.ts.map

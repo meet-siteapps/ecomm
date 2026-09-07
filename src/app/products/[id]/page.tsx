@@ -24,8 +24,6 @@ import {
   HeartHandshake,
   Loader2
 } from 'lucide-react';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { getProductById } from '@/backend/products/products'; // kept as fallback — do not delete
 import { fetchProductById } from '@/frontend/lib/api/products';
 import { Product } from '@/frontend/types/product';
 import { useCartStore } from '@/frontend/store/useCartStore';

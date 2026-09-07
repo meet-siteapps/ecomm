@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { StoreSettings, DEFAULT_STORE_SETTINGS } from '@/frontend/types/settings';
 import { fetchStoreSettings, updateStoreSettings } from '@/frontend/lib/api/settings';
-import { createClient } from '@/frontend/lib/supabase/client';
+import { createClient, getValidAccessToken } from '@/frontend/lib/supabase/client';
 
 export default function AdminSettingsPage() {
   const [settings, setSettings] = useState<StoreSettings>(DEFAULT_STORE_SETTINGS);
@@ -50,16 +50,13 @@ export default function AdminSettingsPage() {
     setFeedback(null);
 
     try {
-      const supabase = createClient();
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+      const token = await getValidAccessToken();
 
-      if (!session?.access_token) {
+      if (!token) {
         throw new Error('You must be signed in as an administrator to update settings.');
       }
 
-      const updated = await updateStoreSettings(session.access_token, {
+      const updated = await updateStoreSettings(token, {
         store_name: settings.store_name.trim(),
         tagline: settings.tagline?.trim(),
         contact_email: settings.contact_email.trim(),

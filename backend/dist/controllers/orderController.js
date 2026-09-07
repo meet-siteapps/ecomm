@@ -3,6 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createOrder = createOrder;
 exports.getMyOrders = getMyOrders;
 exports.getOrder = getOrder;
+exports.listAllOrdersAdmin = listAllOrdersAdmin;
+exports.updateOrderStatusAdmin = updateOrderStatusAdmin;
+exports.getDashboardStats = getDashboardStats;
 const orderService_js_1 = require("../services/orderService.js");
 const errorHandler_js_1 = require("../middleware/errorHandler.js");
 async function createOrder(req, res, next) {
@@ -53,6 +56,48 @@ async function getOrder(req, res, next) {
         res.status(200).json({
             status: 'ok',
             data: order,
+        });
+    }
+    catch (err) {
+        next(err);
+    }
+}
+async function listAllOrdersAdmin(_req, res, next) {
+    try {
+        const { getAllOrdersAdmin: getAllOrdersAdminService } = await import('../services/orderService.js');
+        const orders = await getAllOrdersAdminService();
+        res.status(200).json({
+            status: 'ok',
+            data: orders,
+        });
+    }
+    catch (err) {
+        next(err);
+    }
+}
+async function updateOrderStatusAdmin(req, res, next) {
+    try {
+        const orderId = req.params.id;
+        const body = req.body;
+        const targetOrderStatus = body.order_status || body.status;
+        const { updateOrderStatusAdmin: updateOrderStatusAdminService } = await import('../services/orderService.js');
+        const updated = await updateOrderStatusAdminService(orderId, targetOrderStatus, body.payment_status);
+        res.status(200).json({
+            status: 'ok',
+            data: updated,
+        });
+    }
+    catch (err) {
+        next(err);
+    }
+}
+async function getDashboardStats(_req, res, next) {
+    try {
+        const { getDashboardStats: getDashboardStatsService } = await import('../services/orderService.js');
+        const stats = await getDashboardStatsService();
+        res.status(200).json({
+            status: 'ok',
+            data: stats,
         });
     }
     catch (err) {

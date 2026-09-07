@@ -1,363 +1,198 @@
 # Baby Ladoo — Full-Stack E-Commerce Platform
 
-A full-stack e-commerce storefront for baby and kids essentials, built with Next.js 16 (App Router), Express, TypeScript, Supabase, and Tailwind CSS v4.
+A production-grade, full-stack e-commerce storefront for curated baby and kids essentials. Built with Next.js 16 (App Router, Turbopack), a standalone Express + TypeScript API, Supabase (PostgreSQL, Auth, Storage, RLS), and Tailwind CSS v4.
 
-🌐 **Live frontend:** [https://ecommerce-site-dun-phi.vercel.app](https://ecommerce-site-dun-phi.vercel.app)
-⚙️ **Live backend API:** [https://ecomm-backend-u88t.onrender.com](https://ecomm-backend-u88t.onrender.com)
+🌐 **Live Frontend:** [https://ecommerce-site-dun-phi.vercel.app](https://ecommerce-site-dun-phi.vercel.app)  
+⚙️ **Live Backend API:** [https://ecomm-backend-u88t.onrender.com](https://ecomm-backend-u88t.onrender.com)  
 
 ---
 
 ## Architecture Overview
 
 ```
-ecomm/                          ← Monorepo root
-├── src/                        ← Next.js frontend (deployed to Vercel)
-│   ├── app/                    ← App Router pages & route handlers
-│   ├── frontend/               ← UI components, stores, types, lib
-│   └── backend/                ← Legacy Next.js-side Supabase helpers (kept as fallback)
-├── backend/                    ← Standalone Express API (deployed to Render)
-└── supabase/                   ← Database migrations & Edge Functions
+ecomm/                                ← Monorepo root
+├── src/                              ← Next.js 16 frontend (deployed to Vercel)
+│   ├── app/                          ← App Router (pages, dynamic routes, route handlers)
+│   └── frontend/                     ← UI components, Zustand stores, API clients, lib/supabase
+├── backend/                          ← Standalone Express + TypeScript API (deployed to Render)
+│   ├── src/
+│   │   ├── controllers/              ← Request handlers & business delegation
+│   │   ├── middleware/               ← requireAuth, requireAdmin, rateLimiter, errorHandler
+│   │   ├── routes/                   ← Product, Admin Product, Order, Admin Order, Admin Dashboard, Payment, Auth, Settings
+│   │   ├── services/                 ← Supabase client & admin client database operations
+│   │   ├── types/                    ← Type definitions mirroring database models & envelopes
+│   │   └── validation/               ← Strict Zod request schemas
+│   └── dist/                         ← Compiled JavaScript (tsc)
+└── supabase/                         ← Database migrations & SQL schemas
 ```
-
-The project is mid-migration from a fully Next.js-coupled Supabase setup to a separate Express API backend. Both run in parallel — old `src/backend/` logic is kept as a fallback until each module is fully migrated and verified.
 
 ---
 
-## Tech Stack
+## Tech Stack & Tooling
 
 ### Frontend (Next.js — Vercel)
-| Layer | Technology |
-|-------|-----------|
-| Framework | Next.js 16.3.0 (App Router) |
-| Language | TypeScript 5 |
-| Styling | Tailwind CSS v4 |
-| State management | Zustand 5 |
-| Forms | React Hook Form 7 + Zod 4 |
-| Auth client | @supabase/ssr (browser + server clients) |
-| Icons | Lucide React |
-| Notifications | Sonner |
-| Utilities | clsx, tailwind-merge |
+| Layer | Technology | Description |
+|---|---|---|
+| **Framework** | Next.js 16.3.0 (App Router) | Server-side rendering & client components with Turbopack |
+| **Language** | TypeScript 5 | Strict typing across components, stores, and API clients |
+| **Styling** | Tailwind CSS v4 | Custom warm baby pastel theme, custom typography & CSS variables |
+| **State Management** | Zustand 5 | `useAuthStore`, `useCartStore` (localStorage persist), `useWishlistStore` |
+| **Form & Validation** | React Hook Form 7 + Zod | Type-safe form inputs and validations |
+| **Auth Client** | `@supabase/ssr` + Supabase JS | Session management with auto-refreshing access tokens (`getValidAccessToken`) |
+| **Icons & UI** | Lucide React + Sonner | Modern icons and toast notifications |
 
 ### Backend API (Express — Render)
-| Layer | Technology |
-|-------|-----------|
-| Runtime | Node.js ≥ 18 |
-| Framework | Express 4 |
-| Language | TypeScript 5 (strict, Node16 modules) |
-| Validation | Zod 3 |
-| Database client | @supabase/supabase-js 2 |
-| Dev server | tsx watch |
-| Build | tsc |
+| Layer | Technology | Description |
+|---|---|---|
+| **Runtime & Server** | Node.js ≥ 18 / Express 4 | Standalone REST API with modular routing |
+| **Language** | TypeScript 5 | Strict mode with Node16 module resolution |
+| **Security & Hardening** | `express-rate-limit`, `cors` | Tiered IP rate limiting, strict CORS allowlist, body size limits |
+| **Validation** | Zod 3 | Schema-based payload, query, and parameter validation middleware |
+| **Database Clients** | `@supabase/supabase-js` 2 | Singleton anon client + privileged service-role admin client |
+| **Payment Gateway** | Razorpay SDK (Integrated) | Order generation, HMAC-SHA256 signature verification |
 
-### Database & Auth
-| Layer | Technology |
-|-------|-----------|
-| Database | Supabase (PostgreSQL) |
-| Auth provider | Supabase Auth (email + password, PKCE flow) |
-| File storage | Supabase Storage |
-| RLS | Row-Level Security on all tables |
+### Database & Cloud Infrastructure
+| Layer | Technology | Description |
+|---|---|---|
+| **Database** | Supabase (PostgreSQL) | Relational tables with Row-Level Security (RLS) policies |
+| **Authentication** | Supabase Auth | Email/password sign-in, token refresh, PKCE recovery callbacks |
+| **Media Storage** | Supabase Storage | Product image uploads via `product-images` bucket |
 
 ---
 
-## Project Structure
+## Pages & Routes Directory
 
-```
-ecomm/
-│
-├── src/
-│   ├── app/                            ← Next.js App Router
-│   │   ├── layout.tsx                  ← Root layout (AuthListener + Header + Footer)
-│   │   ├── page.tsx                    ← Homepage /
-│   │   ├── globals.css                 ← Global styles
-│   │   │
-│   │   ├── about/page.tsx              ← /about
-│   │   ├── account/page.tsx            ← /account (protected, customer)
-│   │   ├── cart/page.tsx               ← /cart
-│   │   ├── checkout/
-│   │   │   ├── page.tsx                ← /checkout (requires auth)
-│   │   │   └── success/page.tsx        ← /checkout/success
-│   │   ├── contact/page.tsx            ← /contact
-│   │   ├── orders/page.tsx             ← /orders (customer order history)
-│   │   ├── wishlist/page.tsx           ← /wishlist (requires auth)
-│   │   │
-│   │   ├── products/
-│   │   │   ├── page.tsx                ← /products (catalog, filters, search)
-│   │   │   └── [id]/page.tsx           ← /products/:id (product detail)
-│   │   │
-│   │   ├── login/page.tsx              ← /login
-│   │   ├── register/page.tsx           ← /register
-│   │   ├── forgot-password/page.tsx    ← /forgot-password
-│   │   ├── reset-password/page.tsx     ← /reset-password
-│   │   │
-│   │   ├── auth/
-│   │   │   └── callback/route.ts       ← /auth/callback (PKCE + OTP handler)
-│   │   │
-│   │   ├── admin/                      ← /admin/* (requires admin role)
-│   │   │   ├── layout.tsx              ← AdminGuard wrapper + admin nav
-│   │   │   ├── page.tsx                ← /admin (dashboard + stats)
-│   │   │   ├── products/page.tsx       ← /admin/products (CRUD catalog)
-│   │   │   ├── orders/page.tsx         ← /admin/orders
-│   │   │   ├── customers/page.tsx      ← /admin/customers
-│   │   │   └── settings/page.tsx       ← /admin/settings (store config)
-│   │   │
-│   │   ├── privacy-policy/page.tsx     ← /privacy-policy
-│   │   ├── return-refund-policy/       ← /return-refund-policy
-│   │   ├── shipping-policy/page.tsx    ← /shipping-policy
-│   │   └── terms/page.tsx              ← /terms
-│   │
-│   │
-│   ├── frontend/
-│   │   ├── components/
-│   │   │   ├── layout/
-│   │   │   │   ├── Header.tsx          ← Global nav + cart badge + auth state
-│   │   │   │   ├── Footer.tsx
-│   │   │   │   └── MobileMenu.tsx
-│   │   │   ├── auth/
-│   │   │   │   └── AuthListener.tsx    ← Global session listener (mounts in root layout)
-│   │   │   ├── admin/
-│   │   │   │   ├── AdminGuard.tsx      ← Client-side role guard (wraps all /admin routes)
-│   │   │   │   └── ProductFormModal.tsx ← Add/edit product modal (admin)
-│   │   │   ├── products/
-│   │   │   │   ├── ProductCard.tsx     ← Product tile (add-to-cart, wishlist)
-│   │   │   │   └── PincodeChecker.tsx  ← Delivery availability checker
-│   │   │   └── common/
-│   │   │       └── CartoonIllustrations.tsx
-│   │   │
-│   │   ├── store/
-│   │   │   ├── useAuthStore.ts         ← Zustand: user, profile, isLoading, signOut
-│   │   │   ├── useCartStore.ts         ← Zustand: cart items, totals (localStorage persist)
-│   │   │   └── useWishlistStore.ts     ← Zustand: wishlist (syncs with Supabase)
-│   │   │
-│   │   ├── types/
-│   │   │   ├── product.ts              ← Product, CartItem interfaces
-│   │   │   ├── user.ts                 ← UserProfile, UserRole
-│   │   │   ├── order.ts                ← Order, OrderItem, ShippingAddress
-│   │   │   ├── settings.ts             ← StoreSettings
-│   │   │   └── wishlist.ts             ← WishlistItem
-│   │   │
-│   │   └── lib/
-│   │       ├── api/
-│   │       │   └── products.ts         ← Express API client (fetchProducts, fetchProductById)
-│   │       ├── supabase/
-│   │       │   ├── client.ts           ← createBrowserClient (public anon key)
-│   │       │   └── wishlist.ts         ← Wishlist Supabase helpers
-│   │       ├── constants.ts            ← SAMPLE_CATEGORIES, shared constants
-│   │       └── utils.ts
-│   │
-│   │
-│   └── backend/                        ← Legacy Next.js Supabase helpers (kept as fallback)
-│       │                               ← Will be removed after full Express migration
-│       ├── auth/
-│       │   └── auth.ts                 ← getCurrentUserProfile, verifyAdminRole, ensureUserProfile
-│       ├── orders/
-│       │   └── orders.ts               ← validateStockAndCreatePendingOrder, getUserOrders
-│       ├── payments/
-│       │   └── razorpay.ts             ← Razorpay order creation helpers
-│       ├── products/
-│       │   └── products.ts             ← getProducts, getProductById, admin CRUD (Supabase direct)
-│       ├── services/
-│       │   ├── supabase.ts             ← getServerSupabaseClient, getAdminSupabaseClient
-│       │   ├── settings.ts             ← getStoreSettings, updateStoreSettings
-│       │   └── storage.ts              ← Supabase Storage upload helpers
-│       ├── types/
-│       │   └── index.ts                ← Shared backend TypeScript types
-│       └── validation/
-│           ├── index.ts
-│           ├── checkout.ts             ← Checkout payload Zod schema
-│           └── product.ts              ← Product input Zod schema
-│
-│
-├── backend/                            ← Standalone Express API (separate deploy)
-│   ├── src/
-│   │   ├── server.ts                   ← Entry point: CORS, middleware, route mounting
-│   │   │
-│   │   ├── routes/
-│   │   │   ├── health.ts               ← GET /health
-│   │   │   ├── products.ts             ← GET /api/products, GET /api/products/:id
-│   │   │   └── auth.ts                 ← GET /api/auth/me (protected)
-│   │   │
-│   │   ├── controllers/
-│   │   │   ├── healthController.ts
-│   │   │   ├── productController.ts    ← listProducts, getProduct
-│   │   │   └── authController.ts       ← getMe
-│   │   │
-│   │   ├── middleware/
-│   │   │   ├── errorHandler.ts         ← Centralized error handler + AppError class
-│   │   │   ├── notFound.ts             ← 404 handler
-│   │   │   ├── requireAuth.ts          ← JWT verification via Supabase auth.getUser()
-│   │   │   └── requireAdmin.ts         ← Role guard (403 if role !== 'admin')
-│   │   │
-│   │   ├── services/
-│   │   │   ├── supabase.ts             ← Singleton Supabase client (anon key only)
-│   │   │   └── productService.ts       ← getProducts(), getProductById() (Supabase queries)
-│   │   │
-│   │   ├── types/
-│   │   │   ├── index.ts                ← ApiSuccess, ApiError, AuthUser, AuthenticatedRequest
-│   │   │   └── product.ts              ← Product, ProductListQuery, ProductListResponse
-│   │   │
-│   │   └── validation/
-│   │       ├── index.ts                ← validate() middleware factory, paginationSchema
-│   │       └── product.ts              ← productListQuerySchema, productIdParamSchema
-│   │
-│   ├── .env                            ← Local secrets (gitignored)
-│   ├── .env.example                    ← Template for all env vars
-│   ├── package.json
-│   ├── tsconfig.json                   ← Production build config (module: Node16)
-│   ├── tsconfig.dev.json               ← Dev override (tsx watch compatibility)
-│   └── README.md
-│
-│
-├── supabase/
-│   ├── migrations/
-│   │   ├── 01_create_profiles.sql
-│   │   ├── 02_create_products.sql
-│   │   ├── 03_create_orders.sql
-│   │   ├── 04_create_store_settings.sql
-│   │   ├── 05_create_wishlist.sql
-│   │   └── 06_auth_helpers.sql         ← check_user_exists_by_email RPC
-│   └── functions/                      ← Edge Functions (none active yet)
-│
-├── public/
-│   └── heroimg1.png                    ← Static assets
-│
-├── .env.example                        ← Frontend env var template
-├── .env.local                          ← Local frontend secrets (gitignored)
-├── next.config.ts
-├── tsconfig.json
-├── eslint.config.mjs
-├── postcss.config.mjs
-└── AGENTS.md                           ← AI agent rules (Next.js version notices)
-```
+### Customer Storefront
+| Route | Access | Description |
+|---|---|---|
+| `/` | Public | Homepage featuring hero banner, categories, bestsellers, trust badges, and perks |
+| `/products` | Public | Searchable catalog with sidebar filters (category, age group, price range, sorting) |
+| `/products/[id]` | Public | Product details page with image gallery, specs, stock indicator, wishlist & cart actions |
+| `/cart` | Public | Cart slideover/page with quantity increment/decrement, subtotal, and free delivery tracker |
+| `/checkout` | Auth Required | Multi-step checkout with address validation and COD / Razorpay payment modes |
+| `/checkout/success` | Auth Required | Order confirmation receipt |
+| `/account` | Customer | Profile dashboard with personal info editing and customer order history |
+| `/orders` | Customer | Dedicated past orders listing with live status badges |
+| `/wishlist` | Auth Required | User wishlist synchronized directly with Supabase |
+| `/about` | Public | Brand story and quality promise |
+| `/contact` | Public | Contact details pulled dynamically from store settings |
+| `/privacy-policy` | Public | Privacy & data compliance terms |
+| `/shipping-policy` | Public | Shipping zones, delivery estimates, and fees |
+| `/return-refund-policy` | Public | Return process and refund guidelines |
+| `/terms` | Public | Terms and conditions |
+
+### Authentication Routes
+| Route | Purpose |
+|---|---|
+| `/login` | Email/password login with redirect support and role checks |
+| `/register` | User signup with name, email, and phone provisioning |
+| `/forgot-password` | Password reset link dispatcher |
+| `/reset-password` | Secure password update interface |
+| `/auth/callback` | Route handler for Supabase PKCE exchange & magic link / reset tokens |
+
+### Admin Portal (`/admin/*`)
+> Protected by `AdminGuard` (verifies `profile.role === 'admin'` from `profiles` table via Express API token check).
+
+| Route | Purpose |
+|---|---|
+| `/admin` | Overview dashboard with metric cards (Total Products, Active Orders, Revenue, Customers) |
+| `/admin/products` | Full inventory management (Add product modal, edit specs, toggle status, delete) |
+| `/admin/orders` | Order management table with live status transitions (pending, processing, shipped, delivered, cancelled) |
+| `/admin/customers` | Registered customer records and contact directory |
+| `/admin/settings` | Global store settings (store name, tagline, email, phone, shipping fee, tax rate, COD toggle) |
 
 ---
 
-## Pages & Routes
+## Express Backend API Reference
 
-### Customer-facing
+**Base URL (Production):** `https://ecomm-backend-u88t.onrender.com`  
+**Base URL (Local):** `http://localhost:5000`
 
-| Route | Page | Description |
-|-------|------|-------------|
-| `/` | Homepage | Hero, featured products, promotions |
-| `/products` | Catalog | Product grid with sidebar filters: category, age group, price range, sort |
-| `/products/[id]` | Product detail | Images, description, specs, add to cart, wishlist |
-| `/cart` | Cart | Item list, quantity controls, order summary, free shipping progress |
-| `/checkout` | Checkout | Shipping form, payment selection (COD / Razorpay), order placement |
-| `/checkout/success` | Success | Order confirmation (unused — success shown inline on checkout page) |
-| `/account` | Account | Profile info, order history |
-| `/orders` | Orders | Order listing |
-| `/wishlist` | Wishlist | Saved products (requires auth, synced to Supabase) |
-| `/about` | About |  |
-| `/contact` | Contact |  |
-| `/privacy-policy` | Privacy Policy |  |
-| `/shipping-policy` | Shipping Policy |  |
-| `/return-refund-policy` | Returns |  |
-| `/terms` | Terms |  |
+### Health & Liveness
+- `GET /health` — Liveness probe returning `{ status: "ok" }`.
 
-### Auth
+### Authentication & Profile (`/api/auth`)
+| Method | Endpoint | Protection | Rate Limit | Description |
+|---|---|---|---|---|
+| `GET` | `/api/auth/me` | Bearer Token | General | Fetches the current user profile from `profiles` |
+| `POST` | `/api/auth/ensure-profile` | Bearer Token | AuthLimiter (10/15m) | Auto-provisions profile row upon user registration |
+| `PUT` | `/api/auth/profile` | Bearer Token | AuthLimiter (10/15m) | Updates user profile name and/or phone number |
 
-| Route | Description |
-|-------|-------------|
-| `/login` | Email + password sign in, role-based redirect |
-| `/register` | Sign up with name, email, phone, password |
-| `/forgot-password` | Password reset request |
-| `/reset-password` | Password update (after reset link) |
-| `/auth/callback` | Route Handler: PKCE code exchange + OTP token_hash verification |
+### Store Settings (`/api/settings` & `/api/admin/settings`)
+| Method | Endpoint | Protection | Rate Limit | Description |
+|---|---|---|---|---|
+| `GET` | `/api/settings` | Public | General | Retrieves public store info (branding, contact, shipping rates) |
+| `PUT` | `/api/admin/settings` | Bearer Token (Admin) | WriteLimiter (30/15m) | Updates global store configurations in `store_settings` |
 
-### Admin (requires `role = 'admin'` in `profiles` table)
+### Products Catalog (`/api/products` & `/api/admin/products`)
+| Method | Endpoint | Protection | Rate Limit | Description |
+|---|---|---|---|---|
+| `GET` | `/api/products` | Public | General | Filtered & paginated active products list |
+| `GET` | `/api/products/:id` | Public | General | Single product lookup by UUID |
+| `GET` | `/api/admin/products` | Bearer Token (Admin) | General | Complete product list (including inactive/out-of-stock) |
+| `POST` | `/api/admin/products` | Bearer Token (Admin) | WriteLimiter (30/15m) | Create new product with specs & inventory count |
+| `PUT` | `/api/admin/products/:id` | Bearer Token (Admin) | WriteLimiter (30/15m) | Update existing product details |
+| `PATCH` | `/api/admin/products/:id/status` | Bearer Token (Admin) | WriteLimiter (30/15m) | Toggle product `is_active` flag |
+| `DELETE` | `/api/admin/products/:id` | Bearer Token (Admin) | WriteLimiter (30/15m) | Soft-delete product (`is_active = false`) |
+| `DELETE` | `/api/admin/products/:id/permanent` | Bearer Token (Admin) | WriteLimiter (30/15m) | Permanently delete product (hard delete, 0 orders only) |
 
-| Route | Description |
-|-------|-------------|
-| `/admin` | Dashboard with live stats (products, orders, customers) |
-| `/admin/products` | Full product CRUD — add, edit, toggle status, delete |
-| `/admin/orders` | Order management |
-| `/admin/customers` | Customer list |
-| `/admin/settings` | Store settings (name, logo, contact info) |
+### Orders & Admin Orders (`/api/orders` & `/api/admin/orders`)
+| Method | Endpoint | Protection | Rate Limit | Description |
+|---|---|---|---|---|
+| `POST` | `/api/orders` | Bearer Token | WriteLimiter (30/15m) | Validates stock, calculates pricing & creates pending order |
+| `GET` | `/api/orders` | Bearer Token | General | Lists orders for authenticated user |
+| `GET` | `/api/orders/:id` | Bearer Token | General | Single order details by UUID |
+| `GET` | `/api/admin/orders` | Bearer Token (Admin) | General | Lists all customer orders for admin panel |
+| `PATCH` | `/api/admin/orders/:id/status` | Bearer Token (Admin) | WriteLimiter (30/15m) | Updates order lifecycle status (pending, processing, shipped, delivered, cancelled) |
 
----
+### Admin Dashboard (`/api/admin/dashboard-stats`)
+| Method | Endpoint | Protection | Rate Limit | Description |
+|---|---|---|---|---|
+| `GET` | `/api/admin/dashboard-stats` | Bearer Token (Admin) | General | Aggregated dashboard KPI stats & recent orders |
 
-## Express API Endpoints
-
-**Base URL (production):** `https://ecomm-backend-u88t.onrender.com`
-**Base URL (local):** `http://localhost:5000`
-
-| Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| `GET` | `/health` | None | Liveness probe — `{ status: "ok" }` |
-| `GET` | `/api/products` | None | List active products |
-| `GET` | `/api/products/:id` | None | Single product by UUID |
-| `GET` | `/api/auth/me` | Bearer JWT | Verified user identity + role |
-
-### `GET /api/products` Query Parameters
-
-| Param | Type | Description |
-|-------|------|-------------|
-| `search` | string | Full-text across name, brand, category, description |
-| `category` | string | Category name (case-insensitive) or `all` |
-| `ageGroup` | string | e.g. `0-6 Months` — `All Ages` skips filter |
-| `maxPrice` | number | Maximum price in INR |
-| `sortBy` | `featured` \| `price-low` \| `price-high` \| `discount` | Sort order |
-| `limit` | number (1–200) | Max results |
-
-### Response Envelope
-
-```json
-{ "status": "ok", "data": { ... } }
-{ "status": "error", "message": "...", "code": "ERROR_CODE" }
-```
+### Payments (`/api/payments`)
+| Method | Endpoint | Protection | Rate Limit | Description |
+|---|---|---|---|---|
+| `POST` | `/api/payments/create-order` | Bearer Token | WriteLimiter (30/15m) | Generates Razorpay payment order for internal pending order |
+| `POST` | `/api/payments/verify` | Bearer Token | WriteLimiter (30/15m) | Validates Razorpay HMAC signature and confirms payment status |
 
 ---
 
-## Supabase Database Tables
+## Security & Reliability Hardening
 
-| Table | Purpose |
-|-------|---------|
-| `profiles` | User profiles — `id`, `name`, `email`, `phone`, `role` |
-| `products` | Product catalog — full product data, `is_active`, `stock` |
-| `orders` | Customer orders — shipping address, totals, status |
-| `order_items` | Line items per order |
-| `store_settings` | Admin-configurable store config |
-| `wishlist` | Per-user saved product references |
+1. **Token Refresh & Lifecycle Management**:
+   - `getValidAccessToken()` proactively verifies token expiration before dispatching authenticated requests.
+   - `AuthListener.tsx` catches 401 token expiry responses, invokes `supabase.auth.refreshSession()`, and retries transparently.
+   - `requireAuth` in Express verifies JWTs against Supabase Auth with admin client fallback validation.
 
----
+2. **Rate Limiting & Abuse Prevention**:
+   - `generalLimiter`: 100 requests / 15 minutes globally per IP.
+   - `authLimiter`: 10 requests / 15 minutes for auth and profile modifications.
+   - `writeLimiter`: 30 requests / 15 minutes for order creation, admin CRUD, and payment calls.
 
-## Authentication Flow
+3. **CORS & Payload Controls**:
+   - Explicit CORS whitelist restricting API access to `localhost:3000` and `https://ecommerce-site-dun-phi.vercel.app`.
+   - 1MB body limit on JSON and URL-encoded payloads to block payload exhaustion attacks.
 
-```
-Browser                    Next.js                    Supabase Auth
-  │                            │                            │
-  │── signInWithPassword ──────────────────────────────────▶│
-  │◀──────────────────── session + user ───────────────────│
-  │                            │                            │
-  │  AuthListener (global)     │                            │
-  │── getSession() ────────────▶                            │
-  │── onAuthStateChange() ─────▶ (live subscription)        │
-  │                            │                            │
-  │  fetchProfile()            │                            │
-  │──── profiles table ────────────────────────────────────▶│
-  │◀─── UserProfile (role) ────────────────────────────────│
-  │                            │                            │
-  │  Zustand (useAuthStore)    │                            │
-  │  user + profile + isLoading│                            │
-```
-
-- Sessions are stored in browser cookies via `@supabase/ssr`
-- `AuthListener` is the single source of truth — mounts in root layout, drives all auth state
-- Admin protection: `AdminGuard` (client-side) reads `profile.role` from Zustand
-- Express API: `requireAuth` middleware verifies JWTs via `supabase.auth.getUser(token)`
+4. **Database Security (RLS)**:
+   - Row-Level Security enabled on all Supabase tables (`profiles`, `products`, `orders`, `order_items`, `store_settings`, `wishlist`).
+   - Express server leverages service role client only within privileged admin/order transactions.
 
 ---
 
 ## Migration Status
 
-| Module | Old location | Express backend | Status |
-|--------|-------------|-----------------|--------|
-| Products (read) | `src/backend/products/products.ts` | `GET /api/products`, `GET /api/products/:id` | ✅ Migrated — frontend uses Express API |
-| Auth middleware | — | `requireAuth`, `requireAdmin` | ✅ Added — ready for protected routes |
-| Orders | `src/backend/orders/orders.ts` | Not started | ⏳ Pending |
-| Payments (Razorpay) | `src/backend/payments/razorpay.ts` | Not started | ⏳ Pending |
-| Product CRUD (admin) | `src/backend/products/products.ts` | Not started | ⏳ Pending |
-| User profile | `src/backend/auth/auth.ts` | Not started | ⏳ Pending |
-| Store settings | `src/backend/services/settings.ts` | Not started | ⏳ Pending |
+| Module | Frontend Integration | Express API Endpoint | Status |
+|---|---|---|---|
+| **Auth & Profiles** | Uses `src/frontend/lib/api/auth.ts` | `/api/auth/me`, `/api/auth/ensure-profile`, `/api/auth/profile` | ✅ **Migrated & Active** |
+| **Store Settings** | Uses `src/frontend/lib/api/settings.ts` | `/api/settings`, `/api/admin/settings` | ✅ **Migrated & Active** |
+| **Products (Public Catalog)** | Uses `src/frontend/lib/api/products.ts` | `/api/products`, `/api/products/:id` | ✅ **Migrated & Active** |
+| **Wishlist** | Direct Supabase Client + RLS | — | ✅ **Active** |
+| **Admin Products CRUD** | Ready for client swap | `/api/admin/products` (GET, POST, PUT, DELETE, PATCH) | 🔄 **API Tested & Ready** |
+| **Orders & Checkout** | Ready for client swap | `/api/orders` (POST, GET, GET /:id) | 🔄 **API Tested & Ready** |
+| **Payments (Razorpay)** | Ready for client swap | `/api/payments/create-order`, `/api/payments/verify` | 🔄 **API Tested & Ready** |
+
+*All legacy unused files (`src/backend/auth/auth.ts`, `src/backend/services/settings.ts`, `src/backend/payments/razorpay.ts`) have been safely audited and removed from the codebase.*
 
 ---
 

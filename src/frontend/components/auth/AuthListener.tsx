@@ -16,10 +16,27 @@ export function AuthListener() {
 
   const syncUserProfile = useCallback(
     async (session: Session) => {
-      const token = session.access_token;
+      let token = session.access_token;
       if (!token) {
         setProfile(null);
         return;
+      }
+
+      // Proactively refresh if session token is expired or close to expiry
+      const now = Math.floor(Date.now() / 1000);
+      if (session.expires_at && session.expires_at <= now + 60) {
+        try {
+          const supabase = createClient();
+          const { data: refreshData, error: refreshErr } = await supabase.auth.refreshSession();
+          if (refreshData?.session?.access_token && !refreshErr) {
+            token = refreshData.session.access_token;
+            if (refreshData.session.user) {
+              setUser(refreshData.session.user);
+            }
+          }
+        } catch (e) {
+          console.warn('Proactive token refresh failed:', e);
+        }
       }
 
       try {
@@ -29,6 +46,30 @@ export function AuthListener() {
         const msg = (err?.message || '').toLowerCase();
         const code = err?.code || '';
         const status = err?.status;
+
+        // If token was rejected as invalid or expired (401), attempt a token refresh and retry
+        if (
+          status === 401 ||
+          code === 'INVALID_TOKEN' ||
+          msg.includes('expired') ||
+          msg.includes('invalid')
+        ) {
+          try {
+            const supabase = createClient();
+            const { data: refreshData, error: refreshErr } = await supabase.auth.refreshSession();
+            if (refreshData?.session?.access_token && !refreshErr) {
+              if (refreshData.session.user) {
+                setUser(refreshData.session.user);
+              }
+              const retryProfile = await fetchMyProfile(refreshData.session.access_token);
+              setProfile(retryProfile);
+              return;
+            }
+          } catch (retryErr) {
+            console.error('Session refresh retry failed after 401:', retryErr);
+          }
+        }
+
         const isNotFound =
           status === 404 ||
           code === 'PROFILE_NOT_FOUND' ||
@@ -65,7 +106,7 @@ export function AuthListener() {
         setProfile(null);
       }
     },
-    [setProfile]
+    [setProfile, setUser]
   );
 
   useEffect(() => {

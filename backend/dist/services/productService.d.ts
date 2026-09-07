@@ -6,4 +6,7 @@ export declare function createProduct(input: CreateProductInput): Promise<Produc
 export declare function updateProduct(id: string, input: UpdateProductInput): Promise<Product>;
 export declare function deleteProduct(id: string): Promise<Product>;
 export declare function toggleProductStatus(id: string, isActive: boolean): Promise<Product>;
+export declare function permanentDeleteProduct(id: string): Promise<{
+    id: string;
+}>;
 //# sourceMappingURL=productService.d.ts.map

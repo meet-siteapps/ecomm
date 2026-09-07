@@ -46,7 +46,21 @@ export async function requireAuth(
     const token = authHeader.slice(7); // strip "Bearer "
 
     const supabase = getSupabaseClient();
-    const { data, error } = await supabase.auth.getUser(token);
+    let { data, error } = await supabase.auth.getUser(token);
+
+    // Fallback to adminClient if anon client failed
+    if ((error || !data.user) && process.env['SUPABASE_SERVICE_ROLE_KEY']) {
+      try {
+        const adminClient = getSupabaseAdminClient();
+        const adminAuthResult = await adminClient.auth.getUser(token);
+        if (adminAuthResult.data?.user && !adminAuthResult.error) {
+          data = adminAuthResult.data;
+          error = null;
+        }
+      } catch {
+        // ignore fallback errors
+      }
+    }
 
     if (error || !data.user) {
       throw new AppError(

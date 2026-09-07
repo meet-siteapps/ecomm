@@ -15,7 +15,7 @@ import {
   ExternalLink,
   Loader2
 } from 'lucide-react';
-import { getOrderDetails } from '@/backend/orders/orders';
+import { fetchOrderById } from '@/frontend/lib/api/orders';
 import { Order } from '@/frontend/types/order';
 
 import { CuteTeddyLogo, HotAirBalloonIllustration } from '@/frontend/components/common/CartoonIllustrations';
@@ -30,10 +30,11 @@ function CheckoutSuccessContent() {
 
   useEffect(() => {
     async function load() {
-      if (orderId || orderNumber) {
+      const targetId = orderId || orderNumber;
+      if (targetId) {
         setIsLoading(true);
         try {
-          const data = await getOrderDetails(orderId || orderNumber);
+          const data = await fetchOrderById(targetId);
           setOrder(data);
         } catch (err) {
           console.error('Failed to load order details:', err);

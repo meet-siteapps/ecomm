@@ -7,6 +7,7 @@ exports.createProduct = createProduct;
 exports.updateProduct = updateProduct;
 exports.deleteProduct = deleteProduct;
 exports.toggleProductStatus = toggleProductStatus;
+exports.permanentDeleteProduct = permanentDeleteProduct;
 const supabase_js_1 = require("./supabase.js");
 const supabaseAdmin_js_1 = require("./supabaseAdmin.js");
 const errorHandler_js_1 = require("../middleware/errorHandler.js");
@@ -130,5 +131,37 @@ async function deleteProduct(id) {
 }
 async function toggleProductStatus(id, isActive) {
     return updateProduct(id, { is_active: isActive });
+}
+async function permanentDeleteProduct(id) {
+    const supabase = (0, supabaseAdmin_js_1.getSupabaseAdminClient)();
+    const { data: product, error: findError } = await supabase
+        .from('products')
+        .select('id')
+        .eq('id', id)
+        .maybeSingle();
+    if (findError) {
+        throw new errorHandler_js_1.AppError(`Failed to fetch product ${id}: ${findError.message}`, 500, 'PRODUCT_FETCH_FAILED');
+    }
+    if (!product) {
+        throw new errorHandler_js_1.AppError(`Product not found: ${id}`, 404, 'PRODUCT_NOT_FOUND');
+    }
+    const { count, error: countError } = await supabase
+        .from('order_items')
+        .select('id', { count: 'exact', head: true })
+        .eq('product_id', id);
+    if (countError) {
+        throw new errorHandler_js_1.AppError(`Failed to check order history for product ${id}: ${countError.message}`, 500, 'ORDER_CHECK_FAILED');
+    }
+    if (count && count > 0) {
+        throw new errorHandler_js_1.AppError('Cannot permanently delete — this product has order history. Deactivate it instead.', 409, 'PRODUCT_HAS_ORDERS');
+    }
+    const { error: deleteError } = await supabase
+        .from('products')
+        .delete()
+        .eq('id', id);
+    if (deleteError) {
+        throw new errorHandler_js_1.AppError(`Failed to permanently delete product ${id}: ${deleteError.message}`, 500, 'PRODUCT_PERMANENT_DELETE_FAILED');
+    }
+    return { id };
 }
 //# sourceMappingURL=productService.js.map

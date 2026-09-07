@@ -7,6 +7,7 @@ exports.createProduct = createProduct;
 exports.updateProduct = updateProduct;
 exports.deleteProduct = deleteProduct;
 exports.toggleStatus = toggleStatus;
+exports.permanentDeleteProduct = permanentDeleteProduct;
 const productService_js_1 = require("../services/productService.js");
 const errorHandler_js_1 = require("../middleware/errorHandler.js");
 async function listProducts(req, res, next) {
@@ -90,6 +91,18 @@ async function toggleStatus(req, res, next) {
         res.status(200).json({
             status: 'ok',
             data: product,
+        });
+    }
+    catch (err) {
+        next(err);
+    }
+}
+async function permanentDeleteProduct(req, res, next) {
+    try {
+        const result = await (0, productService_js_1.permanentDeleteProduct)(req.params.id);
+        res.status(200).json({
+            status: 'ok',
+            data: result,
         });
     }
     catch (err) {

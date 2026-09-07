@@ -12,7 +12,19 @@ async function requireAuth(req, _res, next) {
         }
         const token = authHeader.slice(7);
         const supabase = (0, supabase_js_1.getSupabaseClient)();
-        const { data, error } = await supabase.auth.getUser(token);
+        let { data, error } = await supabase.auth.getUser(token);
+        if ((error || !data.user) && process.env['SUPABASE_SERVICE_ROLE_KEY']) {
+            try {
+                const adminClient = (0, supabaseAdmin_js_1.getSupabaseAdminClient)();
+                const adminAuthResult = await adminClient.auth.getUser(token);
+                if (adminAuthResult.data?.user && !adminAuthResult.error) {
+                    data = adminAuthResult.data;
+                    error = null;
+                }
+            }
+            catch {
+            }
+        }
         if (error || !data.user) {
             throw new errorHandler_js_1.AppError('Invalid or expired access token.', 401, 'INVALID_TOKEN');
         }

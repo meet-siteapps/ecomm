@@ -25,7 +25,7 @@ import {
 } from 'lucide-react';
 import { useCartStore } from '@/frontend/store/useCartStore';
 import { useAuthStore } from '@/frontend/store/useAuthStore';
-import { validateStockAndCreatePendingOrder } from '@/backend/orders/orders';
+import { createOrder } from '@/frontend/lib/api/orders';
 
 const emptySubscribe = () => () => {};
 
@@ -176,33 +176,30 @@ export default function CheckoutPage() {
     setLoading(true);
 
     try {
-      // 1. Create Pending Order in Supabase
-      const result = await validateStockAndCreatePendingOrder(
-        items,
-        {
+      // 1. Create Pending Order in Express Backend
+      const order = await createOrder({
+        items: items.map((item) => ({
+          productId: item.product.id,
+          quantity: item.quantity,
+          selectedSize: item.selectedSize,
+          selectedColor: item.selectedColor,
+        })),
+        shippingAddress: {
           fullName: name.trim(),
           phone: phone.trim(),
           email: email.trim(),
           addressLine1: addressLine1.trim(),
-          addressLine2: addressLine2.trim(),
+          addressLine2: addressLine2.trim() || undefined,
           city: city.trim(),
           state: state.trim(),
           pincode: pincode.trim(),
-          landmark: landmark.trim(),
+          landmark: landmark.trim() || undefined,
         },
         paymentMethod,
-        user?.id,
-        email.trim()
-      );
-
-      if (!result.success) {
-        setErrorMessage(result.error || 'Failed to place order.');
-        setLoading(false);
-        return;
-      }
+      });
 
       // Order created successfully
-      setCreatedOrderNumber(result.orderNumber || result.orderId || '');
+      setCreatedOrderNumber(order.order_number || order.id || '');
       setIsSuccess(true);
       clearCart();
     } catch (err: any) {

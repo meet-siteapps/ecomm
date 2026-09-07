@@ -6,6 +6,9 @@ exports.getOrderById = getOrderById;
 exports.attachRazorpayOrderId = attachRazorpayOrderId;
 exports.confirmPayment = confirmPayment;
 exports.markPaymentFailed = markPaymentFailed;
+exports.getAllOrdersAdmin = getAllOrdersAdmin;
+exports.updateOrderStatusAdmin = updateOrderStatusAdmin;
+exports.getDashboardStats = getDashboardStats;
 const supabaseAdmin_js_1 = require("./supabaseAdmin.js");
 const errorHandler_js_1 = require("../middleware/errorHandler.js");
 function mapDbOrderToOrder(dbOrder) {
@@ -271,6 +274,102 @@ async function markPaymentFailed(orderId, userId) {
         .eq('user_id', userId);
     if (error) {
         console.error(`[orderService] Failed to mark payment as failed for order ${orderId}:`, error.message);
+    }
+}
+async function getAllOrdersAdmin() {
+    const supabaseAdmin = (0, supabaseAdmin_js_1.getSupabaseAdminClient)();
+    const { data, error } = await supabaseAdmin
+        .from('orders')
+        .select('*, order_items (*)')
+        .order('created_at', { ascending: false });
+    if (error) {
+        throw new errorHandler_js_1.AppError(`Failed to retrieve admin orders: ${error.message}`, 500, 'DATABASE_ERROR');
+    }
+    const rows = (data ?? []);
+    return rows.map(mapDbOrderToOrder);
+}
+async function updateOrderStatusAdmin(orderId, orderStatus, paymentStatus) {
+    const supabaseAdmin = (0, supabaseAdmin_js_1.getSupabaseAdminClient)();
+    const updates = {
+        updated_at: new Date().toISOString(),
+    };
+    if (orderStatus) {
+        updates['order_status'] = orderStatus;
+    }
+    if (paymentStatus) {
+        updates['payment_status'] = paymentStatus;
+    }
+    const { data, error } = await supabaseAdmin
+        .from('orders')
+        .update(updates)
+        .eq('id', orderId)
+        .select('*, order_items (*)')
+        .maybeSingle();
+    if (error) {
+        throw new errorHandler_js_1.AppError(`Failed to update order status: ${error.message}`, 500, 'DATABASE_ERROR');
+    }
+    if (!data) {
+        throw new errorHandler_js_1.AppError(`Order not found: ${orderId}`, 404, 'ORDER_NOT_FOUND');
+    }
+    return mapDbOrderToOrder(data);
+}
+async function getDashboardStats() {
+    const supabaseAdmin = (0, supabaseAdmin_js_1.getSupabaseAdminClient)();
+    try {
+        const { count: totalProducts } = await supabaseAdmin
+            .from('products')
+            .select('*', { count: 'exact', head: true });
+        const { count: activeProducts } = await supabaseAdmin
+            .from('products')
+            .select('*', { count: 'exact', head: true })
+            .eq('is_active', true);
+        const { count: lowStockProducts } = await supabaseAdmin
+            .from('products')
+            .select('*', { count: 'exact', head: true })
+            .lte('stock', 5);
+        const { count: totalCustomers } = await supabaseAdmin
+            .from('profiles')
+            .select('*', { count: 'exact', head: true });
+        const { count: totalOrders } = await supabaseAdmin
+            .from('orders')
+            .select('*', { count: 'exact', head: true });
+        const { count: pendingOrders } = await supabaseAdmin
+            .from('orders')
+            .select('*', { count: 'exact', head: true })
+            .eq('order_status', 'pending');
+        const { data: recentOrdersData } = await supabaseAdmin
+            .from('orders')
+            .select('id, order_number, customer_name, total, order_status, created_at')
+            .order('created_at', { ascending: false })
+            .limit(5);
+        return {
+            totalProducts: totalProducts ?? 0,
+            activeProducts: activeProducts ?? 0,
+            lowStockProducts: lowStockProducts ?? 0,
+            totalCustomers: totalCustomers ?? 0,
+            totalOrders: totalOrders ?? 0,
+            pendingOrders: pendingOrders ?? 0,
+            recentOrders: (recentOrdersData || []).map((o) => ({
+                id: o.id,
+                order_number: o.order_number,
+                customer_name: o.customer_name,
+                amount: Number(o.total),
+                status: o.order_status,
+                date: o.created_at
+                    ? new Date(o.created_at).toLocaleDateString('en-IN', {
+                        day: 'numeric',
+                        month: 'short',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                    })
+                    : 'Recently',
+            })),
+        };
+    }
+    catch (err) {
+        if (err instanceof errorHandler_js_1.AppError)
+            throw err;
+        throw new errorHandler_js_1.AppError(`Failed to compute dashboard stats: ${err?.message || 'Unknown error'}`, 500, 'DATABASE_ERROR');
     }
 }
 //# sourceMappingURL=orderService.js.map

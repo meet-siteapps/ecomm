@@ -6,6 +6,7 @@ import {
   createProduct as createProductService,
   updateProduct as updateProductService,
   deleteProduct as deleteProductService,
+  permanentDeleteProduct as permanentDeleteProductService,
   toggleProductStatus as toggleProductStatusService,
 } from '../services/productService.js';
 import {
@@ -167,4 +168,25 @@ export async function toggleStatus(
     next(err);
   }
 }
+
+/**
+ * DELETE /api/admin/products/:id/permanent
+ * Hard delete a product (only allowed if 0 order history).
+ */
+export async function permanentDeleteProduct(
+  req: Request<ProductIdParamInput>,
+  res: Response<ApiSuccess<{ id: string }>>,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    const result = await permanentDeleteProductService(req.params.id);
+    res.status(200).json({
+      status: 'ok',
+      data: result,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 

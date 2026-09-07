@@ -250,3 +250,76 @@ export async function toggleProductStatus(
   return updateProduct(id, { is_active: isActive });
 }
 
+/**
+ * Permanently delete a product by UUID (hard delete).
+ * Only allowed when the product has zero order history in order_items table.
+ *
+ * @param id The product UUID
+ * @returns Object confirming deletion { id }
+ */
+export async function permanentDeleteProduct(id: string): Promise<{ id: string }> {
+  const supabase = getSupabaseAdminClient();
+
+  // 1. Verify the product exists
+  const { data: product, error: findError } = await supabase
+    .from('products')
+    .select('id')
+    .eq('id', id)
+    .maybeSingle();
+
+  if (findError) {
+    throw new AppError(
+      `Failed to fetch product ${id}: ${findError.message}`,
+      500,
+      'PRODUCT_FETCH_FAILED',
+    );
+  }
+
+  if (!product) {
+    throw new AppError(
+      `Product not found: ${id}`,
+      404,
+      'PRODUCT_NOT_FOUND',
+    );
+  }
+
+  // 2. Check order_items table for any row with this product_id
+  const { count, error: countError } = await supabase
+    .from('order_items')
+    .select('id', { count: 'exact', head: true })
+    .eq('product_id', id);
+
+  if (countError) {
+    throw new AppError(
+      `Failed to check order history for product ${id}: ${countError.message}`,
+      500,
+      'ORDER_CHECK_FAILED',
+    );
+  }
+
+  if (count && count > 0) {
+    throw new AppError(
+      'Cannot permanently delete — this product has order history. Deactivate it instead.',
+      409,
+      'PRODUCT_HAS_ORDERS',
+    );
+  }
+
+  // 3. Real DELETE FROM products WHERE id = :id
+  const { error: deleteError } = await supabase
+    .from('products')
+    .delete()
+    .eq('id', id);
+
+  if (deleteError) {
+    throw new AppError(
+      `Failed to permanently delete product ${id}: ${deleteError.message}`,
+      500,
+      'PRODUCT_PERMANENT_DELETE_FAILED',
+    );
+  }
+
+  return { id };
+}
+
+

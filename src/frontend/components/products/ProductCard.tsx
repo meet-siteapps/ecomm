@@ -9,7 +9,7 @@ import { Product } from '@/frontend/types/product';
 import { useCartStore } from '@/frontend/store/useCartStore';
 import { useAuthStore } from '@/frontend/store/useAuthStore';
 import { useWishlistStore } from '@/frontend/store/useWishlistStore';
-import { toggleProductStatus } from '@/backend/products/products';
+import { toggleProductStatus } from '@/frontend/lib/api/products';
 
 interface ProductCardProps {
   product: Product;

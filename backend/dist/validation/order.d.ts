@@ -26,8 +26,8 @@ export declare const shippingAddressSchema: z.ZodObject<{
     pincode: z.ZodString;
     landmark: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    phone: string;
     fullName: string;
+    phone: string;
     addressLine1: string;
     city: string;
     state: string;
@@ -36,8 +36,8 @@ export declare const shippingAddressSchema: z.ZodObject<{
     addressLine2?: string | undefined;
     landmark?: string | undefined;
 }, {
-    phone: string;
     fullName: string;
+    phone: string;
     addressLine1: string;
     city: string;
     state: string;
@@ -74,8 +74,8 @@ export declare const createOrderSchema: z.ZodObject<{
         pincode: z.ZodString;
         landmark: z.ZodOptional<z.ZodString>;
     }, "strip", z.ZodTypeAny, {
-        phone: string;
         fullName: string;
+        phone: string;
         addressLine1: string;
         city: string;
         state: string;
@@ -84,8 +84,8 @@ export declare const createOrderSchema: z.ZodObject<{
         addressLine2?: string | undefined;
         landmark?: string | undefined;
     }, {
-        phone: string;
         fullName: string;
+        phone: string;
         addressLine1: string;
         city: string;
         state: string;
@@ -103,8 +103,8 @@ export declare const createOrderSchema: z.ZodObject<{
         selectedColor?: string | undefined;
     }[];
     shippingAddress: {
-        phone: string;
         fullName: string;
+        phone: string;
         addressLine1: string;
         city: string;
         state: string;
@@ -122,8 +122,8 @@ export declare const createOrderSchema: z.ZodObject<{
         selectedColor?: string | undefined;
     }[];
     shippingAddress: {
-        phone: string;
         fullName: string;
+        phone: string;
         addressLine1: string;
         city: string;
         state: string;
@@ -143,4 +143,26 @@ export declare const orderIdParamSchema: z.ZodObject<{
     id: string;
 }>;
 export type OrderIdParamInput = z.infer<typeof orderIdParamSchema>;
+export declare const updateOrderStatusSchema: z.ZodEffects<z.ZodObject<{
+    order_status: z.ZodOptional<z.ZodEnum<["pending", "confirmed", "processing", "shipped", "delivered", "cancelled"]>>;
+    status: z.ZodOptional<z.ZodEnum<["pending", "confirmed", "processing", "shipped", "delivered", "cancelled"]>>;
+    payment_status: z.ZodOptional<z.ZodEnum<["pending", "paid", "failed", "refunded", "unpaid"]>>;
+}, "strip", z.ZodTypeAny, {
+    status?: "pending" | "confirmed" | "processing" | "shipped" | "delivered" | "cancelled" | undefined;
+    payment_status?: "unpaid" | "pending" | "paid" | "failed" | "refunded" | undefined;
+    order_status?: "pending" | "confirmed" | "processing" | "shipped" | "delivered" | "cancelled" | undefined;
+}, {
+    status?: "pending" | "confirmed" | "processing" | "shipped" | "delivered" | "cancelled" | undefined;
+    payment_status?: "unpaid" | "pending" | "paid" | "failed" | "refunded" | undefined;
+    order_status?: "pending" | "confirmed" | "processing" | "shipped" | "delivered" | "cancelled" | undefined;
+}>, {
+    status?: "pending" | "confirmed" | "processing" | "shipped" | "delivered" | "cancelled" | undefined;
+    payment_status?: "unpaid" | "pending" | "paid" | "failed" | "refunded" | undefined;
+    order_status?: "pending" | "confirmed" | "processing" | "shipped" | "delivered" | "cancelled" | undefined;
+}, {
+    status?: "pending" | "confirmed" | "processing" | "shipped" | "delivered" | "cancelled" | undefined;
+    payment_status?: "unpaid" | "pending" | "paid" | "failed" | "refunded" | undefined;
+    order_status?: "pending" | "confirmed" | "processing" | "shipped" | "delivered" | "cancelled" | undefined;
+}>;
+export type UpdateOrderStatusSchema = z.infer<typeof updateOrderStatusSchema>;
 //# sourceMappingURL=order.d.ts.map

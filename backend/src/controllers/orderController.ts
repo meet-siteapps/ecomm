@@ -124,3 +124,84 @@ export async function getOrder(
     next(err);
   }
 }
+
+/**
+ * GET /api/admin/orders
+ *
+ * Fetches all orders with item details for admin dashboard/order management.
+ */
+export async function listAllOrdersAdmin(
+  _req: AuthenticatedRequest,
+  res: Response<ApiSuccess<Order[]>>,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    const { getAllOrdersAdmin: getAllOrdersAdminService } = await import('../services/orderService.js');
+    const orders = await getAllOrdersAdminService();
+
+    res.status(200).json({
+      status: 'ok',
+      data: orders,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * PATCH /api/admin/orders/:id/status
+ *
+ * Updates an order's status and/or payment status (Admin action).
+ */
+export async function updateOrderStatusAdmin(
+  req: AuthenticatedRequest & { params: OrderIdParamInput },
+  res: Response<ApiSuccess<Order>>,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    const orderId = req.params.id;
+    const body = req.body as {
+      order_status?: Order['order_status'];
+      status?: Order['order_status'];
+      payment_status?: Order['payment_status'];
+    };
+
+    const targetOrderStatus = body.order_status || body.status;
+    const { updateOrderStatusAdmin: updateOrderStatusAdminService } = await import('../services/orderService.js');
+    const updated = await updateOrderStatusAdminService(
+      orderId,
+      targetOrderStatus,
+      body.payment_status,
+    );
+
+    res.status(200).json({
+      status: 'ok',
+      data: updated,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * GET /api/admin/dashboard-stats
+ *
+ * Computes and returns aggregated store metrics for the admin dashboard.
+ */
+export async function getDashboardStats(
+  _req: AuthenticatedRequest,
+  res: Response<ApiSuccess<import('../types/order.js').AdminDashboardStats>>,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    const { getDashboardStats: getDashboardStatsService } = await import('../services/orderService.js');
+    const stats = await getDashboardStatsService();
+
+    res.status(200).json({
+      status: 'ok',
+      data: stats,
+    });
+  } catch (err) {
+    next(err);
+  }
+}

@@ -64,4 +64,26 @@ export interface Order {
     updated_at?: string;
     items?: OrderItem[];
 }
+export interface UpdateOrderStatusInput {
+    order_status?: OrderStatus;
+    status?: OrderStatus;
+    payment_status?: PaymentStatus;
+}
+export interface AdminDashboardRecentOrder {
+    id: string;
+    order_number?: string;
+    customer_name: string;
+    amount: number;
+    status: string;
+    date: string;
+}
+export interface AdminDashboardStats {
+    totalProducts: number;
+    activeProducts: number;
+    lowStockProducts: number;
+    totalCustomers: number;
+    totalOrders: number;
+    pendingOrders: number;
+    recentOrders: AdminDashboardRecentOrder[];
+}
 //# sourceMappingURL=order.d.ts.map

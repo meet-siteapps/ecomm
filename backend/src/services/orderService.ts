@@ -525,3 +525,146 @@ export async function markPaymentFailed(
   }
 }
 
+/**
+ * Retrieves all orders with full line items for administrator review (newest first).
+ */
+export async function getAllOrdersAdmin(): Promise<Order[]> {
+  const supabaseAdmin = getSupabaseAdminClient();
+
+  const { data, error } = await supabaseAdmin
+    .from('orders')
+    .select('*, order_items (*)')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    throw new AppError(
+      `Failed to retrieve admin orders: ${error.message}`,
+      500,
+      'DATABASE_ERROR',
+    );
+  }
+
+  const rows = (data ?? []) as DbOrderRow[];
+  return rows.map(mapDbOrderToOrder);
+}
+
+/**
+ * Updates an order's status and/or payment status (Admin action).
+ */
+export async function updateOrderStatusAdmin(
+  orderId: string,
+  orderStatus?: Order['order_status'],
+  paymentStatus?: Order['payment_status'],
+): Promise<Order> {
+  const supabaseAdmin = getSupabaseAdminClient();
+
+  const updates: Record<string, unknown> = {
+    updated_at: new Date().toISOString(),
+  };
+
+  if (orderStatus) {
+    updates['order_status'] = orderStatus;
+  }
+  if (paymentStatus) {
+    updates['payment_status'] = paymentStatus;
+  }
+
+  const { data, error } = await supabaseAdmin
+    .from('orders')
+    .update(updates)
+    .eq('id', orderId)
+    .select('*, order_items (*)')
+    .maybeSingle();
+
+  if (error) {
+    throw new AppError(
+      `Failed to update order status: ${error.message}`,
+      500,
+      'DATABASE_ERROR',
+    );
+  }
+
+  if (!data) {
+    throw new AppError(`Order not found: ${orderId}`, 404, 'ORDER_NOT_FOUND');
+  }
+
+  return mapDbOrderToOrder(data as DbOrderRow);
+}
+
+/**
+ * Calculates admin dashboard metrics (products count, active count, low stock, customer count, order totals, and recent 5 orders).
+ */
+export async function getDashboardStats(): Promise<import('../types/order.js').AdminDashboardStats> {
+  const supabaseAdmin = getSupabaseAdminClient();
+
+  try {
+    // 1. Total products & active products & low stock
+    const { count: totalProducts } = await supabaseAdmin
+      .from('products')
+      .select('*', { count: 'exact', head: true });
+
+    const { count: activeProducts } = await supabaseAdmin
+      .from('products')
+      .select('*', { count: 'exact', head: true })
+      .eq('is_active', true);
+
+    const { count: lowStockProducts } = await supabaseAdmin
+      .from('products')
+      .select('*', { count: 'exact', head: true })
+      .lte('stock', 5);
+
+    // 2. Total customers from profiles
+    const { count: totalCustomers } = await supabaseAdmin
+      .from('profiles')
+      .select('*', { count: 'exact', head: true });
+
+    // 3. Orders stats from orders table
+    const { count: totalOrders } = await supabaseAdmin
+      .from('orders')
+      .select('*', { count: 'exact', head: true });
+
+    const { count: pendingOrders } = await supabaseAdmin
+      .from('orders')
+      .select('*', { count: 'exact', head: true })
+      .eq('order_status', 'pending');
+
+    // 4. Recent orders list
+    const { data: recentOrdersData } = await supabaseAdmin
+      .from('orders')
+      .select('id, order_number, customer_name, total, order_status, created_at')
+      .order('created_at', { ascending: false })
+      .limit(5);
+
+    return {
+      totalProducts: totalProducts ?? 0,
+      activeProducts: activeProducts ?? 0,
+      lowStockProducts: lowStockProducts ?? 0,
+      totalCustomers: totalCustomers ?? 0,
+      totalOrders: totalOrders ?? 0,
+      pendingOrders: pendingOrders ?? 0,
+      recentOrders: (recentOrdersData || []).map((o) => ({
+        id: o.id,
+        order_number: o.order_number,
+        customer_name: o.customer_name,
+        amount: Number(o.total),
+        status: o.order_status,
+        date: o.created_at
+          ? new Date(o.created_at).toLocaleDateString('en-IN', {
+              day: 'numeric',
+              month: 'short',
+              hour: '2-digit',
+              minute: '2-digit',
+            })
+          : 'Recently',
+      })),
+    };
+  } catch (err: any) {
+    if (err instanceof AppError) throw err;
+    throw new AppError(
+      `Failed to compute dashboard stats: ${err?.message || 'Unknown error'}`,
+      500,
+      'DATABASE_ERROR',
+    );
+  }
+}
+

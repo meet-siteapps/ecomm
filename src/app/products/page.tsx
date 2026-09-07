@@ -3,8 +3,6 @@
 import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { ProductCard } from '@/frontend/components/products/ProductCard';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { getProducts } from '@/backend/products/products'; // kept as fallback — do not delete
 import { fetchProducts } from '@/frontend/lib/api/products';
 import { Product } from '@/frontend/types/product';
 import { SAMPLE_CATEGORIES } from '@/frontend/lib/constants';

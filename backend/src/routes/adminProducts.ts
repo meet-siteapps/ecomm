@@ -4,6 +4,7 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
+  permanentDeleteProduct,
   toggleStatus,
 } from '../controllers/productController.js';
 import { requireAuth } from '../middleware/requireAuth.js';
@@ -64,6 +65,18 @@ router.delete(
   writeLimiter,
   validate(productIdParamSchema, 'params'),
   deleteProduct,
+);
+
+/**
+ * @route   DELETE /api/admin/products/:id/permanent
+ * @desc    Permanently delete a product by UUID (hard delete, allowed only if 0 order history)
+ * @access  Private (Admin)
+ */
+router.delete(
+  '/:id/permanent',
+  writeLimiter,
+  validate(productIdParamSchema, 'params'),
+  permanentDeleteProduct,
 );
 
 /**

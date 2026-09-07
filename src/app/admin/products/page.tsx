@@ -9,6 +9,7 @@ import {
   Search,
   Edit,
   Trash2,
+  XOctagon,
   Eye,
   EyeOff,
   Package,
@@ -25,8 +26,9 @@ import {
   getAllProductsAdmin,
   toggleProductStatus,
   deleteProduct,
-  updateProduct
-} from '@/backend/products/products';
+  permanentDeleteProduct,
+  updateProduct,
+} from '@/frontend/lib/api/products';
 import { ProductFormModal } from '@/frontend/components/admin/ProductFormModal';
 import { SAMPLE_CATEGORIES } from '@/frontend/lib/constants';
 
@@ -48,6 +50,7 @@ function AdminProductsContent() {
   // Quick Inline edits
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [permDeletingId, setPermDeletingId] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   const loadProducts = async () => {
@@ -99,9 +102,9 @@ function AdminProductsContent() {
     }
   };
 
-  // Delete product
+  // Soft delete product (sets is_active = false)
   const handleDeleteProduct = async (id: string, name: string) => {
-    if (!confirm(`Are you sure you want to delete "${name}"? This action cannot be undone.`)) {
+    if (!confirm(`Are you sure you want to deactivate "${name}"?`)) {
       return;
     }
     setDeletingId(id);
@@ -113,6 +116,27 @@ function AdminProductsContent() {
       showFeedback('error', err.message || 'Failed to delete product.');
     } finally {
       setDeletingId(null);
+    }
+  };
+
+  // Permanently delete product (hard delete, allowed only when zero order history)
+  const handlePermanentDeleteProduct = async (id: string, name: string) => {
+    if (
+      !confirm(
+        'This will permanently erase this product and cannot be undone. Are you sure?'
+      )
+    ) {
+      return;
+    }
+    setPermDeletingId(id);
+    try {
+      await permanentDeleteProduct(id);
+      setProducts((prev) => prev.filter((p) => p.id !== id));
+      showFeedback('success', `Product "${name}" was permanently deleted.`);
+    } catch (err: any) {
+      showFeedback('error', err.message || 'Failed to permanently delete product.');
+    } finally {
+      setPermDeletingId(null);
     }
   };
 
@@ -425,15 +449,30 @@ function AdminProductsContent() {
                             <Edit className="w-4 h-4" />
                           </button>
 
-                          {/* Delete */}
+                          {/* Soft Delete */}
                           <button
                             type="button"
                             onClick={() => handleDeleteProduct(product.id, product.name)}
-                            disabled={deletingId === product.id}
+                            disabled={deletingId === product.id || permDeletingId === product.id}
                             className="p-2 rounded-xl text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-40"
-                            title="Delete Product"
+                            title="Deactivate Product (Soft Delete)"
                           >
                             <Trash2 className="w-4 h-4" />
+                          </button>
+
+                          {/* Permanently Delete */}
+                          <button
+                            type="button"
+                            onClick={() => handlePermanentDeleteProduct(product.id, product.name)}
+                            disabled={permDeletingId === product.id || deletingId === product.id}
+                            className="p-2 rounded-xl text-gray-400 hover:text-rose-700 hover:bg-rose-50 transition-colors disabled:opacity-40"
+                            title="Permanently Delete (Hard delete if 0 orders)"
+                          >
+                            {permDeletingId === product.id ? (
+                              <Loader2 className="w-4 h-4 animate-spin text-rose-600" />
+                            ) : (
+                              <XOctagon className="w-4 h-4" />
+                            )}
                           </button>
                         </div>
                       </td>

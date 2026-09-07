@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.orderIdParamSchema = exports.createOrderSchema = exports.shippingAddressSchema = exports.orderItemInputSchema = void 0;
+exports.updateOrderStatusSchema = exports.orderIdParamSchema = exports.createOrderSchema = exports.shippingAddressSchema = exports.orderItemInputSchema = void 0;
 const zod_1 = require("zod");
 exports.orderItemInputSchema = zod_1.z.object({
     productId: zod_1.z.string().uuid({ message: 'productId must be a valid UUID' }),
@@ -74,5 +74,28 @@ exports.createOrderSchema = zod_1.z.object({
 });
 exports.orderIdParamSchema = zod_1.z.object({
     id: zod_1.z.string().uuid({ message: 'Order id must be a valid UUID' }),
+});
+exports.updateOrderStatusSchema = zod_1.z
+    .object({
+    order_status: zod_1.z
+        .enum(['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'], {
+        errorMap: () => ({ message: 'Invalid order status' }),
+    })
+        .optional(),
+    status: zod_1.z
+        .enum(['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'], {
+        errorMap: () => ({ message: 'Invalid order status' }),
+    })
+        .optional(),
+    payment_status: zod_1.z
+        .enum(['pending', 'paid', 'failed', 'refunded', 'unpaid'], {
+        errorMap: () => ({ message: 'Invalid payment status' }),
+    })
+        .optional(),
+})
+    .refine((data) => data.order_status !== undefined ||
+    data.status !== undefined ||
+    data.payment_status !== undefined, {
+    message: 'At least one of order_status, status, or payment_status must be provided',
 });
 //# sourceMappingURL=order.js.map

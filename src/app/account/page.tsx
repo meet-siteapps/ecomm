@@ -22,7 +22,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { useAuthStore } from '@/frontend/store/useAuthStore';
-import { getUserOrders } from '@/backend/orders/orders';
+import { fetchUserOrders } from '@/frontend/lib/api/orders';
 import { Order, OrderStatus } from '@/frontend/types/order';
 
 const STATUS_BADGES: Record<OrderStatus, { label: string; bg: string; text: string; border: string }> = {
@@ -55,7 +55,7 @@ export default function AccountPage() {
       if (user?.id) {
         setLoadingOrders(true);
         try {
-          const userOrders = await getUserOrders(user.id);
+          const userOrders = await fetchUserOrders();
           setOrders(userOrders);
         } catch (err) {
           console.error('Failed to load user orders:', err);

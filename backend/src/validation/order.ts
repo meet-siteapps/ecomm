@@ -95,3 +95,36 @@ export const orderIdParamSchema = z.object({
 });
 
 export type OrderIdParamInput = z.infer<typeof orderIdParamSchema>;
+
+/**
+ * Validates the body for PATCH /api/admin/orders/:id/status.
+ */
+export const updateOrderStatusSchema = z
+  .object({
+    order_status: z
+      .enum(['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'], {
+        errorMap: () => ({ message: 'Invalid order status' }),
+      })
+      .optional(),
+    status: z
+      .enum(['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'], {
+        errorMap: () => ({ message: 'Invalid order status' }),
+      })
+      .optional(),
+    payment_status: z
+      .enum(['pending', 'paid', 'failed', 'refunded', 'unpaid'], {
+        errorMap: () => ({ message: 'Invalid payment status' }),
+      })
+      .optional(),
+  })
+  .refine(
+    (data) =>
+      data.order_status !== undefined ||
+      data.status !== undefined ||
+      data.payment_status !== undefined,
+    {
+      message: 'At least one of order_status, status, or payment_status must be provided',
+    },
+  );
+
+export type UpdateOrderStatusSchema = z.infer<typeof updateOrderStatusSchema>;
