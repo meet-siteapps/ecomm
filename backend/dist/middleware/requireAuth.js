@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.requireAuth = requireAuth;
 const supabase_js_1 = require("../services/supabase.js");
+const supabaseAdmin_js_1 = require("../services/supabaseAdmin.js");
 const errorHandler_js_1 = require("./errorHandler.js");
 async function requireAuth(req, _res, next) {
     try {
@@ -17,15 +18,24 @@ async function requireAuth(req, _res, next) {
         }
         const supabaseUser = data.user;
         let role = 'customer';
-        const { data: profile } = await supabase
-            .from('profiles')
-            .select('role')
-            .eq('id', supabaseUser.id)
-            .maybeSingle();
-        if (profile?.role === 'admin' || profile?.role === 'customer') {
-            role = profile.role;
+        try {
+            const adminClient = (0, supabaseAdmin_js_1.getSupabaseAdminClient)();
+            const { data: profile } = await adminClient
+                .from('profiles')
+                .select('role')
+                .eq('id', supabaseUser.id)
+                .maybeSingle();
+            if (profile?.role === 'admin' || profile?.role === 'customer') {
+                role = profile.role;
+            }
+            else {
+                const metaRole = supabaseUser.user_metadata?.['role'];
+                if (metaRole === 'admin' || metaRole === 'customer') {
+                    role = metaRole;
+                }
+            }
         }
-        else {
+        catch {
             const metaRole = supabaseUser.user_metadata?.['role'];
             if (metaRole === 'admin' || metaRole === 'customer') {
                 role = metaRole;

@@ -19,7 +19,8 @@ import {
   Banknote
 } from 'lucide-react';
 import { StoreSettings, DEFAULT_STORE_SETTINGS } from '@/frontend/types/settings';
-import { getStoreSettings, updateStoreSettings } from '@/backend/services/settings';
+import { fetchStoreSettings, updateStoreSettings } from '@/frontend/lib/api/settings';
+import { createClient } from '@/frontend/lib/supabase/client';
 
 export default function AdminSettingsPage() {
   const [settings, setSettings] = useState<StoreSettings>(DEFAULT_STORE_SETTINGS);
@@ -30,7 +31,7 @@ export default function AdminSettingsPage() {
   const loadSettings = async () => {
     setIsLoading(true);
     try {
-      const data = await getStoreSettings();
+      const data = await fetchStoreSettings();
       setSettings(data);
     } catch (err) {
       console.error('Failed to load store settings:', err);
@@ -49,7 +50,16 @@ export default function AdminSettingsPage() {
     setFeedback(null);
 
     try {
-      const updated = await updateStoreSettings({
+      const supabase = createClient();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session?.access_token) {
+        throw new Error('You must be signed in as an administrator to update settings.');
+      }
+
+      const updated = await updateStoreSettings(session.access_token, {
         store_name: settings.store_name.trim(),
         tagline: settings.tagline?.trim(),
         contact_email: settings.contact_email.trim(),
@@ -63,7 +73,7 @@ export default function AdminSettingsPage() {
       });
 
       setSettings(updated);
-      setFeedback({ type: 'success', message: 'Store settings saved successfully to Supabase!' });
+      setFeedback({ type: 'success', message: 'Store settings saved successfully!' });
       setTimeout(() => setFeedback(null), 4000);
     } catch (err: any) {
       setFeedback({ type: 'error', message: err.message || 'Failed to save settings.' });

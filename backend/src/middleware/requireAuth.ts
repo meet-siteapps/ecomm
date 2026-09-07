@@ -1,5 +1,6 @@
 import { Response, NextFunction } from 'express';
 import { getSupabaseClient } from '../services/supabase.js';
+import { getSupabaseAdminClient } from '../services/supabaseAdmin.js';
 import { AppError } from './errorHandler.js';
 import { AuthenticatedRequest } from '../types/index.js';
 
@@ -60,15 +61,23 @@ export async function requireAuth(
     // ── Resolve role from profiles table, fall back to metadata ───────────
     let role: 'customer' | 'admin' = 'customer';
 
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', supabaseUser.id)
-      .maybeSingle();
+    try {
+      const adminClient = getSupabaseAdminClient();
+      const { data: profile } = await adminClient
+        .from('profiles')
+        .select('role')
+        .eq('id', supabaseUser.id)
+        .maybeSingle();
 
-    if (profile?.role === 'admin' || profile?.role === 'customer') {
-      role = profile.role;
-    } else {
+      if (profile?.role === 'admin' || profile?.role === 'customer') {
+        role = profile.role;
+      } else {
+        const metaRole = supabaseUser.user_metadata?.['role'];
+        if (metaRole === 'admin' || metaRole === 'customer') {
+          role = metaRole;
+        }
+      }
+    } catch {
       const metaRole = supabaseUser.user_metadata?.['role'];
       if (metaRole === 'admin' || metaRole === 'customer') {
         role = metaRole;
