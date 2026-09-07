@@ -26,8 +26,8 @@ export declare const shippingAddressSchema: z.ZodObject<{
     pincode: z.ZodString;
     landmark: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    fullName: string;
     phone: string;
+    fullName: string;
     addressLine1: string;
     city: string;
     state: string;
@@ -36,8 +36,8 @@ export declare const shippingAddressSchema: z.ZodObject<{
     addressLine2?: string | undefined;
     landmark?: string | undefined;
 }, {
-    fullName: string;
     phone: string;
+    fullName: string;
     addressLine1: string;
     city: string;
     state: string;
@@ -74,8 +74,8 @@ export declare const createOrderSchema: z.ZodObject<{
         pincode: z.ZodString;
         landmark: z.ZodOptional<z.ZodString>;
     }, "strip", z.ZodTypeAny, {
-        fullName: string;
         phone: string;
+        fullName: string;
         addressLine1: string;
         city: string;
         state: string;
@@ -84,8 +84,8 @@ export declare const createOrderSchema: z.ZodObject<{
         addressLine2?: string | undefined;
         landmark?: string | undefined;
     }, {
-        fullName: string;
         phone: string;
+        fullName: string;
         addressLine1: string;
         city: string;
         state: string;
@@ -103,8 +103,8 @@ export declare const createOrderSchema: z.ZodObject<{
         selectedColor?: string | undefined;
     }[];
     shippingAddress: {
-        fullName: string;
         phone: string;
+        fullName: string;
         addressLine1: string;
         city: string;
         state: string;
@@ -122,8 +122,8 @@ export declare const createOrderSchema: z.ZodObject<{
         selectedColor?: string | undefined;
     }[];
     shippingAddress: {
-        fullName: string;
         phone: string;
+        fullName: string;
         addressLine1: string;
         city: string;
         state: string;
