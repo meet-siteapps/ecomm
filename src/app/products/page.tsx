@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, Suspense } from 'react';
+import { createPortal } from 'react-dom';
 import { useSearchParams } from 'next/navigation';
 import { ProductCard } from '@/components/products/ProductCard';
 import { fetchProducts } from '@/lib/api/products';
@@ -31,6 +32,11 @@ function ProductsContent() {
   const [sortBy, setSortBy] = useState('popular');
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (searchParams.get('search')) {
@@ -364,23 +370,23 @@ function ProductsContent() {
       </div>
       </div>
 
-      {/* Mobile Filters Full-Screen Overlay / Drawer */}
-      {isMobileFilterOpen && (
+      {/* Mobile Filters Full-Screen Overlay / Drawer - Portalled directly to document.body */}
+      {mounted && isMobileFilterOpen && createPortal(
         <div
-          className="fixed inset-0 z-50 lg:hidden flex justify-end"
+          className="fixed inset-0 z-[9999] lg:hidden flex justify-end"
           role="dialog"
           aria-modal="true"
           aria-label="Filter Products"
         >
           {/* Solid Darkened Backdrop */}
           <div
-            className="fixed inset-0 bg-[#193653]/60 backdrop-blur-sm transition-opacity duration-300"
+            className="fixed inset-0 bg-[#193653]/60 backdrop-blur-xs transition-opacity duration-300"
             onClick={() => setIsMobileFilterOpen(false)}
             aria-hidden="true"
           />
 
           {/* Full-width on mobile (375px/390px/412px), max-w-md on tablet */}
-          <div className="relative z-10 w-full sm:max-w-md h-full h-[100dvh] bg-[#FFF9F2] shadow-2xl flex flex-col justify-between overflow-hidden border-l border-[#EFE6DA] animate-drawer-in">
+          <div className="relative z-10 w-full sm:max-w-md h-full max-h-full bg-[#FFF9F2] shadow-2xl flex flex-col justify-between overflow-hidden sm:border-l sm:border-[#EFE6DA] animate-drawer-in">
             {/* 1. Header with clear title & prominent close button */}
             <div className="px-5 py-4 border-b border-[#EFE6DA] bg-white shrink-0 flex items-center justify-between shadow-2xs">
               <div className="flex items-center gap-2.5">
@@ -404,7 +410,10 @@ function ProductsContent() {
             </div>
 
             {/* 2. Scrollable Filter Body */}
-            <div className="flex-1 min-h-0 overflow-y-auto p-5 space-y-6">
+            <div
+              className="flex-1 min-h-0 overflow-y-auto p-5 space-y-6 overscroll-contain"
+              style={{ WebkitOverflowScrolling: 'touch' }}
+            >
               {/* Category Filter */}
               <div className="space-y-2">
                 <label className="text-xs font-bold text-[#193653]">Category</label>
@@ -517,7 +526,8 @@ function ProductsContent() {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
