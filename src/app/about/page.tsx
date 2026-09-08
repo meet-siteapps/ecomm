@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { ShieldCheck, Heart, Leaf, Sparkles, ArrowRight, Award, Users, Smile } from 'lucide-react';
-import { CuteTeddyLogo, HotAirBalloonIllustration } from '@/frontend/components/common/CartoonIllustrations';
+import { CuteTeddyLogo, HotAirBalloonIllustration } from '@/components/common/CartoonIllustrations';
 
 export const metadata = {
   title: 'About Us | Baby Ladoo',

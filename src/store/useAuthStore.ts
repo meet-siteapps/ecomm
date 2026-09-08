@@ -2,9 +2,9 @@
 
 import { create } from 'zustand';
 import { User } from '@supabase/supabase-js';
-import { UserProfile } from '@/frontend/types/user';
-import { createClient, getValidAccessToken } from '@/frontend/lib/supabase/client';
-import { fetchMyProfile, ensureProfile } from '@/frontend/lib/api/auth';
+import { UserProfile } from '@/types/user';
+import { createClient, getValidAccessToken } from '@/lib/supabase/client';
+import { fetchMyProfile, ensureProfile } from '@/lib/api/auth';
 
 interface AuthState {
   user: User | null;

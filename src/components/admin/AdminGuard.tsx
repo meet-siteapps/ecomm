@@ -2,7 +2,7 @@
 
 import { ReactNode } from 'react';
 import Link from 'next/link';
-import { useAuthStore } from '@/frontend/store/useAuthStore';
+import { useAuthStore } from '@/store/useAuthStore';
 import { ShieldAlert, ArrowLeft, Loader2 } from 'lucide-react';
 
 interface AdminGuardProps {

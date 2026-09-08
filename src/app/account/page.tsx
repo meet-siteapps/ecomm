@@ -21,9 +21,9 @@ import {
   Banknote,
   ChevronRight
 } from 'lucide-react';
-import { useAuthStore } from '@/frontend/store/useAuthStore';
-import { fetchUserOrders } from '@/frontend/lib/api/orders';
-import { Order, OrderStatus } from '@/frontend/types/order';
+import { useAuthStore } from '@/store/useAuthStore';
+import { fetchUserOrders } from '@/lib/api/orders';
+import { Order, OrderStatus } from '@/types/order';
 
 const STATUS_BADGES: Record<OrderStatus, { label: string; bg: string; text: string; border: string }> = {
   pending: { label: 'Pending Confirmation', bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200' },

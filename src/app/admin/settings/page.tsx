@@ -18,9 +18,9 @@ import {
   Sparkles,
   Banknote
 } from 'lucide-react';
-import { StoreSettings, DEFAULT_STORE_SETTINGS } from '@/frontend/types/settings';
-import { fetchStoreSettings, updateStoreSettings } from '@/frontend/lib/api/settings';
-import { createClient, getValidAccessToken } from '@/frontend/lib/supabase/client';
+import { StoreSettings, DEFAULT_STORE_SETTINGS } from '@/types/settings';
+import { fetchStoreSettings, updateStoreSettings } from '@/lib/api/settings';
+import { createClient, getValidAccessToken } from '@/lib/supabase/client';
 
 export default function AdminSettingsPage() {
   const [settings, setSettings] = useState<StoreSettings>(DEFAULT_STORE_SETTINGS);

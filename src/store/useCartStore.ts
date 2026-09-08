@@ -2,7 +2,7 @@
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { CartItem, Product } from '@/frontend/types/product';
+import { CartItem, Product } from '@/types/product';
 
 const FREE_SHIPPING_THRESHOLD = 999;
 const STANDARD_SHIPPING_FEE = 99;

@@ -1,11 +1,11 @@
 /**
- * Thin client for the Express store settings API.
+ * Thin client for the Express auth API.
  *
- * Wraps GET /api/settings and PUT /api/admin/settings.
- * Follows the same pattern as src/frontend/lib/api/products.ts and auth.ts.
+ * Wraps GET /api/auth/me, POST /api/auth/ensure-profile, and PUT /api/auth/profile.
+ * Follows the same pattern as src/frontend/lib/api/products.ts.
  *
  * Response shape from the backend:
- *   { status: 'ok', data: StoreSettings }                — success
+ *   { status: 'ok', data: UserProfile }                  — success
  *   { status: 'error', message: string, code?: string }  — error
  *
  * Environment variable priority (all are NEXT_PUBLIC_ so they are inlined at
@@ -15,7 +15,7 @@
  *   3. Hard-coded Render URL      — production fallback so deploys never break
  */
 
-import { StoreSettings, DEFAULT_STORE_SETTINGS } from '@/frontend/types/settings';
+import { UserProfile } from '@/types/user';
 
 const PRODUCTION_URL = 'https://ecomm-backend-u88t.onrender.com';
 
@@ -39,10 +39,22 @@ interface BackendError {
 
 type BackendResponse<T> = BackendSuccess<T> | BackendError;
 
+export interface EnsureProfileInput {
+  email: string;
+  name: string;
+  phone?: string;
+}
+
+export interface UpdateProfileInput {
+  name?: string;
+  phone?: string;
+}
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-async function apiFetch<T>(
+async function apiAuthFetch<T>(
   path: string,
+  accessToken: string,
   options: RequestInit = {}
 ): Promise<T> {
   const url = `${BASE_URL}${path}`;
@@ -50,6 +62,7 @@ async function apiFetch<T>(
     ...options,
     headers: {
       'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
       ...options.headers,
     },
     cache: 'no-store',
@@ -79,34 +92,39 @@ async function apiFetch<T>(
 // ─── Public API ──────────────────────────────────────────────────────────────
 
 /**
- * Fetch the public store settings from the Express backend.
- * Calls GET /api/settings (no auth needed).
- * Falls back to DEFAULT_STORE_SETTINGS if network/backend fails.
+ * Fetch the authenticated user's profile from the Express backend.
+ * Calls GET /api/auth/me with Authorization: Bearer <accessToken>
  */
-export async function fetchStoreSettings(): Promise<StoreSettings> {
-  try {
-    return await apiFetch<StoreSettings>('/api/settings', {
-      method: 'GET',
-    });
-  } catch (err) {
-    console.warn('Could not fetch store settings from API, using defaults:', err);
-    return DEFAULT_STORE_SETTINGS;
-  }
+export async function fetchMyProfile(accessToken: string): Promise<UserProfile> {
+  return apiAuthFetch<UserProfile>('/api/auth/me', accessToken, {
+    method: 'GET',
+  });
 }
 
 /**
- * Update store settings in the Express backend (Admin only).
- * Calls PUT /api/admin/settings with Authorization: Bearer <accessToken>.
+ * Ensures a user profile exists in the Express backend (auto-provision if missing).
+ * Calls POST /api/auth/ensure-profile with Authorization: Bearer <accessToken>
  */
-export async function updateStoreSettings(
+export async function ensureProfile(
   accessToken: string,
-  input: Partial<StoreSettings>
-): Promise<StoreSettings> {
-  return apiFetch<StoreSettings>('/api/admin/settings', {
+  input: EnsureProfileInput
+): Promise<UserProfile> {
+  return apiAuthFetch<UserProfile>('/api/auth/ensure-profile', accessToken, {
+    method: 'POST',
+    body: JSON.stringify(input),
+  });
+}
+
+/**
+ * Updates the authenticated user's profile (name and/or phone).
+ * Calls PUT /api/auth/profile with Authorization: Bearer <accessToken>
+ */
+export async function updateProfile(
+  accessToken: string,
+  input: UpdateProfileInput
+): Promise<UserProfile> {
+  return apiAuthFetch<UserProfile>('/api/auth/profile', accessToken, {
     method: 'PUT',
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
     body: JSON.stringify(input),
   });
 }

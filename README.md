@@ -11,9 +11,12 @@ A production-grade, full-stack e-commerce storefront for curated baby and kids e
 
 ```
 ecomm/                                ← Monorepo root
-├── src/                              ← Next.js 16 frontend (deployed to Vercel)
+├── src/                              ← Next.js 16 storefront (deployed to Vercel)
 │   ├── app/                          ← App Router (pages, dynamic routes, route handlers)
-│   └── frontend/                     ← UI components, Zustand stores, API clients, lib/supabase
+│   ├── components/                   ← Modular UI components (admin, auth, layout, products, common)
+│   ├── lib/                          ← Core utilities, Supabase SSR/client, & REST API clients
+│   ├── store/                        ← Zustand global state stores (auth, cart, wishlist)
+│   └── types/                        ← TypeScript interfaces, models & barrel exports
 ├── backend/                          ← Standalone Express + TypeScript API (deployed to Render)
 │   ├── src/
 │   │   ├── controllers/              ← Request handlers & business delegation

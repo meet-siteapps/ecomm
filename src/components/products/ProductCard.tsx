@@ -5,11 +5,11 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { ShoppingBag, Check, Heart, Edit, Eye, EyeOff, Shield } from 'lucide-react';
-import { Product } from '@/frontend/types/product';
-import { useCartStore } from '@/frontend/store/useCartStore';
-import { useAuthStore } from '@/frontend/store/useAuthStore';
-import { useWishlistStore } from '@/frontend/store/useWishlistStore';
-import { toggleProductStatus } from '@/frontend/lib/api/products';
+import { Product } from '@/types/product';
+import { useCartStore } from '@/store/useCartStore';
+import { useAuthStore } from '@/store/useAuthStore';
+import { useWishlistStore } from '@/store/useWishlistStore';
+import { toggleProductStatus } from '@/lib/api/products';
 
 interface ProductCardProps {
   product: Product;

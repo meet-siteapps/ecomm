@@ -20,8 +20,8 @@ import {
   Heart,
   Sparkles,
 } from 'lucide-react';
-import { useAuthStore } from '@/frontend/store/useAuthStore';
-import { CuteTeddyLogo, CuteSittingTeddyIllustration } from '@/frontend/components/common/CartoonIllustrations';
+import { useAuthStore } from '@/store/useAuthStore';
+import { CuteTeddyLogo, CuteSittingTeddyIllustration } from '@/components/common/CartoonIllustrations';
 
 const emptySubscribe = () => () => {};
 

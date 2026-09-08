@@ -1,4 +1,4 @@
-import { createClient } from '@/frontend/lib/supabase/client';
+import { createClient } from '@/lib/supabase/client';
 
 /**
  * Uploads a product image to the Supabase 'products' storage bucket.

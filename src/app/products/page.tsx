@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { ProductCard } from '@/frontend/components/products/ProductCard';
-import { fetchProducts } from '@/frontend/lib/api/products';
-import { Product } from '@/frontend/types/product';
-import { SAMPLE_CATEGORIES } from '@/frontend/lib/constants';
+import { ProductCard } from '@/components/products/ProductCard';
+import { fetchProducts } from '@/lib/api/products';
+import { Product } from '@/types/product';
+import { SAMPLE_CATEGORIES } from '@/lib/constants';
 import { Search, SlidersHorizontal, X, ChevronDown, Loader2 } from 'lucide-react';
 
 const AGE_RANGES = ['0-6 Months', '6-12 Months', '1-2 Years', '2-4 Years'];

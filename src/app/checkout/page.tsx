@@ -23,9 +23,9 @@ import {
   CreditCard,
   CheckCircle2
 } from 'lucide-react';
-import { useCartStore } from '@/frontend/store/useCartStore';
-import { useAuthStore } from '@/frontend/store/useAuthStore';
-import { createOrder } from '@/frontend/lib/api/orders';
+import { useCartStore } from '@/store/useCartStore';
+import { useAuthStore } from '@/store/useAuthStore';
+import { createOrder } from '@/lib/api/orders';
 
 const emptySubscribe = () => () => {};
 

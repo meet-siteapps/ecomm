@@ -21,16 +21,16 @@ import {
   SlidersHorizontal,
   RefreshCw
 } from 'lucide-react';
-import { Product } from '@/frontend/types/product';
+import { Product } from '@/types/product';
 import {
   getAllProductsAdmin,
   toggleProductStatus,
   deleteProduct,
   permanentDeleteProduct,
   updateProduct,
-} from '@/frontend/lib/api/products';
-import { ProductFormModal } from '@/frontend/components/admin/ProductFormModal';
-import { SAMPLE_CATEGORIES } from '@/frontend/lib/constants';
+} from '@/lib/api/products';
+import { ProductFormModal } from '@/components/admin/ProductFormModal';
+import { SAMPLE_CATEGORIES } from '@/lib/constants';
 
 function AdminProductsContent() {
   const searchParams = useSearchParams();

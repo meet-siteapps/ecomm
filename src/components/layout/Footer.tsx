@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { ShieldCheck, Truck, Heart, Leaf } from 'lucide-react';
-import { CuteTeddyLogo, HotAirBalloonIllustration } from '@/frontend/components/common/CartoonIllustrations';
+import { CuteTeddyLogo, HotAirBalloonIllustration } from '@/components/common/CartoonIllustrations';
 
 export function Footer() {
   return (

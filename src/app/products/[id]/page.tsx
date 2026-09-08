@@ -24,12 +24,12 @@ import {
   HeartHandshake,
   Loader2
 } from 'lucide-react';
-import { fetchProductById } from '@/frontend/lib/api/products';
-import { Product } from '@/frontend/types/product';
-import { useCartStore } from '@/frontend/store/useCartStore';
-import { useAuthStore } from '@/frontend/store/useAuthStore';
-import { useWishlistStore } from '@/frontend/store/useWishlistStore';
-import { PincodeChecker } from '@/frontend/components/products/PincodeChecker';
+import { fetchProductById } from '@/lib/api/products';
+import { Product } from '@/types/product';
+import { useCartStore } from '@/store/useCartStore';
+import { useAuthStore } from '@/store/useAuthStore';
+import { useWishlistStore } from '@/store/useWishlistStore';
+import { PincodeChecker } from '@/components/products/PincodeChecker';
 
 interface ProductDetailPageProps {
   params: Promise<{ id: string }>;

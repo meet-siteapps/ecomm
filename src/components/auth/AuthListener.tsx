@@ -2,10 +2,10 @@
 
 import { useEffect, useCallback } from 'react';
 import { Session } from '@supabase/supabase-js';
-import { createClient } from '@/frontend/lib/supabase/client';
-import { useAuthStore } from '@/frontend/store/useAuthStore';
-import { useWishlistStore } from '@/frontend/store/useWishlistStore';
-import { fetchMyProfile, ensureProfile } from '@/frontend/lib/api/auth';
+import { createClient } from '@/lib/supabase/client';
+import { useAuthStore } from '@/store/useAuthStore';
+import { useWishlistStore } from '@/store/useWishlistStore';
+import { fetchMyProfile, ensureProfile } from '@/lib/api/auth';
 
 export function AuthListener() {
   const setUser = useAuthStore((state) => state.setUser);

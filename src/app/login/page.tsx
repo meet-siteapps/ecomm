@@ -4,8 +4,8 @@ import { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ShoppingBag, Lock, Mail, AlertCircle, ArrowRight, Loader2 } from 'lucide-react';
-import { createClient } from '@/frontend/lib/supabase/client';
-import { useAuthStore } from '@/frontend/store/useAuthStore';
+import { createClient } from '@/lib/supabase/client';
+import { useAuthStore } from '@/store/useAuthStore';
 
 function LoginForm() {
   const router = useRouter();

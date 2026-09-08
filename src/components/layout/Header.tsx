@@ -14,9 +14,9 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import { MobileMenu } from './MobileMenu';
-import { useCartStore } from '@/frontend/store/useCartStore';
-import { useAuthStore } from '@/frontend/store/useAuthStore';
-import { CuteTeddyLogo } from '@/frontend/components/common/CartoonIllustrations';
+import { useCartStore } from '@/store/useCartStore';
+import { useAuthStore } from '@/store/useAuthStore';
+import { CuteTeddyLogo } from '@/components/common/CartoonIllustrations';
 
 const emptySubscribe = () => () => {};
 

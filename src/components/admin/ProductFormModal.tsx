@@ -13,10 +13,10 @@ import {
   Sparkles,
   Info
 } from 'lucide-react';
-import { Product } from '@/frontend/types/product';
-import { createProduct, updateProduct } from '@/frontend/lib/api/products';
-import { uploadProductImage } from '@/frontend/lib/supabase/storage';
-import { SAMPLE_CATEGORIES } from '@/frontend/lib/constants';
+import { Product } from '@/types/product';
+import { createProduct, updateProduct } from '@/lib/api/products';
+import { uploadProductImage } from '@/lib/supabase/storage';
+import { SAMPLE_CATEGORIES } from '@/lib/constants';
 
 interface ProductFormModalProps {
   isOpen: boolean;

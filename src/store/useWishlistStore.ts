@@ -1,13 +1,13 @@
 'use client';
 
 import { create } from 'zustand';
-import { Product } from '@/frontend/types/product';
+import { Product } from '@/types/product';
 import {
   fetchUserWishlist,
   fetchUserWishlistProductIds,
   addToWishlist,
   removeFromWishlist,
-} from '@/frontend/lib/supabase/wishlist';
+} from '@/lib/supabase/wishlist';
 
 interface WishlistState {
   wishlistProductIds: string[];

@@ -11,8 +11,8 @@
  * Follows the standard envelope pattern and uses getValidAccessToken() for automatic session refresh.
  */
 
-import { Order, OrderStatus, PaymentStatus, ShippingAddress } from '@/frontend/types/order';
-import { getValidAccessToken } from '@/frontend/lib/supabase/client';
+import { Order, OrderStatus, PaymentStatus, ShippingAddress } from '@/types/order';
+import { getValidAccessToken } from '@/lib/supabase/client';
 
 const PRODUCTION_URL = 'https://ecomm-backend-u88t.onrender.com';
 

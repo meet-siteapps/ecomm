@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ShoppingBag, Lock, AlertCircle, ArrowRight, Loader2, CheckCircle2 } from 'lucide-react';
 import { z } from 'zod';
-import { createClient } from '@/frontend/lib/supabase/client';
+import { createClient } from '@/lib/supabase/client';
 
 const passwordSchema = z
   .string()

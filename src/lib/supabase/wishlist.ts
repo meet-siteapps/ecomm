@@ -1,5 +1,5 @@
 import { createClient } from './client';
-import { Product } from '@/frontend/types/product';
+import { Product } from '@/types/product';
 
 /**
  * Fetch all wishlisted products for a specific authenticated user from Supabase.

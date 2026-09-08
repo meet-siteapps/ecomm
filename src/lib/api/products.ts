@@ -17,8 +17,8 @@
  *   3. Hard-coded Render URL      — production fallback so deploys never break
  */
 
-import { Product } from '@/frontend/types/product';
-import { getValidAccessToken } from '@/frontend/lib/supabase/client';
+import { Product } from '@/types/product';
+import { getValidAccessToken } from '@/lib/supabase/client';
 
 const PRODUCTION_URL = 'https://ecomm-backend-u88t.onrender.com';
 
