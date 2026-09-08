@@ -41,6 +41,24 @@ function ProductsContent() {
     }
   }, [searchParams]);
 
+  // Lock body scroll when mobile filter is open & handle ESC key
+  useEffect(() => {
+    if (isMobileFilterOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          setIsMobileFilterOpen(false);
+        }
+      };
+      window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        window.removeEventListener('keydown', handleKeyDown);
+      };
+    }
+  }, [isMobileFilterOpen]);
+
   useEffect(() => {
     let isMounted = true;
     async function load() {
@@ -123,7 +141,8 @@ function ProductsContent() {
     search !== '' || selectedCategory !== 'all' || selectedAges.length > 0 || maxPrice < 4000;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 animate-fade-in">
+    <>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* LEFT FILTER SIDEBAR */}
         <aside className="hidden lg:block lg:col-span-3 space-y-6 sticky top-24 bg-white/60 backdrop-blur-xs p-5 rounded-3xl border border-[#EFE6DA] shadow-2xs">
@@ -343,30 +362,50 @@ function ProductsContent() {
           )}
         </main>
       </div>
+      </div>
 
-      {/* Mobile Filters Drawer */}
+      {/* Mobile Filters Full-Screen Overlay / Drawer */}
       {isMobileFilterOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden flex justify-end">
+        <div
+          className="fixed inset-0 z-50 lg:hidden flex justify-end"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Filter Products"
+        >
+          {/* Solid Darkened Backdrop */}
           <div
-            className="fixed inset-0 bg-[#193653]/40 backdrop-blur-xs transition-opacity duration-300 animate-in fade-in"
+            className="fixed inset-0 bg-[#193653]/60 backdrop-blur-sm transition-opacity duration-300"
             onClick={() => setIsMobileFilterOpen(false)}
+            aria-hidden="true"
           />
-          <div className="relative z-10 w-full max-w-xs h-full bg-[#FFF9F2] shadow-2xl flex flex-col justify-between overflow-y-auto animate-in slide-in-from-right duration-300 ease-out">
-            <div className="p-5 space-y-6">
-              <div className="flex items-center justify-between border-b border-[#EFE6DA] pb-3 bg-white p-3 rounded-2xl shadow-2xs">
-                <h3 className="font-extrabold text-base text-[#193653] flex items-center gap-2">
-                  <SlidersHorizontal className="w-4 h-4 text-[#F27A8A]" />
-                  Filters
-                </h3>
-                <button
-                  type="button"
-                  onClick={() => setIsMobileFilterOpen(false)}
-                  className="p-1.5 text-gray-500 hover:bg-[#FDE8EB] hover:text-[#F27A8A] rounded-full transition-all active:scale-90"
-                >
-                  <X className="w-4 h-4" />
-                </button>
+
+          {/* Full-width on mobile (375px/390px/412px), max-w-md on tablet */}
+          <div className="relative z-10 w-full sm:max-w-md h-full h-[100dvh] bg-[#FFF9F2] shadow-2xl flex flex-col justify-between overflow-hidden border-l border-[#EFE6DA] animate-drawer-in">
+            {/* 1. Header with clear title & prominent close button */}
+            <div className="px-5 py-4 border-b border-[#EFE6DA] bg-white shrink-0 flex items-center justify-between shadow-2xs">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-[#FFD6E0] text-[#F27A8A] flex items-center justify-center shadow-2xs">
+                  <SlidersHorizontal className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-base text-[#193653] leading-tight">Filters</h3>
+                  <p className="text-[11px] text-[#5D7285] font-medium">Refine baby essentials</p>
+                </div>
               </div>
 
+              <button
+                type="button"
+                onClick={() => setIsMobileFilterOpen(false)}
+                className="w-8 h-8 rounded-full border border-[#EFE6DA] bg-[#FAF4EE] text-[#5D7285] hover:bg-[#FFD6E0] hover:text-[#F27A8A] hover:border-[#F27A8A]/40 flex items-center justify-center transition-all duration-200 active:scale-90 shadow-2xs"
+                aria-label="Close filters"
+              >
+                <X className="w-4 h-4 text-current" />
+              </button>
+            </div>
+
+            {/* 2. Scrollable Filter Body */}
+            <div className="flex-1 min-h-0 overflow-y-auto p-5 space-y-6">
+              {/* Category Filter */}
               <div className="space-y-2">
                 <label className="text-xs font-bold text-[#193653]">Category</label>
                 <div className="space-y-1">
@@ -374,7 +413,9 @@ function ProductsContent() {
                     type="button"
                     onClick={() => setSelectedCategory('all')}
                     className={`w-full text-left px-4 py-2.5 rounded-2xl text-xs font-bold transition-all ${
-                      selectedCategory === 'all' ? 'bg-[#FFD6E0] text-[#F27A8A] shadow-2xs' : 'text-[#5D7285] bg-white hover:bg-[#FAF4EE]'
+                      selectedCategory === 'all'
+                        ? 'bg-[#FFD6E0] text-[#F27A8A] shadow-2xs'
+                        : 'text-[#5D7285] bg-white hover:bg-[#FAF4EE] border border-[#EFE6DA]/60'
                     }`}
                   >
                     All Categories
@@ -387,7 +428,7 @@ function ProductsContent() {
                       className={`w-full text-left px-4 py-2.5 rounded-2xl text-xs font-bold transition-all ${
                         selectedCategory.toLowerCase() === cat.name.toLowerCase()
                           ? 'bg-[#FFD6E0] text-[#F27A8A] shadow-2xs'
-                          : 'text-[#5D7285] bg-white hover:bg-[#FAF4EE]'
+                          : 'text-[#5D7285] bg-white hover:bg-[#FAF4EE] border border-[#EFE6DA]/60'
                       }`}
                     >
                       {cat.name}
@@ -396,27 +437,32 @@ function ProductsContent() {
                 </div>
               </div>
 
+              {/* Age Filter */}
               <div className="space-y-2">
-                <label className="text-xs font-bold text-[#193653]">Age</label>
-                <div className="space-y-2 bg-white p-3 rounded-2xl border border-[#EFE6DA] shadow-2xs">
+                <label className="text-xs font-bold text-[#193653]">Age Range</label>
+                <div className="space-y-2 bg-white p-3.5 rounded-2xl border border-[#EFE6DA] shadow-2xs">
                   {AGE_RANGES.map((age) => (
-                    <label key={age} className="flex items-center gap-2 text-xs text-[#5D7285] cursor-pointer hover:text-[#193653] transition-colors">
+                    <label
+                      key={age}
+                      className="flex items-center gap-2.5 text-xs text-[#5D7285] cursor-pointer hover:text-[#193653] transition-colors py-0.5 select-none"
+                    >
                       <input
                         type="checkbox"
                         checked={selectedAges.includes(age)}
                         onChange={() => toggleAge(age)}
-                        className="w-4 h-4 rounded accent-[#F27A8A]"
+                        className="w-4 h-4 rounded-md accent-[#F27A8A] border-[#EFE6DA] cursor-pointer"
                       />
-                      <span>{age}</span>
+                      <span className="font-semibold">{age}</span>
                     </label>
                   ))}
                 </div>
               </div>
 
+              {/* Price Filter */}
               <div className="space-y-2 bg-white p-4 rounded-2xl border border-[#EFE6DA] shadow-2xs">
                 <div className="flex items-center justify-between text-xs font-bold text-[#193653]">
                   <span>Max Price</span>
-                  <span className="text-[#F27A8A] font-extrabold">₹{maxPrice.toLocaleString('en-IN')}</span>
+                  <span className="text-[#F27A8A] font-extrabold text-sm">₹{maxPrice.toLocaleString('en-IN')}</span>
                 </div>
                 <input
                   type="range"
@@ -425,31 +471,55 @@ function ProductsContent() {
                   step={100}
                   value={maxPrice}
                   onChange={(e) => setMaxPrice(Number(e.target.value))}
-                  className="w-full accent-[#F27A8A]"
+                  className="w-full accent-[#F27A8A] cursor-pointer"
                 />
+                <div className="flex justify-between text-[11px] text-[#5D7285] font-medium">
+                  <span>₹500</span>
+                  <span>₹4,000</span>
+                </div>
+              </div>
+
+              {/* Sort By Filter */}
+              <div className="space-y-2 bg-white p-4 rounded-2xl border border-[#EFE6DA] shadow-2xs">
+                <span className="text-xs font-bold text-[#193653]">Sort by</span>
+                <div className="relative">
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="w-full appearance-none bg-white text-xs font-semibold text-[#193653] rounded-xl pl-3.5 pr-8 py-2.5 border border-[#EFE6DA] focus:border-[#F27A8A] focus:outline-none cursor-pointer transition-colors shadow-2xs"
+                  >
+                    {SORT_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
               </div>
             </div>
 
-            <div className="p-4 border-t border-[#EFE6DA] bg-white flex gap-2">
+            {/* 3. Sticky Actions Footer with Safe Area Padding */}
+            <div className="p-4 border-t border-[#EFE6DA] bg-white shrink-0 flex items-center gap-3 shadow-cute pb-[calc(1rem+env(safe-area-inset-bottom,0px))]">
               <button
                 type="button"
                 onClick={clearFilters}
-                className="flex-1 py-3 rounded-full border border-[#EFE6DA] text-xs font-bold text-[#5D7285] bg-[#FFF9F2] hover:bg-[#FAF4EE] active:scale-95 transition-all"
+                className="flex-1 py-3 rounded-full border border-[#EFE6DA] text-xs font-bold text-[#5D7285] bg-[#FAF4EE] hover:bg-[#FDE8EB] hover:text-[#F27A8A] active:scale-95 transition-all"
               >
                 Reset
               </button>
               <button
                 type="button"
                 onClick={() => setIsMobileFilterOpen(false)}
-                className="flex-1 py-3 rounded-full bg-[#F27A8A] text-white text-xs font-extrabold shadow-cute-pink active:scale-95 transition-all"
+                className="flex-1 py-3 rounded-full bg-[#F27A8A] hover:bg-[#e06878] text-white text-xs font-extrabold shadow-cute-pink active:scale-95 transition-all"
               >
-                Apply
+                Apply ({filteredProducts.length})
               </button>
             </div>
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
 
