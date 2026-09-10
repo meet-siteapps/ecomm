@@ -11,7 +11,7 @@
  * Follows the standard envelope pattern and uses getValidAccessToken() for automatic session refresh.
  */
 
-import { Order, OrderStatus, PaymentStatus, ShippingAddress } from '@/types/order';
+import { Order, OrderStatus, PaymentStatus, PaymentMethod, ShippingAddress } from '@/types/order';
 import { getValidAccessToken } from '@/lib/supabase/client';
 
 const PRODUCTION_URL = 'https://ecomm-backend-u88t.onrender.com';
@@ -46,7 +46,7 @@ export interface CreateOrderItemPayload {
 export interface CreateOrderPayload {
   items: CreateOrderItemPayload[];
   shippingAddress: ShippingAddress;
-  paymentMethod: 'cod' | 'razorpay';
+  paymentMethod: PaymentMethod;
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────

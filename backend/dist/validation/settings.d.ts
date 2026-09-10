@@ -4,6 +4,8 @@ export declare const updateSettingsSchema: z.ZodEffects<z.ZodObject<{
     tagline: z.ZodNullable<z.ZodOptional<z.ZodString>>;
     contact_email: z.ZodOptional<z.ZodString>;
     contact_phone: z.ZodOptional<z.ZodString>;
+    whatsapp_number: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+    upi_id: z.ZodNullable<z.ZodOptional<z.ZodString>>;
     store_address: z.ZodNullable<z.ZodOptional<z.ZodString>>;
     shipping_fee: z.ZodOptional<z.ZodNumber>;
     free_shipping_threshold: z.ZodOptional<z.ZodNumber>;
@@ -16,6 +18,8 @@ export declare const updateSettingsSchema: z.ZodEffects<z.ZodObject<{
     tagline?: string | null | undefined;
     contact_email?: string | undefined;
     contact_phone?: string | undefined;
+    whatsapp_number?: string | null | undefined;
+    upi_id?: string | null | undefined;
     store_address?: string | null | undefined;
     free_shipping_threshold?: number | undefined;
     tax_percentage?: number | undefined;
@@ -27,6 +31,8 @@ export declare const updateSettingsSchema: z.ZodEffects<z.ZodObject<{
     tagline?: string | null | undefined;
     contact_email?: string | undefined;
     contact_phone?: string | undefined;
+    whatsapp_number?: string | null | undefined;
+    upi_id?: string | null | undefined;
     store_address?: string | null | undefined;
     free_shipping_threshold?: number | undefined;
     tax_percentage?: number | undefined;
@@ -38,6 +44,8 @@ export declare const updateSettingsSchema: z.ZodEffects<z.ZodObject<{
     tagline?: string | null | undefined;
     contact_email?: string | undefined;
     contact_phone?: string | undefined;
+    whatsapp_number?: string | null | undefined;
+    upi_id?: string | null | undefined;
     store_address?: string | null | undefined;
     free_shipping_threshold?: number | undefined;
     tax_percentage?: number | undefined;
@@ -49,6 +57,8 @@ export declare const updateSettingsSchema: z.ZodEffects<z.ZodObject<{
     tagline?: string | null | undefined;
     contact_email?: string | undefined;
     contact_phone?: string | undefined;
+    whatsapp_number?: string | null | undefined;
+    upi_id?: string | null | undefined;
     store_address?: string | null | undefined;
     free_shipping_threshold?: number | undefined;
     tax_percentage?: number | undefined;

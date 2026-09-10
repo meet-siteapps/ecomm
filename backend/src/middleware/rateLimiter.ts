@@ -11,11 +11,16 @@ function createRateLimiter(
   message: string,
   code = 'TOO_MANY_REQUESTS',
 ) {
+  const isDev = (process.env['NODE_ENV'] ?? 'development') !== 'production';
+
   return rateLimit({
     windowMs,
-    max,
+    // In local dev, allow 50x headroom so developers aren't locked out by Fast Refresh
+    max: isDev ? max * 50 : max,
     standardHeaders: 'draft-7',
     legacyHeaders: false,
+    // Never rate-limit CORS preflight OPTIONS requests
+    skip: (req: Request) => req.method === 'OPTIONS',
     handler: (_req: Request, res: Response) => {
       const body: ApiError = {
         status: 'error',

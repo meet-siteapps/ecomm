@@ -57,6 +57,7 @@ function mapDbOrderToOrder(dbOrder) {
         total: Number(dbOrder.total),
         payment_status: dbOrder.payment_status,
         order_status: dbOrder.order_status,
+        payment_method: dbOrder.payment_method,
         guest_token: dbOrder.guest_token ?? null,
         razorpay_order_id: dbOrder.razorpay_order_id ?? null,
         razorpay_payment_id: dbOrder.razorpay_payment_id ?? null,
@@ -122,12 +123,23 @@ async function createOrder(userId, input) {
         total: totalAmount,
         payment_status: 'pending',
         order_status: 'pending',
+        payment_method: input.paymentMethod || 'cod',
     };
-    const { data: createdOrderData, error: orderInsertError } = await supabaseAdmin
+    let { data: createdOrderData, error: orderInsertError } = await supabaseAdmin
         .from('orders')
         .insert(orderInsertPayload)
         .select('*')
         .single();
+    if (orderInsertError && orderInsertError.message?.includes('payment_method')) {
+        delete orderInsertPayload.payment_method;
+        const retry = await supabaseAdmin
+            .from('orders')
+            .insert(orderInsertPayload)
+            .select('*')
+            .single();
+        createdOrderData = retry.data;
+        orderInsertError = retry.error;
+    }
     if (orderInsertError || !createdOrderData) {
         throw new errorHandler_js_1.AppError(`Failed to create order record: ${orderInsertError?.message ?? 'Unknown database error'}`, 500, 'ORDER_INSERT_FAILED');
     }

@@ -16,7 +16,8 @@ import {
   Save,
   RefreshCw,
   Sparkles,
-  Banknote
+  Banknote,
+  MessageCircle
 } from 'lucide-react';
 import { StoreSettings, DEFAULT_STORE_SETTINGS } from '@/types/settings';
 import { fetchStoreSettings, updateStoreSettings } from '@/lib/api/settings';
@@ -61,6 +62,8 @@ export default function AdminSettingsPage() {
         tagline: settings.tagline?.trim(),
         contact_email: settings.contact_email.trim(),
         contact_phone: settings.contact_phone.trim(),
+        whatsapp_number: settings.whatsapp_number ? settings.whatsapp_number.trim() : '',
+        upi_id: settings.upi_id ? settings.upi_id.trim() : '',
         store_address: settings.store_address.trim(),
         shipping_fee: Number(settings.shipping_fee) || 0,
         free_shipping_threshold: Number(settings.free_shipping_threshold) || 0,
@@ -201,6 +204,46 @@ export default function AdminSettingsPage() {
                 />
                 <Phone className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
               </div>
+            </div>
+
+            <div className="space-y-1 sm:col-span-2">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-gray-700">WhatsApp Business Number</label>
+                <span className="text-[10px] sm:text-[11px] text-emerald-600 font-medium">Used for "Pay via UPI (WhatsApp)" checkout</span>
+              </div>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={settings.whatsapp_number || ''}
+                  onChange={(e) => setSettings({ ...settings, whatsapp_number: e.target.value })}
+                  placeholder="+91 98765 43210 (or 919876543210)"
+                  className="w-full text-xs text-[#1F2937] bg-gray-50/50 rounded-xl pl-9 pr-3.5 py-2.5 border border-gray-200 focus:bg-white focus:border-[#4DA3FF] focus:outline-none focus:ring-2 focus:ring-[#4DA3FF]/20"
+                />
+                <MessageCircle className="w-4 h-4 text-emerald-500 absolute left-3 top-1/2 -translate-y-1/2" />
+              </div>
+              <span className="text-[11px] text-gray-400 block">
+                Customers selecting "Pay via UPI (WhatsApp)" will be directed to this number with their order number and amount pre-filled.
+              </span>
+            </div>
+
+            <div className="space-y-1 sm:col-span-2">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-gray-700">UPI ID</label>
+                <span className="text-[10px] sm:text-[11px] text-emerald-600 font-medium">Shown to customers for payment via WhatsApp checkout</span>
+              </div>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={settings.upi_id || ''}
+                  onChange={(e) => setSettings({ ...settings, upi_id: e.target.value })}
+                  placeholder="e.g. babyladoo@upi or 9876543210@paytm"
+                  className="w-full text-xs text-[#1F2937] bg-gray-50/50 rounded-xl pl-9 pr-3.5 py-2.5 border border-gray-200 focus:bg-white focus:border-[#4DA3FF] focus:outline-none focus:ring-2 focus:ring-[#4DA3FF]/20"
+                />
+                <MessageCircle className="w-4 h-4 text-emerald-500 absolute left-3 top-1/2 -translate-y-1/2" />
+              </div>
+              <span className="text-[11px] text-gray-400 block">
+                Included in the pre-filled WhatsApp message so customers can pay immediately without asking for it separately.
+              </span>
             </div>
 
             <div className="space-y-1 sm:col-span-2">

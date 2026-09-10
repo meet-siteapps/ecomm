@@ -66,9 +66,9 @@ exports.createOrderSchema = zod_1.z.object({
         .min(1, 'Order must contain at least one item')
         .max(50, 'Order cannot contain more than 50 items'),
     shippingAddress: exports.shippingAddressSchema,
-    paymentMethod: zod_1.z.enum(['cod', 'razorpay'], {
+    paymentMethod: zod_1.z.enum(['cod', 'razorpay', 'upi_whatsapp'], {
         errorMap: () => ({
-            message: "Payment method must be either 'cod' or 'razorpay'",
+            message: "Payment method must be 'cod', 'razorpay', or 'upi_whatsapp'",
         }),
     }),
 });

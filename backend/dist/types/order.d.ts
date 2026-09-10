@@ -1,6 +1,6 @@
 export type PaymentStatus = 'unpaid' | 'pending' | 'paid' | 'failed' | 'refunded';
 export type OrderStatus = 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
-export type PaymentMethod = 'cod' | 'razorpay';
+export type PaymentMethod = 'cod' | 'razorpay' | 'upi_whatsapp';
 export interface ShippingAddress {
     fullName: string;
     phone: string;

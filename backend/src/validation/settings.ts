@@ -30,6 +30,18 @@ export const updateSettingsSchema = z
       .min(1, 'Contact phone cannot be empty')
       .max(30, 'Contact phone cannot exceed 30 characters')
       .optional(),
+    whatsapp_number: z
+      .string()
+      .trim()
+      .max(30, 'WhatsApp number cannot exceed 30 characters')
+      .optional()
+      .nullable(),
+    upi_id: z
+      .string()
+      .trim()
+      .max(50, 'UPI ID cannot exceed 50 characters')
+      .optional()
+      .nullable(),
     store_address: z
       .string()
       .trim()

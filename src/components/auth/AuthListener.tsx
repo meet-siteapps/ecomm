@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { Session } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/store/useAuthStore';
@@ -14,40 +14,49 @@ export function AuthListener() {
   const fetchWishlist = useWishlistStore((state) => state.fetchWishlist);
   const clearWishlist = useWishlistStore((state) => state.clearWishlist);
 
+  // Guards to prevent duplicate concurrent profile fetches and spamming the backend
+  const inFlightSyncRef = useRef(false);
+  const lastSyncedTokenRef = useRef<string | null>(null);
+
   const syncUserProfile = useCallback(
     async (session: Session) => {
-      let token = session.access_token;
-      if (!token) {
+      const token = session?.access_token;
+      if (!token || !session?.user) {
+        lastSyncedTokenRef.current = null;
         setProfile(null);
         return;
       }
 
-      // Proactively refresh if session token is expired or close to expiry
-      const now = Math.floor(Date.now() / 1000);
-      if (session.expires_at && session.expires_at <= now + 60) {
-        try {
-          const supabase = createClient();
-          const { data: refreshData, error: refreshErr } = await supabase.auth.refreshSession();
-          if (refreshData?.session?.access_token && !refreshErr) {
-            token = refreshData.session.access_token;
-            if (refreshData.session.user) {
-              setUser(refreshData.session.user);
-            }
-          }
-        } catch (e) {
-          console.warn('Proactive token refresh failed:', e);
-        }
+      // Skip if this exact token was already successfully synced
+      if (lastSyncedTokenRef.current === token) {
+        return;
       }
+
+      // Prevent concurrent duplicate executions
+      if (inFlightSyncRef.current) {
+        return;
+      }
+
+      inFlightSyncRef.current = true;
 
       try {
         const profile = await fetchMyProfile(token);
+        lastSyncedTokenRef.current = token;
         setProfile(profile);
       } catch (err: any) {
         const msg = (err?.message || '').toLowerCase();
         const code = err?.code || '';
         const status = err?.status;
+        const isNetworkError = Boolean(err?.isNetworkError || msg.includes('failed to fetch'));
 
-        // If token was rejected as invalid or expired (401), attempt a token refresh and retry
+        // If it's a pure network failure (backend offline/starting), do not flood with ensureProfile retries
+        if (isNetworkError) {
+          console.warn('[AuthListener] Express backend is currently unreachable. Profile sync will retry when connection is restored.');
+          setProfile(null);
+          return;
+        }
+
+        // If token was rejected as invalid or expired (401), attempt a single token refresh and retry
         if (
           status === 401 ||
           code === 'INVALID_TOKEN' ||
@@ -62,11 +71,12 @@ export function AuthListener() {
                 setUser(refreshData.session.user);
               }
               const retryProfile = await fetchMyProfile(refreshData.session.access_token);
+              lastSyncedTokenRef.current = refreshData.session.access_token;
               setProfile(retryProfile);
               return;
             }
           } catch (retryErr) {
-            console.error('Session refresh retry failed after 401:', retryErr);
+            console.error('[AuthListener] Session refresh retry failed after 401:', retryErr);
           }
         }
 
@@ -93,17 +103,20 @@ export function AuthListener() {
             });
 
             const retryProfile = await fetchMyProfile(token);
+            lastSyncedTokenRef.current = token;
             setProfile(retryProfile);
             return;
           } catch (ensureErr) {
-            console.error('Failed to ensure and refetch user profile:', ensureErr);
+            console.error('[AuthListener] Failed to ensure and refetch user profile:', ensureErr);
             setProfile(null);
             return;
           }
         }
 
-        console.error('Error fetching user profile from Express backend:', err);
+        console.error('[AuthListener] Error fetching user profile from Express backend:', err);
         setProfile(null);
+      } finally {
+        inFlightSyncRef.current = false;
       }
     },
     [setProfile, setUser]
@@ -111,9 +124,11 @@ export function AuthListener() {
 
   useEffect(() => {
     const supabase = createClient();
+    let isMounted = true;
 
-    // 1. Check current session immediately
+    // 1. Initial session check
     supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (!isMounted) return;
       if (session?.user) {
         setUser(session.user);
         fetchWishlist(session.user.id);
@@ -122,6 +137,7 @@ export function AuthListener() {
         setUser(null);
         setProfile(null);
         clearWishlist();
+        lastSyncedTokenRef.current = null;
       }
       setLoading(false);
     });
@@ -130,6 +146,11 @@ export function AuthListener() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!isMounted) return;
+
+      // Skip redundant initial session event since getSession() handles it above
+      if (event === 'INITIAL_SESSION') return;
+
       if (session?.user) {
         setUser(session.user);
         fetchWishlist(session.user.id);
@@ -138,11 +159,13 @@ export function AuthListener() {
         setUser(null);
         setProfile(null);
         clearWishlist();
+        lastSyncedTokenRef.current = null;
       }
       setLoading(false);
     });
 
     return () => {
+      isMounted = false;
       subscription.unsubscribe();
     };
   }, [setUser, setProfile, setLoading, syncUserProfile, fetchWishlist, clearWishlist]);

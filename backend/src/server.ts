@@ -21,14 +21,13 @@ const app = express();
 
 // ─── Global middleware ────────────────────────────────────────────────────────
 
-// 1. Global rate limiter (100 requests / 15 mins per IP)
-app.use(generalLimiter);
-
-// 2. CORS — explicit allowlist, no wildcards.
-// CORS_ORIGIN env var can be a comma-separated list of origins.
-// Defaults cover local dev + the production Vercel deployment.
+// 1. CORS — explicit allowlist, no wildcards.
+// MUST be mounted before rate limiter so OPTIONS preflights and 429 errors include CORS headers.
 const DEFAULT_ORIGINS = [
   'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  'http://localhost:3001',
+  'http://127.0.0.1:3001',
   'https://ecommerce-site-dun-phi.vercel.app',
 ];
 
@@ -44,7 +43,8 @@ app.use(
       if (!incomingOrigin || allowedOrigins.includes(incomingOrigin)) {
         callback(null, true);
       } else {
-        callback(new Error(`CORS: origin '${incomingOrigin}' not allowed`));
+        // Return false to gracefully reject disallowed origins without breaking CORS headers
+        callback(null, false);
       }
     },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
@@ -52,6 +52,9 @@ app.use(
     credentials: true,
   }),
 );
+
+// 2. Global rate limiter (applied after CORS headers are attached)
+app.use(generalLimiter);
 
 // 3. Body size limits (prevents payload flood abuse)
 app.use(express.json({ limit: '1mb' }));

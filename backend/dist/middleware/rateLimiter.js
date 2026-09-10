@@ -6,11 +6,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.writeLimiter = exports.authLimiter = exports.generalLimiter = void 0;
 const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
 function createRateLimiter(windowMs, max, message, code = 'TOO_MANY_REQUESTS') {
+    const isDev = (process.env['NODE_ENV'] ?? 'development') !== 'production';
     return (0, express_rate_limit_1.default)({
         windowMs,
-        max,
+        max: isDev ? max * 50 : max,
         standardHeaders: 'draft-7',
         legacyHeaders: false,
+        skip: (req) => req.method === 'OPTIONS',
         handler: (_req, res) => {
             const body = {
                 status: 'error',

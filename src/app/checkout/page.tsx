@@ -21,11 +21,14 @@ import {
   Truck,
   Banknote,
   CreditCard,
-  CheckCircle2
+  CheckCircle2,
+  MessageCircle
 } from 'lucide-react';
 import { useCartStore } from '@/store/useCartStore';
 import { useAuthStore } from '@/store/useAuthStore';
 import { createOrder } from '@/lib/api/orders';
+import { fetchStoreSettings } from '@/lib/api/settings';
+import { StoreSettings } from '@/types/settings';
 
 const emptySubscribe = () => () => {};
 
@@ -62,12 +65,19 @@ export default function CheckoutPage() {
   const [state, setState] = useState('');
   const [pincode, setPincode] = useState('');
   const [landmark, setLandmark] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'cod'>('cod');
+  const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'cod' | 'upi_whatsapp'>('upi_whatsapp');
+  const [storeSettings, setStoreSettings] = useState<StoreSettings | null>(null);
 
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
   const [createdOrderNumber, setCreatedOrderNumber] = useState('');
+  const [createdOrderTotal, setCreatedOrderTotal] = useState(0);
+
+  // Fetch store settings on mount for WhatsApp business number
+  useEffect(() => {
+    fetchStoreSettings().then(setStoreSettings).catch(() => {});
+  }, []);
 
   // Prefill authenticated profile info
   useEffect(() => {
@@ -198,10 +208,26 @@ export default function CheckoutPage() {
         paymentMethod,
       });
 
-      // Order created successfully
-      setCreatedOrderNumber(order.order_number || order.id || '');
-      setIsSuccess(true);
-      clearCart();
+      // Handle post-creation flow
+      if (paymentMethod === 'upi_whatsapp') {
+        const rawWa = storeSettings?.whatsapp_number || storeSettings?.contact_phone || '';
+        const cleanWa = rawWa.replace(/\D/g, '');
+        const finalWaPhone = cleanWa.length === 10 ? `91${cleanWa}` : cleanWa;
+        const upiIdParam = storeSettings?.upi_id ? `&upi_id=${encodeURIComponent(storeSettings.upi_id)}` : '';
+
+        clearCart();
+        router.push(
+          `/checkout/success?order_id=${order.id}&order_number=${order.order_number}&method=upi_whatsapp${
+            finalWaPhone ? `&wa_phone=${encodeURIComponent(finalWaPhone)}` : ''
+          }${upiIdParam}`
+        );
+      } else {
+        // Order created successfully (COD flow untouched)
+        setCreatedOrderNumber(order.order_number || order.id || '');
+        setCreatedOrderTotal(order.total || total);
+        setIsSuccess(true);
+        clearCart();
+      }
     } catch (err: any) {
       console.error('Order creation error:', err);
       setErrorMessage(err.message || 'An unexpected error occurred during checkout.');
@@ -405,56 +431,88 @@ export default function CheckoutPage() {
               <span>Select Payment Method</span>
             </h2>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {/* Cash on Delivery */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {/* Pay via UPI (WhatsApp) — ONLY ACTIVE PAYMENT METHOD */}
               <label
-                className={`p-4 rounded-2xl border-2 flex items-center gap-3 cursor-pointer transition-all ${
-                  paymentMethod === 'cod'
-                    ? 'border-[#F27A8A] bg-[#FDE8EB]/40'
+                className={`p-4 rounded-2xl border-2 flex items-center justify-between gap-3 cursor-pointer transition-all ${
+                  paymentMethod === 'upi_whatsapp'
+                    ? 'border-emerald-500 bg-emerald-50/50 shadow-2xs ring-2 ring-emerald-500/20'
                     : 'border-[#EFE6DA] hover:border-gray-300 bg-white'
                 }`}
               >
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value="cod"
-                  checked={paymentMethod === 'cod'}
-                  onChange={() => setPaymentMethod('cod')}
-                  className="accent-[#F27A8A] w-4 h-4 cursor-pointer"
-                />
-                <div className="space-y-0.5">
-                  <div className="flex items-center gap-1.5 font-bold text-xs text-[#193653]">
-                    <Banknote className="w-4 h-4 text-[#F27A8A]" />
-                    <span>Cash on Delivery (COD)</span>
+                <div className="flex items-center gap-3 min-w-0">
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="upi_whatsapp"
+                    checked={paymentMethod === 'upi_whatsapp'}
+                    onChange={() => setPaymentMethod('upi_whatsapp')}
+                    className="accent-emerald-600 w-4 h-4 cursor-pointer shrink-0"
+                  />
+                  <div className="space-y-0.5 min-w-0">
+                    <div className="flex items-center gap-1.5 font-bold text-xs text-[#193653]">
+                      <MessageCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span>Pay via UPI (WhatsApp)</span>
+                    </div>
+                    <p className="text-[10px] text-[#5D7285]">Pay directly on WhatsApp with admin</p>
                   </div>
-                  <p className="text-[10px] text-[#5D7285]">Pay comfortably with cash/UPI upon delivery</p>
                 </div>
+                <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-300 shrink-0">
+                  Active
+                </span>
               </label>
+
+              {/* Cash on Delivery (Temporarily Disabled / Off) */}
+              <div
+                className="p-4 rounded-2xl border-2 border-dashed border-[#EFE6DA] bg-[#FFF9F2]/60 opacity-60 cursor-not-allowed flex items-center justify-between gap-3 select-none relative"
+                title="Cash on Delivery is currently unavailable. Please use Pay via UPI (WhatsApp)."
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="cod"
+                    disabled
+                    checked={false}
+                    className="accent-gray-400 w-4 h-4 cursor-not-allowed shrink-0"
+                  />
+                  <div className="space-y-0.5 min-w-0">
+                    <div className="flex items-center gap-1.5 font-bold text-xs text-gray-400">
+                      <Banknote className="w-4 h-4 text-gray-400 shrink-0" />
+                      <span>Cash on Delivery</span>
+                    </div>
+                    <p className="text-[10px] text-gray-400 truncate">Temporarily unavailable</p>
+                  </div>
+                </div>
+                <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider bg-gray-100 text-gray-500 border border-gray-200 shrink-0">
+                  Off
+                </span>
+              </div>
 
               {/* Online Payment / Razorpay (Coming Soon / Disabled) */}
               <div
-                className="p-4 rounded-2xl border-2 border-dashed border-[#EFE6DA] bg-[#FFF9F2]/60 opacity-70 cursor-not-allowed flex items-center justify-between gap-3 select-none relative"
-                title="Online payments via UPI, Debit/Credit Cards & NetBanking will be available soon. Please select Cash on Delivery for now."
+                className="p-4 rounded-2xl border-2 border-dashed border-[#EFE6DA] bg-[#FFF9F2]/60 opacity-60 cursor-not-allowed flex items-center justify-between gap-3 select-none relative"
+                title="Online payments via UPI, Debit/Credit Cards & NetBanking will be available soon. Please use Pay via UPI (WhatsApp)."
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 min-w-0">
                   <input
                     type="radio"
                     name="paymentMethod"
                     value="razorpay"
                     disabled
                     checked={false}
-                    className="accent-gray-400 w-4 h-4 cursor-not-allowed"
+                    className="accent-gray-400 w-4 h-4 cursor-not-allowed shrink-0"
                   />
-                  <div className="space-y-0.5">
-                    <div className="flex items-center gap-1.5 font-bold text-xs text-gray-500">
-                      <CreditCard className="w-4 h-4 text-gray-400" />
-                      <span>UPI, Cards, NetBanking</span>
+                  <div className="space-y-0.5 min-w-0">
+                    <div className="flex items-center gap-1.5 font-bold text-xs text-gray-400">
+                      <CreditCard className="w-4 h-4 text-gray-400 shrink-0" />
+                      <span>Cards / NetBanking</span>
                     </div>
-                    <p className="text-[10px] text-gray-400">Online payment gateway integration in progress</p>
+                    <p className="text-[10px] text-gray-400 truncate">Online gateway coming soon</p>
                   </div>
                 </div>
                 <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200 shrink-0">
-                  Coming Soon
+                  Soon
                 </span>
               </div>
             </div>
@@ -533,12 +591,21 @@ export default function CheckoutPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 rounded-full bg-[#F27A8A] hover:bg-[#e06878] text-white text-xs sm:text-sm font-extrabold flex items-center justify-center gap-2 transition-all shadow-cute-pink active:scale-98 disabled:opacity-50"
+              className={`w-full py-3.5 rounded-full text-white text-xs sm:text-sm font-extrabold flex items-center justify-center gap-2 transition-all shadow-md active:scale-98 disabled:opacity-50 ${
+                paymentMethod === 'upi_whatsapp'
+                  ? 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-500/20'
+                  : 'bg-[#F27A8A] hover:bg-[#e06878] shadow-cute-pink'
+              }`}
             >
               {loading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
                   <span>Confirming Order...</span>
+                </>
+              ) : paymentMethod === 'upi_whatsapp' ? (
+                <>
+                  <MessageCircle className="w-4 h-4 fill-white" />
+                  <span>Place Order &amp; Pay via WhatsApp (₹{total.toLocaleString('en-IN')})</span>
                 </>
               ) : (
                 <>

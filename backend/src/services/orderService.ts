@@ -39,6 +39,7 @@ interface DbOrderRow {
   total: number | string;
   payment_status: Order['payment_status'];
   order_status: Order['order_status'];
+  payment_method?: Order['payment_method'];
   guest_token?: string | null;
   razorpay_order_id?: string | null;
   razorpay_payment_id?: string | null;
@@ -98,6 +99,7 @@ function mapDbOrderToOrder(dbOrder: DbOrderRow): Order {
     total: Number(dbOrder.total),
     payment_status: dbOrder.payment_status,
     order_status: dbOrder.order_status,
+    payment_method: dbOrder.payment_method,
     guest_token: dbOrder.guest_token ?? null,
     razorpay_order_id: dbOrder.razorpay_order_id ?? null,
     razorpay_payment_id: dbOrder.razorpay_payment_id ?? null,
@@ -205,7 +207,7 @@ export async function createOrder(
   const orderNumber = generateOrderNumber();
 
   // 4. Insert into `orders` table using supabaseAdmin
-  const orderInsertPayload = {
+  const orderInsertPayload: Record<string, unknown> = {
     user_id: userId,
     order_number: orderNumber,
     customer_name: input.shippingAddress.fullName.trim(),
@@ -218,13 +220,26 @@ export async function createOrder(
     total: totalAmount,
     payment_status: 'pending',
     order_status: 'pending',
+    payment_method: input.paymentMethod || 'cod',
   };
 
-  const { data: createdOrderData, error: orderInsertError } = await supabaseAdmin
+  let { data: createdOrderData, error: orderInsertError } = await supabaseAdmin
     .from('orders')
     .insert(orderInsertPayload)
     .select('*')
     .single();
+
+  if (orderInsertError && orderInsertError.message?.includes('payment_method')) {
+    // If DB column doesn't exist yet before migration is applied, insert without payment_method
+    delete orderInsertPayload.payment_method;
+    const retry = await supabaseAdmin
+      .from('orders')
+      .insert(orderInsertPayload)
+      .select('*')
+      .single();
+    createdOrderData = retry.data;
+    orderInsertError = retry.error;
+  }
 
   if (orderInsertError || !createdOrderData) {
     throw new AppError(

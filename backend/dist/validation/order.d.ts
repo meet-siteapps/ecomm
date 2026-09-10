@@ -94,7 +94,7 @@ export declare const createOrderSchema: z.ZodObject<{
         addressLine2?: string | undefined;
         landmark?: string | undefined;
     }>;
-    paymentMethod: z.ZodEnum<["cod", "razorpay"]>;
+    paymentMethod: z.ZodEnum<["cod", "razorpay", "upi_whatsapp"]>;
 }, "strip", z.ZodTypeAny, {
     items: {
         quantity: number;
@@ -113,7 +113,7 @@ export declare const createOrderSchema: z.ZodObject<{
         addressLine2?: string | undefined;
         landmark?: string | undefined;
     };
-    paymentMethod: "cod" | "razorpay";
+    paymentMethod: "cod" | "razorpay" | "upi_whatsapp";
 }, {
     items: {
         quantity: number;
@@ -132,7 +132,7 @@ export declare const createOrderSchema: z.ZodObject<{
         addressLine2?: string | undefined;
         landmark?: string | undefined;
     };
-    paymentMethod: "cod" | "razorpay";
+    paymentMethod: "cod" | "razorpay" | "upi_whatsapp";
 }>;
 export type CreateOrderInputSchema = z.infer<typeof createOrderSchema>;
 export declare const orderIdParamSchema: z.ZodObject<{

@@ -235,8 +235,18 @@ export default function AdminOrdersPage() {
                         <span className="font-mono text-xs text-[#4DA3FF] block">
                           {order.order_number}
                         </span>
-                        <span className="text-[10px] text-gray-400">
-                          {order.items?.length || 0} {(order.items?.length === 1) ? 'item' : 'items'}
+                        <span className="text-[10px] text-gray-400 flex items-center gap-1.5 flex-wrap mt-0.5">
+                          <span>{order.items?.length || 0} {(order.items?.length === 1) ? 'item' : 'items'}</span>
+                          {order.payment_method === 'upi_whatsapp' && (
+                            <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                              UPI WhatsApp
+                            </span>
+                          )}
+                          {order.payment_method === 'cod' && (
+                            <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-gray-100 text-gray-600 border border-gray-200">
+                              COD
+                            </span>
+                          )}
                         </span>
                       </td>
 
@@ -343,9 +353,21 @@ export default function AdminOrdersPage() {
                 <span className="text-xs font-bold uppercase tracking-wider text-[#4DA3FF]">
                   Order Overview
                 </span>
-                <h3 className="text-xl font-extrabold text-[#1F2937] font-mono">
-                  {selectedOrder.order_number}
-                </h3>
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <h3 className="text-xl font-extrabold text-[#1F2937] font-mono">
+                    {selectedOrder.order_number}
+                  </h3>
+                  {selectedOrder.payment_method === 'upi_whatsapp' && (
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      Pay via UPI (WhatsApp)
+                    </span>
+                  )}
+                  {selectedOrder.payment_method === 'cod' && (
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 text-gray-600 border border-gray-200">
+                      Cash on Delivery (COD)
+                    </span>
+                  )}
+                </div>
               </div>
               <button
                 type="button"

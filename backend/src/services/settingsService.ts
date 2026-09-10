@@ -50,6 +50,8 @@ export async function getSettings(): Promise<StoreSettings> {
   return {
     ...DEFAULT_STORE_SETTINGS,
     ...(data as StoreSettings),
+    whatsapp_number: data.whatsapp_number ?? DEFAULT_STORE_SETTINGS.whatsapp_number,
+    upi_id: data.upi_id ?? DEFAULT_STORE_SETTINGS.upi_id,
     shipping_fee: Number(data.shipping_fee ?? DEFAULT_STORE_SETTINGS.shipping_fee),
     free_shipping_threshold: Number(
       data.free_shipping_threshold ?? DEFAULT_STORE_SETTINGS.free_shipping_threshold,
@@ -89,6 +91,12 @@ export async function updateSettings(
   if (input.contact_phone !== undefined) {
     updates['contact_phone'] = input.contact_phone.trim();
   }
+  if (input.whatsapp_number !== undefined) {
+    updates['whatsapp_number'] = input.whatsapp_number ? input.whatsapp_number.trim() : null;
+  }
+  if (input.upi_id !== undefined) {
+    updates['upi_id'] = input.upi_id ? input.upi_id.trim() : null;
+  }
   if (input.store_address !== undefined) {
     updates['store_address'] = input.store_address ? input.store_address.trim() : null;
   }
@@ -108,11 +116,23 @@ export async function updateSettings(
     updates['is_cod_enabled'] = Boolean(input.is_cod_enabled);
   }
 
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from('store_settings')
     .upsert(updates, { onConflict: 'id' })
     .select()
     .single();
+
+  if (error && error.message?.includes('whatsapp_number')) {
+    // If DB column doesn't exist yet before migration is applied, upsert without whatsapp_number
+    delete updates.whatsapp_number;
+    const retry = await supabase
+      .from('store_settings')
+      .upsert(updates, { onConflict: 'id' })
+      .select()
+      .single();
+    data = retry.data;
+    error = retry.error;
+  }
 
   if (error) {
     throw new AppError(
@@ -125,6 +145,8 @@ export async function updateSettings(
   return {
     ...DEFAULT_STORE_SETTINGS,
     ...(data as StoreSettings),
+    whatsapp_number: data.whatsapp_number ?? DEFAULT_STORE_SETTINGS.whatsapp_number,
+    upi_id: data.upi_id ?? DEFAULT_STORE_SETTINGS.upi_id,
     shipping_fee: Number(data.shipping_fee ?? DEFAULT_STORE_SETTINGS.shipping_fee),
     free_shipping_threshold: Number(
       data.free_shipping_threshold ?? DEFAULT_STORE_SETTINGS.free_shipping_threshold,

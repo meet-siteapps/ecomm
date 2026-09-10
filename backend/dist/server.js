@@ -19,9 +19,11 @@ const rateLimiter_js_1 = require("./middleware/rateLimiter.js");
 const errorHandler_js_1 = require("./middleware/errorHandler.js");
 const notFound_js_1 = require("./middleware/notFound.js");
 const app = (0, express_1.default)();
-app.use(rateLimiter_js_1.generalLimiter);
 const DEFAULT_ORIGINS = [
     'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'http://localhost:3001',
+    'http://127.0.0.1:3001',
     'https://ecommerce-site-dun-phi.vercel.app',
 ];
 const rawOrigins = process.env['CORS_ORIGIN'];
@@ -34,13 +36,14 @@ app.use((0, cors_1.default)({
             callback(null, true);
         }
         else {
-            callback(new Error(`CORS: origin '${incomingOrigin}' not allowed`));
+            callback(null, false);
         }
     },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
 }));
+app.use(rateLimiter_js_1.generalLimiter);
 app.use(express_1.default.json({ limit: '1mb' }));
 app.use(express_1.default.urlencoded({ extended: true, limit: '1mb' }));
 app.use('/health', health_js_1.default);

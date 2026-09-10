@@ -4,6 +4,8 @@ export interface StoreSettings {
     tagline?: string | null;
     contact_email: string;
     contact_phone: string;
+    whatsapp_number?: string | null;
+    upi_id?: string | null;
     store_address?: string | null;
     shipping_fee: number;
     free_shipping_threshold: number;
@@ -17,6 +19,8 @@ export interface UpdateSettingsInput {
     tagline?: string | null;
     contact_email?: string;
     contact_phone?: string;
+    whatsapp_number?: string | null;
+    upi_id?: string | null;
     store_address?: string | null;
     shipping_fee?: number;
     free_shipping_threshold?: number;

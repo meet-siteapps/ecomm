@@ -57,16 +57,36 @@ async function apiAuthFetch<T>(
   accessToken: string,
   options: RequestInit = {}
 ): Promise<T> {
+  if (!accessToken || typeof accessToken !== 'string' || !accessToken.trim()) {
+    throw new Error(`[apiAuthFetch] Cannot make authenticated request to ${path}: accessToken is missing or empty.`);
+  }
+
+  if (!BASE_URL) {
+    throw new Error(`[apiAuthFetch] BASE_URL is not configured. Check NEXT_PUBLIC_API_URL or NEXT_PUBLIC_BACKEND_URL.`);
+  }
+
   const url = `${BASE_URL}${path}`;
-  const res = await fetch(url, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
-      ...options.headers,
-    },
-    cache: 'no-store',
-  });
+
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken.trim()}`,
+        ...options.headers,
+      },
+      cache: 'no-store',
+    });
+  } catch (networkErr: any) {
+    console.error(`[apiAuthFetch] Network error calling ${url}:`, networkErr);
+    const err = new Error(
+      `Network error calling ${url} (${networkErr?.message || 'Failed to fetch'}). Ensure Express backend is running at ${BASE_URL} and CORS is allowed.`
+    );
+    (err as any).isNetworkError = true;
+    (err as any).url = url;
+    throw err;
+  }
 
   let json: BackendResponse<T>;
   try {
@@ -76,14 +96,18 @@ async function apiAuthFetch<T>(
   }
 
   if (json.status === 'error') {
-    const error = new Error(json.message || `API error from ${url}`);
+    const error = new Error(json.message || `API error (${res.status}) from ${url}`);
     (error as any).code = json.code;
     (error as any).status = res.status;
+    (error as any).url = url;
     throw error;
   }
 
   if (!res.ok) {
-    throw new Error(`HTTP ${res.status} from ${url}`);
+    const error = new Error(`HTTP ${res.status} from ${url}`);
+    (error as any).status = res.status;
+    (error as any).url = url;
+    throw error;
   }
 
   return json.data;

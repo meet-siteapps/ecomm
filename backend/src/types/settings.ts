@@ -8,6 +8,8 @@ export interface StoreSettings {
   tagline?: string | null;
   contact_email: string;
   contact_phone: string;
+  whatsapp_number?: string | null;
+  upi_id?: string | null;
   store_address?: string | null;
   shipping_fee: number;
   free_shipping_threshold: number;
@@ -25,6 +27,8 @@ export interface UpdateSettingsInput {
   tagline?: string | null;
   contact_email?: string;
   contact_phone?: string;
+  whatsapp_number?: string | null;
+  upi_id?: string | null;
   store_address?: string | null;
   shipping_fee?: number;
   free_shipping_threshold?: number;
@@ -39,6 +43,8 @@ export const DEFAULT_STORE_SETTINGS: StoreSettings = {
   tagline: 'Curated baby & kids essentials',
   contact_email: 'support@babyladoo.com',
   contact_phone: '+91 98765 43210',
+  whatsapp_number: '+91 98765 43210',
+  upi_id: null,
   store_address: 'Ahmedabad, Gujarat, India',
   shipping_fee: 99,
   free_shipping_threshold: 999,

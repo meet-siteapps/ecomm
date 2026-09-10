@@ -11,7 +11,7 @@ export type OrderStatus =
   | 'shipped'
   | 'delivered'
   | 'cancelled';
-export type PaymentMethod = 'cod' | 'razorpay';
+export type PaymentMethod = 'cod' | 'razorpay' | 'upi_whatsapp';
 
 export interface ShippingAddress {
   fullName: string;

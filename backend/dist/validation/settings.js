@@ -28,6 +28,18 @@ exports.updateSettingsSchema = zod_1.z
         .min(1, 'Contact phone cannot be empty')
         .max(30, 'Contact phone cannot exceed 30 characters')
         .optional(),
+    whatsapp_number: zod_1.z
+        .string()
+        .trim()
+        .max(30, 'WhatsApp number cannot exceed 30 characters')
+        .optional()
+        .nullable(),
+    upi_id: zod_1.z
+        .string()
+        .trim()
+        .max(50, 'UPI ID cannot exceed 50 characters')
+        .optional()
+        .nullable(),
     store_address: zod_1.z
         .string()
         .trim()

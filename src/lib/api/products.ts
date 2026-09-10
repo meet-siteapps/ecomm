@@ -157,8 +157,13 @@ export async function fetchProducts(options?: FetchProductsOptions): Promise<Pro
 
   const qs = queryParams.toString();
   const path = qs ? `/api/products?${qs}` : '/api/products';
-  const data = await apiFetch<ProductListData>(path);
-  return data.products;
+  try {
+    const data = await apiFetch<ProductListData>(path);
+    return data.products;
+  } catch (err) {
+    console.warn(`[fetchProducts] Warning: Could not reach backend API at ${path}. Returning empty list. Ensure backend is running.`, err);
+    return [];
+  }
 }
 
 export const getProducts = fetchProducts;
@@ -172,7 +177,8 @@ export async function fetchProductById(id: string): Promise<Product | null> {
     return await apiFetch<Product>(`/api/products/${encodeURIComponent(id)}`);
   } catch (err) {
     if (err instanceof Error && err.message.includes('404')) return null;
-    throw err;
+    console.warn(`[fetchProductById] Failed to fetch product ${id}:`, err);
+    return null;
   }
 }
 
