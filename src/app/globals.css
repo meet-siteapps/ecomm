@@ -1,32 +1,64 @@
 @import "tailwindcss";
 
 :root {
-  /* Color Palette grounded in baby/kids theme */
-  --background: #FAF4EE; /* Soft Warm Linen Cream */
-  --foreground: #193653; /* Deep Navy */
+  /* Color Palette grounded in "Little Nest" / Baby Ladoo reference design */
+  --background: #FFFEFA; /* Light Warm Ivory Cream */
+  --foreground: #1E293B; /* Deep Friendly Slate / Charcoal */
 
-  --color-warm-cream: #FAF4EE;
-  --color-deep-navy: #193653;
-  --color-coral-pink: #F27A8A;
+  --color-warm-cream: #FFFBF5;
+  --color-cream-light: #FFFEFA;
+  --color-deep-charcoal: #1E293B;
+  --color-primary-pink: #F06277;
+  --color-primary-pink-hover: #D9455B;
+  --color-coral-pink: #F06277;
   --color-pastel-sky: #8FD3E8;
   --color-soft-sage: #A8C98B;
   --color-pastel-yellow: #F6D77A;
+  --color-grass-green: #7CAD5C;
 
-  /* Palette Tints for Soft Backdrops */
-  --color-cream-light: #FDF9F5;
-  --color-coral-soft: #FDE8EB;
-  --color-sky-soft: #EBF8FC;
-  --color-sage-soft: #EFF7E9;
+  /* Palette Tints for Soft Backdrops & Trust Badges */
+  --color-coral-soft: #FDF2F4;
+  --color-sky-soft: #EBF5FB;
+  --color-sage-soft: #EBF7EE;
   --color-yellow-soft: #FEF9E8;
+
+  /* Badge Icon Accent Colors */
+  --color-badge-green: #34A853;
+  --color-badge-pink: #F06277;
+  --color-badge-blue: #2B8CE6;
+  --color-badge-yellow: #EAB308;
 
   /* Borders & Neutral Text */
   --color-border-warm: #EFE4D6;
-  --color-text-muted: #5D7285;
+  --color-border-subtle: #F3ECE1;
+  --color-text-muted: #64748B;
+  --color-text-body: #475569;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-warm-cream: var(--color-warm-cream);
+  --color-cream-light: var(--color-cream-light);
+  --color-primary-pink: var(--color-primary-pink);
+  --color-primary-pink-hover: var(--color-primary-pink-hover);
+  --color-coral-pink: var(--color-coral-pink);
+  --color-pastel-sky: var(--color-pastel-sky);
+  --color-soft-sage: var(--color-soft-sage);
+  --color-pastel-yellow: var(--color-pastel-yellow);
+  --color-grass-green: var(--color-grass-green);
+  --color-coral-soft: var(--color-coral-soft);
+  --color-sky-soft: var(--color-sky-soft);
+  --color-sage-soft: var(--color-sage-soft);
+  --color-yellow-soft: var(--color-yellow-soft);
+  --color-badge-green: var(--color-badge-green);
+  --color-badge-pink: var(--color-badge-pink);
+  --color-badge-blue: var(--color-badge-blue);
+  --color-badge-yellow: var(--color-badge-yellow);
+  --color-border-warm: var(--color-border-warm);
+  --color-border-subtle: var(--color-border-subtle);
+  --color-text-muted: var(--color-text-muted);
+  --color-text-body: var(--color-text-body);
   --font-sans: var(--font-quicksand), var(--font-nunito), 'Quicksand', 'Nunito', -apple-system, sans-serif;
 }
 
@@ -104,7 +136,7 @@ body {
     transform: translateY(0px) rotate(0deg);
   }
   50% {
-    transform: translateY(-5px) rotate(1deg);
+    transform: translateY(-8px) rotate(1.5deg);
   }
 }
 
@@ -139,6 +171,27 @@ body {
   100% {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+@keyframes gentleBob {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes gentleSway {
+  0%, 100% {
+    transform: translateX(0px) rotate(0deg);
+  }
+  25% {
+    transform: translateX(5px) rotate(2deg);
+  }
+  75% {
+    transform: translateX(-5px) rotate(-2deg);
   }
 }
 
@@ -213,7 +266,7 @@ body {
 }
 
 .animate-float {
-  animation: floatGentle 4.5s ease-in-out infinite;
+  animation: floatGentle 3s ease-in-out infinite;
 }
 
 .animate-float-slow {
@@ -226,6 +279,14 @@ body {
 
 .animate-pop-in {
   animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-bob {
+  animation: gentleBob 3.5s ease-in-out infinite;
+}
+
+.animate-sway {
+  animation: gentleSway 3.5s ease-in-out infinite;
 }
 
 .animate-pulse-glow {
@@ -278,6 +339,15 @@ body {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+  
+  /* Disable specific decorative animations */
+  .animate-float,
+  .animate-float-slow,
+  .animate-twinkle,
+  .animate-bob,
+  .animate-sway {
+    animation: none !important;
+  }
 }
 
 /* Custom subtle scrollbar */
@@ -286,7 +356,7 @@ body {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #FAF4EE;
+  background: #FFF9F0;
 }
 ::-webkit-scrollbar-thumb {
   background: #EFE4D6;

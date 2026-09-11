@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
 import { fetchUserOrders } from '@/lib/api/orders';
-import { Order, OrderStatus } from '@/types/order';
+import { Order, OrderStatus, PaymentStatus } from '@/types/order';
 
 const STATUS_BADGES: Record<OrderStatus, { label: string; bg: string; text: string; border: string }> = {
   pending: { label: 'Pending Confirmation', bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200' },
@@ -32,6 +32,14 @@ const STATUS_BADGES: Record<OrderStatus, { label: string; bg: string; text: stri
   shipped: { label: 'Shipped / In Transit', bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200' },
   delivered: { label: 'Delivered', bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200' },
   cancelled: { label: 'Cancelled', bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200' },
+};
+
+const PAYMENT_BADGES: Record<PaymentStatus, { label: string; color: string }> = {
+  unpaid:   { label: 'Unpaid',    color: 'text-red-600' },
+  pending:  { label: 'Pending',   color: 'text-amber-600' },
+  paid:     { label: 'Paid',      color: 'text-emerald-600' },
+  failed:   { label: 'Failed',    color: 'text-red-600' },
+  refunded: { label: 'Refunded',  color: 'text-gray-500' },
 };
 
 export default function AccountPage() {
@@ -229,9 +237,14 @@ export default function AccountPage() {
                       <span className="text-sm font-extrabold text-[#2D3748] block">
                         ₹{order.total.toLocaleString('en-IN')}
                       </span>
-                      <span className="text-[10px] text-[#A0AEC0] capitalize font-medium">
-                        Payment: {order.payment_status}
-                      </span>
+                      {(() => {
+                        const pb = PAYMENT_BADGES[order.payment_status] || PAYMENT_BADGES.pending;
+                        return (
+                          <span className={`text-[10px] font-bold capitalize ${pb.color}`}>
+                            Payment: {pb.label}
+                          </span>
+                        );
+                      })()}
                     </div>
                   </div>
 
@@ -264,7 +277,7 @@ export default function AccountPage() {
                   </div>
 
                   {/* Order Shipping Summary Footer */}
-                  <div className="p-4 bg-[#FAF7F2] text-[11px] text-[#718096] flex flex-col sm:flex-row sm:items-center justify-between gap-2 font-medium">
+                  <div className="p-4 bg-[#FAF7F2] text-[11px] text-[#718096] flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-medium">
                     <span>
                       Shipping to:{' '}
                       <strong className="text-[#2D3748]">
@@ -272,9 +285,25 @@ export default function AccountPage() {
                       </strong>{' '}
                       ({order.shipping_address?.city}, {order.shipping_address?.state})
                     </span>
-                    <span className="text-[#059669] font-bold">
-                      Standard Delivery • 3-5 Business Days
-                    </span>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {/* Pay Now — only for UPI orders that aren't paid yet */}
+                      {order.payment_method === 'upi_whatsapp' && order.payment_status !== 'paid' && (
+                        <Link
+                          href={`/checkout/success?order_id=${order.id}&order_number=${order.order_number}&method=upi_whatsapp`}
+                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-extrabold transition-all shadow-sm active:scale-98"
+                        >
+                          <span>Pay Now</span>
+                          <ArrowRight className="w-3 h-3" />
+                        </Link>
+                      )}
+                      <Link
+                        href={`/account/orders/${order.id}`}
+                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white hover:bg-[#FFEAEF] text-[#FF6B8B] text-[11px] font-bold border border-[#FF6B8B]/30 transition-all active:scale-98"
+                      >
+                        <span>View Details</span>
+                        <ChevronRight className="w-3 h-3" />
+                      </Link>
+                    </div>
                   </div>
                 </div>
               );

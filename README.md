@@ -259,3 +259,90 @@ curl http://localhost:5000/api/products
 - Build command: `npm install && npm run build`
 - Start command: `npm start`
 - Environment variables: set all vars from `backend/.env.example` in Render dashboard
+
+---
+
+## Pre-Launch Manual QA Checklist
+
+> COD and Razorpay are intentionally parked — excluded from this checklist.  
+> Work through this on the **live site** (Vercel + Render) using a real phone where noted.  
+> Build success does not substitute for this — do each step for real.
+
+### A. Browsing & Cart
+
+- [ ] Homepage loads, products display correctly, images load
+- [ ] Product filters work (category, price, etc.)
+- [ ] Product detail page loads, add-to-cart works
+- [ ] Cart updates quantity/remove correctly, total recalculates
+- [ ] Wishlist add/remove works
+
+### B. Auth
+
+- [ ] Sign up as a NEW customer account
+- [ ] Log out, log back in
+- [ ] Try checkout while logged OUT — confirm it blocks/redirects to login (guest checkout is intentionally disabled)
+- [ ] Password policy enforced on signup
+
+### C. Checkout — UPI/WhatsApp (Card A path)
+
+- [ ] Place a real order — `upi_whatsapp` should be pre-selected and the only selectable option
+- [ ] COD shows "Off" (greyed, disabled), Razorpay shows "Coming Soon" (greyed, disabled) — neither selectable
+- [ ] Land on `/checkout/success` — confirm `order_id`, `order_number`, total shown correctly
+- [ ] **Card A:** UPI ID visible, Copy button works, "Pay Now with UPI App" deep link opens a UPI app (or correct fallback amber message if `upi_id` not set)
+- [ ] **Card A:** "Confirm on WhatsApp" button opens WhatsApp with correct pre-filled message. Check the actual `wa.me/...` URL — must be digits only, no `+`, spaces, or dashes
+- [ ] **Card B:** opens WhatsApp separately with its own pre-filled message, correct order number and amount
+
+### D. Mobile — no-scroll claim
+
+- [ ] Open `/checkout/success` at 375px, 390px, 412px (real device or devtools emulation)
+- [ ] Both Card A and Card B visible without scrolling, along with the order total header
+- [ ] Note the exact device width where either card gets cut off, if any
+
+### E. Admin — marking payment as paid
+
+- [ ] Log in as admin → Orders
+- [ ] Find the test order, set `payment_status` to `paid`
+- [ ] Order status badge and payment badge both display correctly in the admin list
+- [ ] Confirm `unpaid` badge renders correctly (not blank/broken) — it was added recently
+
+### F. Revisiting a paid order (critical regression check)
+
+- [ ] As customer: `/account` → order history → open the paid order → shows **"Payment Confirmed ✓"**, not Card A/B
+- [ ] Re-visit `/checkout/success?order_id=...` directly for the same paid order → also shows **"Payment Confirmed ✓"** (two-entry-point sharing)
+
+### G. Pay Now flow for a pending order
+
+- [ ] Place a SECOND test order, do NOT mark it paid
+- [ ] `/account` → order history → shows as pending/unpaid with a **Pay Now** button
+- [ ] Click "Pay Now" → lands on Card A/B experience with correct `order_number` and total (from fetched order record, not stale)
+- [ ] Complete via Card B (WhatsApp path) to confirm both paths work from this second entry point
+
+### H. Store settings → live effect
+
+- [ ] As admin, change `whatsapp_number` in `/admin/settings` to a different real number
+- [ ] `/checkout/success` and order detail both immediately reflect the new number (not cached/stale)
+- [ ] Enter the number WITH spaces/dashes in admin form — confirm sanitizer still produces a clean `wa.me/` link on customer side
+- [ ] Update `upi_id` — confirm it shows correctly on Card A and on any Pay Now re-entry
+
+### I. Legal & misc
+
+- [ ] Legal pages (terms, privacy, refund, shipping) load with real content, not placeholder text
+- [ ] COD and Razorpay have zero customer-facing entry points anywhere outside of the checkout page (search, footer links, nav, etc.)
+
+---
+
+### QA Results Log
+
+> Fill in after completing the above. Leave blank until tested.
+
+| Section | Status | Notes |
+|---------|--------|-------|
+| A. Browsing & Cart | ⬜ Untested | |
+| B. Auth | ⬜ Untested | |
+| C. Checkout UPI/WA | ⬜ Untested | |
+| D. Mobile no-scroll | ⬜ Untested | Pixel width where scroll starts: |
+| E. Admin paid | ⬜ Untested | |
+| F. Paid order revisit | ⬜ Untested | |
+| G. Pay Now pending | ⬜ Untested | |
+| H. Settings live effect | ⬜ Untested | |
+| I. Legal & misc | ⬜ Untested | |

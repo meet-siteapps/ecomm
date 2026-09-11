@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; }
+        .image-box { margin: 20px 0; padding: 20px; border: 2px solid #ddd; border-radius: 8px; }
+        img { max-width: 100%; height: auto; display: block; margin: 10px 0; }
+        h2 { color: #333; }
+        .status { padding: 10px; border-radius: 5px; margin: 10px 0; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🖼️ Image Loading Test</h1>
+        
+        <div class="image-box">
+            <h2>1. Hero Image (heroimg1.png) - Updated: 253.74 KB</h2>
+            <img src="/heroimg1.png?v=20260910213840" alt="Hero Image" onload="document.getElementById('hero-status').className='status success'; document.getElementById('hero-status').textContent='✅ Loaded Successfully - NEW IMAGE';" onerror="document.getElementById('hero-status').className='status error'; document.getElementById('hero-status').textContent='❌ Failed to Load';">
+            <div id="hero-status" class="status">⏳ Loading...</div>
+            <p style="font-size: 12px; color: #666;">File size: 253.74 KB | Last modified: 09/10/2026 21:38:40</p>
+        </div>
+
+        <div class="image-box">
+            <h2>2. Giraffe (giraffe.png)</h2>
+            <img src="/giraffe.png" alt="Giraffe" onload="document.getElementById('giraffe-status').className='status success'; document.getElementById('giraffe-status').textContent='✅ Loaded Successfully';" onerror="document.getElementById('giraffe-status').className='status error'; document.getElementById('giraffe-status').textContent='❌ Failed to Load';" style="max-width: 300px;">
+            <div id="giraffe-status" class="status">⏳ Loading...</div>
+        </div>
+
+        <div class="image-box">
+            <h2>3. Hot Air Balloon (hotairbaloon.png)</h2>
+            <img src="/hotairbaloon.png" alt="Hot Air Balloon" onload="document.getElementById('balloon-status').className='status success'; document.getElementById('balloon-status').textContent='✅ Loaded Successfully';" onerror="document.getElementById('balloon-status').className='status error'; document.getElementById('balloon-status').textContent='❌ Failed to Load';" style="max-width: 300px;">
+            <div id="balloon-status" class="status">⏳ Loading...</div>
+        </div>
+
+        <div class="image-box">
+            <h2>📝 Instructions</h2>
+            <p><strong>If all images show "✅ Loaded Successfully":</strong> Images are working correctly!</p>
+            <p><strong>If any show "❌ Failed to Load":</strong> Check the file names and paths.</p>
+            <p><strong>To use on your site:</strong> Restart your dev server with <code>npm run dev</code> and hard refresh (Ctrl+Shift+R)</p>
+        </div>
+    </div>
+</body>
+</html>

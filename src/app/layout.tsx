@@ -32,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${quicksand.variable} ${nunito.variable}`} suppressHydrationWarning>
       <body
-        className="min-h-screen flex flex-col bg-[#FAF4EE] text-[#193653] font-sans antialiased selection:bg-[#FDE8EB] selection:text-[#F27A8A]"
+        className="min-h-screen flex flex-col bg-[#FFFEFA] text-[#1E293B] font-sans antialiased selection:bg-[#FDF2F4] selection:text-[#F06277]"
         suppressHydrationWarning
       >
         <AuthListener />

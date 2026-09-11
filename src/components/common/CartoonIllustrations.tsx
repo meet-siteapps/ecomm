@@ -238,33 +238,84 @@ export function HeroCharactersIllustration({ className = 'w-full max-w-lg' }: { 
 }
 
 /**
- * Hot Air Balloon Mascot for Footer
+ * Hot Air Balloon Mascot for Footer (Little Nest style)
  */
 export function HotAirBalloonIllustration({ className = 'w-24 h-36' }: { className?: string }) {
   return (
-    <svg viewBox="0 0 100 140" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${className} animate-float`}>
-      {/* Balloon Envelope */}
+    <svg viewBox="0 0 120 160" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${className} animate-float select-none`}>
+      {/* Balloon Envelope - 5 distinct pastel slices */}
+      <defs>
+        <clipPath id="balloonClip">
+          <path d="M 60 10 C 25 10 12 38 18 72 C 24 95 50 110 54 112 L 66 112 C 70 110 96 95 102 72 C 108 38 95 10 60 10 Z" />
+        </clipPath>
+      </defs>
+
+      {/* Main outer envelope with outline */}
       <path
-        d="M 50 10 C 20 10 10 35 15 65 C 20 85 42 100 46 102 L 54 102 C 58 100 80 85 85 65 C 90 35 80 10 50 10 Z"
-        fill="#FDE8EB"
-        stroke="#F27A8A"
-        strokeWidth="2.5"
+        d="M 60 10 C 25 10 12 38 18 72 C 24 95 50 110 54 112 L 66 112 C 70 110 96 95 102 72 C 108 38 95 10 60 10 Z"
+        fill="#FFF9F0"
+        stroke="#475569"
+        strokeWidth="2"
       />
-      {/* Vertical Stripes */}
-      <path d="M 50 10 C 36 30 36 80 48 102" stroke="#8FD3E8" strokeWidth="8" fill="none" />
-      <path d="M 50 10 C 64 30 64 80 52 102" stroke="#F6D77A" strokeWidth="8" fill="none" />
-      <path d="M 50 10 L 50 102" stroke="#F27A8A" strokeWidth="3" fill="none" />
 
-      {/* Ropes */}
-      <line x1="42" y1="102" x2="40" y2="114" stroke="#193653" strokeWidth="1.5" />
-      <line x1="58" y1="102" x2="60" y2="114" stroke="#193653" strokeWidth="1.5" />
+      {/* Clipped colored vertical panels */}
+      <g clipPath="url(#balloonClip)">
+        {/* Leftmost panel - Soft Pink */}
+        <path d="M 60 10 C 35 15 20 45 18 72 C 20 90 35 105 54 112 L 18 112 L 18 10 Z" fill="#F8A3AF" stroke="#475569" strokeWidth="1.2" />
+        {/* Next panel - Pastel Yellow */}
+        <path d="M 60 10 C 45 20 38 50 40 80 C 42 98 52 108 55 112 L 35 112 L 35 10 Z" fill="#FDE68A" stroke="#475569" strokeWidth="1.2" />
+        {/* Center panel - Warm Cream */}
+        <path d="M 60 10 C 52 35 52 85 57 112 L 63 112 C 68 85 68 35 60 10 Z" fill="#FFFDF9" stroke="#475569" strokeWidth="1.2" />
+        {/* Next panel - Mint Green */}
+        <path d="M 60 10 C 75 20 82 50 80 80 C 78 98 68 108 65 112 L 85 112 L 85 10 Z" fill="#BBF7D0" stroke="#475569" strokeWidth="1.2" />
+        {/* Rightmost panel - Sky Blue */}
+        <path d="M 60 10 C 85 15 100 45 102 72 C 100 90 85 105 66 112 L 102 112 L 102 10 Z" fill="#BAE6FD" stroke="#475569" strokeWidth="1.2" />
+      </g>
 
-      {/* Basket */}
-      <rect x="36" y="114" width="28" height="18" rx="4" fill="#A8C98B" stroke="#729c50" strokeWidth="2" />
-      {/* Smiling Teddy Inside Basket */}
-      <circle cx="50" cy="112" r="7" fill="#E2AA76" />
-      <circle cx="48" cy="111" r="1" fill="#193653" />
-      <circle cx="52" cy="111" r="1" fill="#193653" />
+      {/* Ropes attaching basket */}
+      <line x1="48" y1="112" x2="45" y2="124" stroke="#475569" strokeWidth="1.5" />
+      <line x1="56" y1="112" x2="53" y2="124" stroke="#475569" strokeWidth="1.5" />
+      <line x1="64" y1="112" x2="67" y2="124" stroke="#475569" strokeWidth="1.5" />
+      <line x1="72" y1="112" x2="75" y2="124" stroke="#475569" strokeWidth="1.5" />
+
+      {/* Smiling Teddy inside basket */}
+      <g transform="translate(60, 122)">
+        {/* Ears */}
+        <circle cx="-6" cy="-4" r="3" fill="#D49B6A" stroke="#475569" strokeWidth="1" />
+        <circle cx="6" cy="-4" r="3" fill="#D49B6A" stroke="#475569" strokeWidth="1" />
+        {/* Head */}
+        <circle cx="0" cy="0" r="7" fill="#E2AA76" stroke="#475569" strokeWidth="1.2" />
+        {/* Eyes & Snout */}
+        <ellipse cx="0" cy="2" rx="3.5" ry="2.5" fill="#FFFDF9" />
+        <circle cx="0" cy="1" r="1" fill="#1E293B" />
+        <circle cx="-2.5" cy="-1" r="0.9" fill="#1E293B" />
+        <circle cx="2.5" cy="-1" r="0.9" fill="#1E293B" />
+        {/* Cheeks */}
+        <circle cx="-4" cy="1" r="1.2" fill="#F06277" opacity="0.6" />
+        <circle cx="4" cy="1" r="1.2" fill="#F06277" opacity="0.6" />
+        {/* Paws on rim */}
+        <ellipse cx="-7" cy="4" rx="2.5" ry="2" fill="#E2AA76" stroke="#475569" strokeWidth="0.8" />
+        <ellipse cx="7" cy="4" rx="2.5" ry="2" fill="#E2AA76" stroke="#475569" strokeWidth="0.8" />
+      </g>
+
+      {/* Wicker Basket */}
+      <rect x="42" y="125" width="36" height="20" rx="4" fill="#E0A96D" stroke="#475569" strokeWidth="1.8" />
+      {/* Basket weave pattern */}
+      <line x1="42" y1="131" x2="78" y2="131" stroke="#BD7E44" strokeWidth="1.2" />
+      <line x1="42" y1="138" x2="78" y2="138" stroke="#BD7E44" strokeWidth="1.2" />
+      <line x1="51" y1="125" x2="51" y2="145" stroke="#BD7E44" strokeWidth="1.2" />
+      <line x1="60" y1="125" x2="60" y2="145" stroke="#BD7E44" strokeWidth="1.2" />
+      <line x1="69" y1="125" x2="69" y2="145" stroke="#BD7E44" strokeWidth="1.2" />
+
+      {/* Fluffy white cloud at the base */}
+      <g transform="translate(15, 136)" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.05))">
+        <path
+          d="M 12 18 Q 0 18 0 10 Q 0 2 10 3 Q 15 -4 28 0 Q 40 -6 50 2 Q 62 -2 65 8 Q 74 6 72 16 Q 72 20 60 20 Z"
+          fill="#FFFFFF"
+          stroke="#E2E8F0"
+          strokeWidth="1.2"
+        />
+      </g>
     </svg>
   );
 }
@@ -409,3 +460,319 @@ export function CuteSittingTeddyIllustration({ className = 'w-28 h-28' }: { clas
   );
 }
 
+
+/**
+ * WavyDivider — smooth organic wave SVG used between homepage sections.
+ * topColor: the section above, bottomColor: the section below.
+ * Flip vertically with className="rotate-180" when needed.
+ */
+export function WavyDivider({
+  topColor = '#FFFEFA',
+  bottomColor = '#FFFBF5',
+  className = '',
+}: {
+  topColor?: string;
+  bottomColor?: string;
+  className?: string;
+}) {
+  return (
+    <div className={`w-full overflow-hidden leading-none ${className}`} style={{ background: topColor }} aria-hidden="true">
+      <svg
+        viewBox="0 0 1440 56"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="w-full block"
+        preserveAspectRatio="none"
+        style={{ height: '40px' }}
+      >
+        <path
+          d="M0 28 C180 56 360 0 540 28 C720 56 900 0 1080 28 C1260 56 1380 14 1440 28 L1440 56 L0 56 Z"
+          fill={bottomColor}
+        />
+      </svg>
+    </div>
+  );
+}
+
+/**
+ * ScallopDivider — tighter scalloped/cloud-bump wave for section breaks.
+ */
+export function ScallopDivider({
+  topColor = '#ffffff',
+  bottomColor = '#FFFBF5',
+  className = '',
+}: {
+  topColor?: string;
+  bottomColor?: string;
+  className?: string;
+}) {
+  return (
+    <div className={`w-full overflow-hidden leading-none ${className}`} style={{ background: topColor }} aria-hidden="true">
+      <svg
+        viewBox="0 0 1440 48"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="w-full block"
+        preserveAspectRatio="none"
+        style={{ height: '36px' }}
+      >
+        <path
+          d="M0 0 Q 36 48 72 0 Q 108 48 144 0 Q 180 48 216 0 Q 252 48 288 0 Q 324 48 360 0 Q 396 48 432 0 Q 468 48 504 0 Q 540 48 576 0 Q 612 48 648 0 Q 684 48 720 0 Q 756 48 792 0 Q 828 48 864 0 Q 900 48 936 0 Q 972 48 1008 0 Q 1044 48 1080 0 Q 1116 48 1152 0 Q 1188 48 1224 0 Q 1260 48 1296 0 Q 1332 48 1368 0 Q 1404 48 1440 0 L1440 48 L0 48 Z"
+          fill={bottomColor}
+        />
+      </svg>
+    </div>
+  );
+}
+
+/**
+ * FooterGiraffe — cute smiling cartoon giraffe sitting in the footer corner.
+ * Matches Little Nest reference: golden yellow coat, warm caramel spots, soft expressions.
+ */
+export function FooterGiraffe({ className = 'w-24 h-36' }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 120 180"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={`${className} select-none animate-float`}
+      aria-hidden="true"
+    >
+      {/* Tail with tuft */}
+      <path d="M 72 148 Q 88 155 82 168 Q 86 162 92 164" stroke="#F5D278" strokeWidth="3" strokeLinecap="round" fill="none" />
+      <circle cx="93" cy="165" r="3.5" fill="#BD7E44" />
+
+      {/* Back legs */}
+      <rect x="60" y="128" width="11" height="38" rx="5" fill="#F5D278" stroke="#D4A745" strokeWidth="1.5" />
+      <rect x="74" y="128" width="11" height="38" rx="5" fill="#F5D278" stroke="#D4A745" strokeWidth="1.5" />
+      {/* Front legs */}
+      <rect x="30" y="110" width="11" height="44" rx="5" fill="#F5D278" stroke="#D4A745" strokeWidth="1.5" />
+      <rect x="44" y="110" width="11" height="44" rx="5" fill="#F5D278" stroke="#D4A745" strokeWidth="1.5" />
+      {/* Hooves */}
+      <rect x="29" y="150" width="13" height="8" rx="4" fill="#8C5320" />
+      <rect x="43" y="150" width="13" height="8" rx="4" fill="#8C5320" />
+      <rect x="59" y="162" width="13" height="8" rx="4" fill="#8C5320" />
+      <rect x="73" y="162" width="13" height="8" rx="4" fill="#8C5320" />
+
+      {/* Body */}
+      <ellipse cx="55" cy="118" rx="30" ry="24" fill="#F5D278" stroke="#D4A745" strokeWidth="2" />
+      {/* Body spots (Caramel Brown) */}
+      <ellipse cx="44" cy="110" rx="6" ry="4" transform="rotate(-20 44 110)" fill="#BD7E44" />
+      <ellipse cx="62" cy="120" rx="5.5" ry="4.5" fill="#BD7E44" />
+      <ellipse cx="50" cy="128" rx="4.5" ry="3.5" transform="rotate(15 50 128)" fill="#BD7E44" />
+      <ellipse cx="70" cy="112" rx="4" ry="3" fill="#BD7E44" />
+
+      {/* Neck */}
+      <path d="M 42 96 Q 38 60 44 30" stroke="#F5D278" strokeWidth="18" strokeLinecap="round" fill="none" />
+      <path d="M 42 96 Q 38 60 44 30" stroke="#D4A745" strokeWidth="18" strokeLinecap="round" fill="none" strokeOpacity="0.25" />
+      {/* Neck spots */}
+      <ellipse cx="40" cy="74" rx="4" ry="3" transform="rotate(-10 40 74)" fill="#BD7E44" />
+      <ellipse cx="43" cy="54" rx="3.5" ry="3" transform="rotate(5 43 54)" fill="#BD7E44" />
+      <ellipse cx="41" cy="38" rx="3" ry="2.5" fill="#BD7E44" />
+
+      {/* Ossicones (horns) */}
+      <rect x="44" y="14" width="5" height="12" rx="2.5" fill="#D4A745" stroke="#8C5320" strokeWidth="1" />
+      <circle cx="46.5" cy="13" r="3.5" fill="#8C5320" />
+      <rect x="56" y="16" width="5" height="10" rx="2.5" fill="#D4A745" stroke="#8C5320" strokeWidth="1" />
+      <circle cx="58.5" cy="15" r="3.5" fill="#8C5320" />
+
+      {/* Head */}
+      <ellipse cx="52" cy="30" rx="18" ry="15" fill="#F5D278" stroke="#D4A745" strokeWidth="2" />
+      {/* Snout */}
+      <ellipse cx="62" cy="35" rx="10" ry="7" fill="#FFF8E7" stroke="#D4A745" strokeWidth="1.2" />
+      {/* Nostrils */}
+      <circle cx="60" cy="36" r="1.2" fill="#8C5320" />
+      <circle cx="65" cy="36" r="1.2" fill="#8C5320" />
+      {/* Eyes */}
+      <circle cx="46" cy="27" r="3.5" fill="#1E293B" />
+      <circle cx="47.5" cy="25.5" r="1.2" fill="white" />
+      {/* Long eyelash */}
+      <path d="M 43 24 Q 45 21 48 23" stroke="#1E293B" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+      {/* Rosy cheek */}
+      <circle cx="41" cy="32" r="4.5" fill="#F06277" fillOpacity="0.5" />
+      {/* Smile */}
+      <path d="M 57 38 Q 62 42 67 38" stroke="#8C5320" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+
+      {/* Mane along neck */}
+      <path d="M 44 26 Q 40 18 42 10 Q 44 16 46 12 Q 47 18 49 14 Q 50 20 52 16 Q 52 22 54 19" stroke="#BD7E44" strokeWidth="3.5" strokeLinecap="round" fill="none" />
+
+      {/* Small flowers near feet */}
+      <circle cx="18" cy="168" r="4" fill="#F06277" />
+      <circle cx="18" cy="168" r="1.8" fill="#FFF9F0" />
+      <circle cx="106" cy="170" r="3.5" fill="#FDE68A" />
+      <circle cx="106" cy="170" r="1.5" fill="#FFF9F0" />
+    </svg>
+  );
+}
+
+/**
+ * SmallCloudAccent — a single puffy cloud shape for hero decoration.
+ */
+export function SmallCloudAccent({ className = 'w-20 h-10' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 80 40" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} aria-hidden="true">
+      <path
+        d="M 10 32 Q 0 32 0 24 Q 0 14 10 13 Q 14 4 24 6 Q 32 0 44 5 Q 56 0 64 10 Q 78 10 78 22 Q 80 32 64 32 Z"
+        fill="white"
+        fillOpacity="0.85"
+      />
+    </svg>
+  );
+}
+
+/**
+ * LeafSprigAccent — small decorative leaf sprig for corner/hero accents.
+ */
+export function LeafSprigAccent({ className = 'w-10 h-10' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} aria-hidden="true">
+      <path d="M 20 38 Q 20 20 20 10" stroke="#A8C98B" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+      <ellipse cx="12" cy="22" rx="9" ry="5" transform="rotate(-35 12 22)" fill="#A8C98B" fillOpacity="0.7" />
+      <ellipse cx="28" cy="18" rx="9" ry="5" transform="rotate(35 28 18)" fill="#A8C98B" fillOpacity="0.7" />
+      <ellipse cx="16" cy="12" rx="7" ry="4" transform="rotate(-15 16 12)" fill="#A8C98B" fillOpacity="0.5" />
+    </svg>
+  );
+}
+
+/**
+ * Animate Bob keyframe — gentle up-down bobbing motion.
+ */
+export const animateBobCSS = `
+@keyframes gentleBob {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.animate-bob {
+  animation: gentleBob 3.5s ease-in-out infinite;
+}
+`;
+
+/**
+ * HeroGroundShape — warm sand/ground-colored wave at bottom of hero with decorative bushes/flowers
+ */
+export function HeroGroundShape({ className = '' }: { className?: string }) {
+  return (
+    <div className={`absolute bottom-0 left-0 right-0 pointer-events-none select-none ${className}`} aria-hidden="true">
+      {/* Warm sand/ground wave */}
+      <svg
+        viewBox="0 0 1440 120"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="w-full"
+        preserveAspectRatio="none"
+      >
+        <path
+          d="M0 40 C240 80 480 20 720 50 C960 80 1200 30 1440 60 L1440 120 L0 120 Z"
+          fill="#E8DCC8"
+        />
+      </svg>
+      
+      {/* Small bush/flower decorations sitting on the ground */}
+      {/* Left bush cluster */}
+      <div className="absolute bottom-2 left-[8%] hidden sm:block">
+        <svg viewBox="0 0 60 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-12 h-8">
+          {/* Bush leaves */}
+          <circle cx="15" cy="28" r="12" fill="#A8C98B" opacity="0.8" />
+          <circle cx="28" cy="25" r="14" fill="#A8C98B" opacity="0.85" />
+          <circle cx="42" cy="28" r="11" fill="#A8C98B" opacity="0.75" />
+          {/* Small flowers */}
+          <circle cx="18" cy="20" r="3" fill="#F27A8A" opacity="0.9" />
+          <circle cx="18" cy="20" r="1.5" fill="#FFF9F2" />
+          <circle cx="38" cy="22" r="2.5" fill="#F6D77A" opacity="0.9" />
+          <circle cx="38" cy="22" r="1.2" fill="#FFF9F2" />
+        </svg>
+      </div>
+
+      {/* Right bush cluster */}
+      <div className="absolute bottom-3 right-[10%] hidden md:block">
+        <svg viewBox="0 0 50 35" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-10 h-7">
+          {/* Bush leaves */}
+          <circle cx="12" cy="24" r="10" fill="#A8C98B" opacity="0.75" />
+          <circle cx="25" cy="22" r="12" fill="#A8C98B" opacity="0.8" />
+          <circle cx="38" cy="25" r="9" fill="#A8C98B" opacity="0.7" />
+          {/* Small flower */}
+          <circle cx="25" cy="16" r="2.5" fill="#8FD3E8" opacity="0.9" />
+          <circle cx="25" cy="16" r="1.2" fill="#FFF9F2" />
+        </svg>
+      </div>
+
+      {/* Center-left small flower */}
+      <div className="absolute bottom-4 left-[25%] hidden lg:block">
+        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5">
+          <circle cx="10" cy="10" r="4" fill="#F27A8A" opacity="0.8" />
+          <circle cx="10" cy="10" r="2" fill="#FFF9F2" />
+          <circle cx="10" cy="16" r="1.5" fill="#A8C98B" opacity="0.6" />
+        </svg>
+      </div>
+
+      {/* Center-right grass tuft */}
+      <div className="absolute bottom-2 right-[28%] hidden lg:block">
+        <svg viewBox="0 0 30 25" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-6 h-5">
+          <path d="M 8 25 Q 12 10 16 5" stroke="#A8C98B" strokeWidth="2" strokeLinecap="round" fill="none" opacity="0.7" />
+          <path d="M 14 25 Q 18 12 22 6" stroke="#A8C98B" strokeWidth="2" strokeLinecap="round" fill="none" opacity="0.6" />
+          <path d="M 4 25 Q 8 15 10 8" stroke="#A8C98B" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.5" />
+        </svg>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Enhanced FloatingPastelDecorations — richer set of hero background accents.
+ * Clouds, stars, hearts, leaf sprigs — all pointer-events-none, aria-hidden.
+ */
+export function FloatingPastelDecorationsEnhanced() {
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden select-none" aria-hidden="true">
+      {/* Top-left large cloud */}
+      <div className="absolute top-6 left-[-2%] opacity-70 motion-safe:animate-float-slow hidden sm:block">
+        <SmallCloudAccent className="w-32 h-16" />
+      </div>
+      {/* Top-right small cloud */}
+      <div className="absolute top-4 right-[8%] opacity-60 motion-safe:animate-float" style={{ animationDelay: '1.2s' }}>
+        <SmallCloudAccent className="w-20 h-10" />
+      </div>
+      {/* Upper-left yellow star */}
+      <div className="absolute top-8 left-[6%] motion-safe:animate-twinkle" style={{ animationDelay: '0.3s' }}>
+        <svg viewBox="0 0 24 24" fill="#F6D77A" className="w-5 h-5 opacity-80">
+          <path d="M12 2l2.4 7.4h7.6l-6.2 4.5 2.4 7.4-6.2-4.5-6.2 4.5 2.4-7.4-6.2-4.5h7.6z" />
+        </svg>
+      </div>
+      {/* Upper-right coral heart */}
+      <div className="absolute top-12 right-[10%] motion-safe:animate-float" style={{ animationDelay: '0.8s' }}>
+        <svg viewBox="0 0 24 24" fill="#F27A8A" className="w-4 h-4 opacity-55">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+        </svg>
+      </div>
+      {/* Mid-left sky-blue sparkle */}
+      <div className="absolute top-1/2 left-[3%] motion-safe:animate-twinkle" style={{ animationDelay: '1.5s' }}>
+        <svg viewBox="0 0 24 24" fill="#8FD3E8" className="w-4 h-4 opacity-65">
+          <path d="M12 0l3 9 9 3-9 3-3 9-3-9-9-3 9-3z" />
+        </svg>
+      </div>
+      {/* Left leaf sprig */}
+      <div className="absolute bottom-24 left-[2%] opacity-50 motion-safe:animate-float-slow hidden md:block" style={{ animationDelay: '2s' }}>
+        <LeafSprigAccent className="w-10 h-10" />
+      </div>
+      {/* Right leaf sprig */}
+      <div className="absolute bottom-20 right-[3%] opacity-45 motion-safe:animate-float hidden md:block" style={{ animationDelay: '0.6s' }}>
+        <LeafSprigAccent className="w-8 h-8" />
+      </div>
+      {/* Bottom-right sage dot */}
+      <div className="absolute bottom-16 right-[5%] w-3 h-3 rounded-full bg-[#A8C98B] opacity-55 motion-safe:animate-float-slow" style={{ animationDelay: '1s' }} />
+      {/* Bottom-left yellow dot */}
+      <div className="absolute bottom-28 left-[8%] w-2.5 h-2.5 rounded-full bg-[#F6D77A] opacity-60 motion-safe:animate-twinkle" style={{ animationDelay: '0.4s' }} />
+      {/* Small pink heart bottom-center-right */}
+      <div className="absolute bottom-10 right-[18%] motion-safe:animate-float" style={{ animationDelay: '1.8s' }}>
+        <svg viewBox="0 0 20 20" fill="#F27A8A" className="w-3 h-3 opacity-40">
+          <path d="M10 17.5l-1.2-1.1C4.5 12.8 2 10.5 2 7.5 2 5.2 3.7 3.5 6 3.5c1.4 0 2.8.7 4 1.9C11.2 4.2 12.6 3.5 14 3.5c2.3 0 4 1.7 4 4 0 3-2.5 5.3-6.8 8.9L10 17.5z" />
+        </svg>
+      </div>
+    </div>
+  );
+}

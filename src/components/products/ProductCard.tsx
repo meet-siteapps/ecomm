@@ -10,6 +10,7 @@ import { useCartStore } from '@/store/useCartStore';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useWishlistStore } from '@/store/useWishlistStore';
 import { toggleProductStatus } from '@/lib/api/products';
+import { SparklesBorder } from '@/components/common/DecorativeElements';
 
 interface ProductCardProps {
   product: Product;
@@ -83,6 +84,12 @@ export function ProductCard({ product, onStatusChange }: ProductCardProps) {
           : 'border-[#EFE6DA] hover:border-[#F27A8A]/40 shadow-cute hover:shadow-cute-lg hover:-translate-y-1'
       }`}
     >
+      {/* Sparkles border on hover */}
+      {isActiveState && (
+        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+          <SparklesBorder />
+        </div>
+      )}
       {/* Product Image Container */}
       <Link
         href={`/products/${product.id}`}

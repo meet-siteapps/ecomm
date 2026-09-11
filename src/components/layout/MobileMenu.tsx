@@ -107,57 +107,57 @@ export function MobileMenu({ cartCount = 0 }: MobileMenuProps) {
       <button
         type="button"
         onClick={openMenu}
-        className="p-2 sm:p-2.5 rounded-full text-[#193653] hover:bg-[#FDE8EB] hover:text-[#F27A8A] active:scale-90 transition-all duration-200 focus:outline-none"
+        className="p-2 sm:p-2.5 rounded-full text-[#5D4E37] bg-white/60 hover:bg-[#FDE8EB] hover:text-[#F27A8A] active:scale-90 transition-all duration-200 focus:outline-none shadow-sm"
         aria-label="Open mobile navigation menu"
         aria-expanded={isOpen}
       >
-        <Menu className="w-5 h-5 sm:w-6 sm:h-6 text-current" />
+        <Menu className="w-5 h-5 sm:w-5 sm:h-5 text-current" strokeWidth={2.5} />
       </button>
 
-      {/* Mobile Drawer Modal - Portalled directly to document.body to escape Header stacking context */}
+      {/* Mobile Drawer Modal - Opens from exact hamburger button position in top-right */}
       {mounted && isOpen && createPortal(
-        <div className="fixed inset-0 z-[9999] flex justify-end">
-          {/* Backdrop (dark overlay for tablet, full overlay protection) */}
+        <div className="fixed inset-0 z-[9999] flex justify-end items-start pt-[14px] sm:pt-[16px] lg:pt-[16px] pr-[16px] sm:pr-[24px] lg:pr-[36px] pb-6 pl-4">
+          {/* Backdrop (dark overlay with smooth fade) */}
           <div
-            className={`fixed inset-0 bg-[#193653]/60 backdrop-blur-xs transition-all duration-300 ${
-              isClosing ? 'animate-backdrop-out' : 'animate-backdrop-in'
+            className={`fixed inset-0 bg-[#1E293B]/50 backdrop-blur-sm transition-all duration-400 ease-out ${
+              isClosing ? 'opacity-0' : 'opacity-100'
             }`}
             onClick={closeMenu}
             aria-hidden="true"
           />
 
-          {/* Smooth Right-to-Left Slide Drawer Panel: 100% width on phones (no left gap or bleed), max-w-[360px] on sm+ */}
+          {/* Slide-in Drawer Panel - animates from hamburger button position */}
           <div
             role="dialog"
             aria-modal="true"
             aria-label="Navigation Menu"
-            className={`relative z-10 w-full max-w-full sm:max-w-[360px] h-full max-h-full bg-[#FAF4EE] shadow-2xl flex flex-col overflow-hidden sm:border-l sm:border-[#EFE4D6] ${
-              isClosing ? 'animate-drawer-out' : 'animate-drawer-in'
+            className={`relative z-10 w-[280px] sm:w-[320px] max-h-[calc(100vh-80px)] bg-gradient-to-br from-[#FAF3E9] via-[#F7EDDF] to-[#F4E8D5] shadow-[0_8px_40px_-4px_rgba(30,41,59,0.25)] flex flex-col overflow-hidden rounded-[24px] sm:rounded-[28px] border-2 border-[#D4C4AE] transition-all duration-400 ease-out origin-top-right ${
+              isClosing ? 'translate-x-12 -translate-y-12 opacity-0 scale-75' : 'translate-x-0 translate-y-0 opacity-100 scale-100'
             }`}
           >
             {/* 1. Header with Brand & Polished Close Button (Sticky top) */}
-            <div className="relative px-5 py-4 border-b border-[#EFE4D6] bg-white shrink-0 flex items-center justify-between shadow-2xs z-20">
+            <div className="relative px-4 py-3 border-b-2 border-[#D4C4AE]/60 bg-white/80 backdrop-blur-sm shrink-0 flex items-center justify-between shadow-sm z-20">
               {/* Subtle Decorative Sparkle */}
-              <div className="absolute top-2 right-16 opacity-35 pointer-events-none animate-twinkle">
-                <Sparkles className="w-4 h-4 text-[#F6D77A]" />
+              <div className="absolute top-2 right-12 opacity-35 pointer-events-none animate-twinkle">
+                <Sparkles className="w-3.5 h-3.5 text-[#F6D77A]" />
               </div>
 
               <Link
                 href="/"
                 onClick={closeMenu}
-                className="flex items-center gap-2.5 group focus:outline-none"
+                className="flex items-center gap-2 group focus:outline-none"
               >
-                <div className="w-9 h-9 rounded-2xl bg-[#FFD6E0] p-1 flex items-center justify-center border border-[#F27A8A]/30 shadow-2xs transition-transform duration-300 group-hover:scale-105 group-hover:rotate-2">
+                <div className="w-8 h-8 rounded-2xl bg-gradient-to-br from-[#FFD6E0] to-[#FFC1CC] p-1.5 flex items-center justify-center border-2 border-white shadow-[0_3px_12px_rgba(242,122,138,0.25)] transition-all duration-300 group-hover:scale-105 group-hover:rotate-3">
                   <CuteTeddyLogo className="w-full h-full" />
                 </div>
 
-                {/* Colorful letters for Baby Ladoo */}
-                <div className="flex items-baseline font-black text-lg tracking-tight select-none">
+                {/* Colorful letters for Baby Ladoo - smaller text */}
+                <div className="flex items-baseline font-black text-base tracking-tight select-none">
                   <span className="text-[#F27A8A]">B</span>
                   <span className="text-[#D99A26]">a</span>
                   <span className="text-[#1F95B5]">b</span>
                   <span className="text-[#5E933E]">y</span>
-                  <span className="w-1.5 inline-block"></span>
+                  <span className="w-1 inline-block"></span>
                   <span className="text-[#F27A8A]">L</span>
                   <span className="text-[#D99A26]">a</span>
                   <span className="text-[#1F95B5]">d</span>
@@ -170,10 +170,10 @@ export function MobileMenu({ cartCount = 0 }: MobileMenuProps) {
               <button
                 type="button"
                 onClick={closeMenu}
-                className="w-8 h-8 rounded-full border border-[#EFE4D6] bg-[#FAF4EE] text-[#5D7285] hover:bg-[#FFD6E0] hover:text-[#F27A8A] hover:border-[#F27A8A]/40 flex items-center justify-center transition-all duration-200 active:scale-90 shadow-2xs"
+                className="w-8 h-8 rounded-full border-2 border-[#D4C4AE] bg-white/90 text-[#5D4E37] hover:bg-[#FDE8EB] hover:text-[#F27A8A] hover:border-[#F27A8A]/40 flex items-center justify-center transition-all duration-300 active:scale-90 shadow-sm hover:shadow-md"
                 aria-label="Close navigation menu"
               >
-                <X className="w-4 h-4 text-current" />
+                <X className="w-4 h-4 text-current" strokeWidth={2.5} />
               </button>
             </div>
 
@@ -184,7 +184,7 @@ export function MobileMenu({ cartCount = 0 }: MobileMenuProps) {
             >
               <div className="min-h-full flex flex-col justify-between">
                 {/* Navigation Items */}
-                <div className="px-4 py-4 space-y-2">
+                <div className="px-3 py-3 space-y-2">
                   {/* Main Navigation Group */}
                   <div className="space-y-1.5">
                     {/* Home Item */}
@@ -192,15 +192,15 @@ export function MobileMenu({ cartCount = 0 }: MobileMenuProps) {
                       <Link
                         href="/"
                         onClick={closeMenu}
-                        className={`flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold transition-all duration-200 active:scale-[0.98] ${
+                        className={`flex items-center justify-between px-3 py-2 rounded-2xl text-xs font-bold transition-all duration-200 active:scale-[0.98] ${
                           pathname === '/'
                             ? 'bg-[#FFD6E0] text-[#F27A8A] shadow-2xs font-extrabold ring-1 ring-[#F27A8A]/30'
                             : 'text-[#193653] hover:bg-white hover:text-[#F27A8A] hover:shadow-2xs'
                         }`}
                       >
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-xl bg-[#FFD6E0] text-[#F27A8A] flex items-center justify-center shrink-0 shadow-2xs">
-                            <Home className="w-4 h-4" />
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-7 h-7 rounded-xl bg-[#FFD6E0] text-[#F27A8A] flex items-center justify-center shrink-0 shadow-2xs">
+                            <Home className="w-3.5 h-3.5" />
                           </div>
                           <span>Home</span>
                         </div>
@@ -215,15 +215,15 @@ export function MobileMenu({ cartCount = 0 }: MobileMenuProps) {
                       <Link
                         href="/products"
                         onClick={closeMenu}
-                        className={`flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold transition-all duration-200 active:scale-[0.98] ${
+                        className={`flex items-center justify-between px-3 py-2 rounded-2xl text-xs font-bold transition-all duration-200 active:scale-[0.98] ${
                           pathname.startsWith('/products')
                             ? 'bg-[#FFD6E0] text-[#F27A8A] shadow-2xs font-extrabold ring-1 ring-[#F27A8A]/30'
                             : 'text-[#193653] hover:bg-white hover:text-[#F27A8A] hover:shadow-2xs'
                         }`}
                       >
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-xl bg-[#FFF3E6] text-[#D99A26] flex items-center justify-center shrink-0 shadow-2xs">
-                            <ShoppingBag className="w-4 h-4" />
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-7 h-7 rounded-xl bg-[#FFF3E6] text-[#D99A26] flex items-center justify-center shrink-0 shadow-2xs">
+                            <ShoppingBag className="w-3.5 h-3.5" />
                           </div>
                           <span>Shop</span>
                         </div>
@@ -238,15 +238,15 @@ export function MobileMenu({ cartCount = 0 }: MobileMenuProps) {
                       <Link
                         href="/about"
                         onClick={closeMenu}
-                        className={`flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold transition-all duration-200 active:scale-[0.98] ${
+                        className={`flex items-center justify-between px-3 py-2 rounded-2xl text-xs font-bold transition-all duration-200 active:scale-[0.98] ${
                           pathname === '/about'
                             ? 'bg-[#FFD6E0] text-[#F27A8A] shadow-2xs font-extrabold ring-1 ring-[#F27A8A]/30'
                             : 'text-[#193653] hover:bg-white hover:text-[#F27A8A] hover:shadow-2xs'
                         }`}
                       >
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-xl bg-[#FFE8A3] text-[#B88714] flex items-center justify-center shrink-0 shadow-2xs">
-                            <Info className="w-4 h-4" />
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-7 h-7 rounded-xl bg-[#FFE8A3] text-[#B88714] flex items-center justify-center shrink-0 shadow-2xs">
+                            <Info className="w-3.5 h-3.5" />
                           </div>
                           <span>About Us</span>
                         </div>
@@ -261,15 +261,15 @@ export function MobileMenu({ cartCount = 0 }: MobileMenuProps) {
                       <Link
                         href="/contact"
                         onClick={closeMenu}
-                        className={`flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold transition-all duration-200 active:scale-[0.98] ${
+                        className={`flex items-center justify-between px-3 py-2 rounded-2xl text-xs font-bold transition-all duration-200 active:scale-[0.98] ${
                           pathname === '/contact'
                             ? 'bg-[#FFD6E0] text-[#F27A8A] shadow-2xs font-extrabold ring-1 ring-[#F27A8A]/30'
                             : 'text-[#193653] hover:bg-white hover:text-[#F27A8A] hover:shadow-2xs'
                         }`}
                       >
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-xl bg-[#D7F5E8] text-[#3D8F68] flex items-center justify-center shrink-0 shadow-2xs">
-                            <Phone className="w-4 h-4" />
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-7 h-7 rounded-xl bg-[#D7F5E8] text-[#3D8F68] flex items-center justify-center shrink-0 shadow-2xs">
+                            <Phone className="w-3.5 h-3.5" />
                           </div>
                           <span>Contact Us</span>
                         </div>
@@ -282,8 +282,8 @@ export function MobileMenu({ cartCount = 0 }: MobileMenuProps) {
 
                   {/* Heart Divider */}
                   <div className="relative py-2 flex items-center justify-center animate-stagger-item" style={{ animationDelay: '220ms' }}>
-                    <div className="w-full border-t border-[#EFE4D6]" />
-                    <div className="absolute bg-[#FAF4EE] px-2 text-[#F27A8A] text-xs select-none">
+                    <div className="w-full border-t-2 border-[#D4C4AE]/40" />
+                    <div className="absolute bg-gradient-to-br from-[#FAF3E9] via-[#F7EDDF] to-[#F4E8D5] px-2 text-[#F27A8A] text-sm select-none">
                       ♡
                     </div>
                   </div>
@@ -295,15 +295,15 @@ export function MobileMenu({ cartCount = 0 }: MobileMenuProps) {
                       <Link
                         href={isAuthenticated ? '/account' : '/login'}
                         onClick={closeMenu}
-                        className={`flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold transition-all duration-200 active:scale-[0.98] ${
+                        className={`flex items-center justify-between px-3 py-2 rounded-2xl text-xs font-bold transition-all duration-200 active:scale-[0.98] ${
                           pathname === '/account'
                             ? 'bg-[#FFD6E0] text-[#F27A8A] shadow-2xs font-extrabold ring-1 ring-[#F27A8A]/30'
                             : 'text-[#193653] hover:bg-white hover:text-[#F27A8A] hover:shadow-2xs'
                         }`}
                       >
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-xl bg-[#D7F5E8] text-[#3D8F68] flex items-center justify-center shrink-0 shadow-2xs">
-                            <User className="w-4 h-4" />
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-7 h-7 rounded-xl bg-[#D7F5E8] text-[#3D8F68] flex items-center justify-center shrink-0 shadow-2xs">
+                            <User className="w-3.5 h-3.5" />
                           </div>
                           <div className="text-left">
                             <span className="block">My Account</span>
@@ -324,11 +324,11 @@ export function MobileMenu({ cartCount = 0 }: MobileMenuProps) {
                         <Link
                           href="/account"
                           onClick={closeMenu}
-                          className="flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold text-[#193653] hover:bg-white hover:text-[#F27A8A] hover:shadow-2xs transition-all duration-200 active:scale-[0.98]"
+                          className="flex items-center justify-between px-3 py-2 rounded-2xl text-xs font-bold text-[#193653] hover:bg-white hover:text-[#F27A8A] hover:shadow-2xs transition-all duration-200 active:scale-[0.98]"
                         >
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-xl bg-[#FFE8A3] text-[#B88714] flex items-center justify-center shrink-0 shadow-2xs">
-                              <Package className="w-4 h-4" />
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-7 h-7 rounded-xl bg-[#FFE8A3] text-[#B88714] flex items-center justify-center shrink-0 shadow-2xs">
+                              <Package className="w-3.5 h-3.5" />
                             </div>
                             <span>My Orders</span>
                           </div>
@@ -342,15 +342,15 @@ export function MobileMenu({ cartCount = 0 }: MobileMenuProps) {
                       <Link
                         href="/wishlist"
                         onClick={closeMenu}
-                        className={`flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold transition-all duration-200 active:scale-[0.98] ${
+                        className={`flex items-center justify-between px-3 py-2 rounded-2xl text-xs font-bold transition-all duration-200 active:scale-[0.98] ${
                           pathname === '/wishlist'
                             ? 'bg-[#FFD6E0] text-[#F27A8A] shadow-2xs font-extrabold ring-1 ring-[#F27A8A]/30'
                             : 'text-[#193653] hover:bg-white hover:text-[#F27A8A] hover:shadow-2xs'
                         }`}
                       >
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-xl bg-[#FDE8EB] text-[#F27A8A] flex items-center justify-center shrink-0 shadow-2xs">
-                            <Heart className="w-4 h-4 fill-[#F27A8A]" />
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-7 h-7 rounded-xl bg-[#FDE8EB] text-[#F27A8A] flex items-center justify-center shrink-0 shadow-2xs">
+                            <Heart className="w-3.5 h-3.5 fill-[#F27A8A]" />
                           </div>
                           <span>Wishlist</span>
                         </div>
@@ -363,15 +363,15 @@ export function MobileMenu({ cartCount = 0 }: MobileMenuProps) {
                       <Link
                         href="/cart"
                         onClick={closeMenu}
-                        className={`flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold transition-all duration-200 active:scale-[0.98] ${
+                        className={`flex items-center justify-between px-3 py-2 rounded-2xl text-xs font-bold transition-all duration-200 active:scale-[0.98] ${
                           pathname === '/cart'
                             ? 'bg-[#FFD6E0] text-[#F27A8A] shadow-2xs font-extrabold ring-1 ring-[#F27A8A]/30'
                             : 'text-[#193653] hover:bg-white hover:text-[#F27A8A] hover:shadow-2xs'
                         }`}
                       >
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-xl bg-[#DDEBFF] text-[#287DB2] flex items-center justify-center shrink-0 shadow-2xs">
-                            <ShoppingBag className="w-4 h-4" />
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-7 h-7 rounded-xl bg-[#DDEBFF] text-[#287DB2] flex items-center justify-center shrink-0 shadow-2xs">
+                            <ShoppingBag className="w-3.5 h-3.5" />
                           </div>
                           <span>Cart</span>
                         </div>
@@ -391,15 +391,15 @@ export function MobileMenu({ cartCount = 0 }: MobileMenuProps) {
                         <Link
                           href="/admin"
                           onClick={closeMenu}
-                          className={`flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold transition-all duration-200 active:scale-[0.98] ${
+                          className={`flex items-center justify-between px-3 py-2 rounded-2xl text-xs font-bold transition-all duration-200 active:scale-[0.98] ${
                             pathname.startsWith('/admin')
                               ? 'bg-[#8FD3E8]/40 text-[#193653] shadow-2xs font-extrabold'
                               : 'bg-[#EBF8FC] text-[#193653] hover:bg-[#8FD3E8]/30'
                           }`}
                         >
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-xl bg-[#8FD3E8] text-[#193653] flex items-center justify-center shrink-0 shadow-2xs">
-                              <Shield className="w-4 h-4" />
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-7 h-7 rounded-xl bg-[#8FD3E8] text-[#193653] flex items-center justify-center shrink-0 shadow-2xs">
+                              <Shield className="w-3.5 h-3.5" />
                             </div>
                             <span>Admin Dashboard</span>
                           </div>
@@ -414,12 +414,12 @@ export function MobileMenu({ cartCount = 0 }: MobileMenuProps) {
                     <Link
                       href="/products?sort=discount"
                       onClick={closeMenu}
-                      className="block p-3 rounded-2xl bg-gradient-to-r from-[#FFF3E6] via-[#FAF4EE] to-[#FFF3E6] border border-[#F27A8A]/25 hover:border-[#F27A8A]/50 transition-all duration-300 shadow-2xs hover:shadow-cute group active:scale-[0.98]"
+                      className="block p-2.5 rounded-2xl bg-gradient-to-r from-[#FFF3E6] via-[#FAF4EE] to-[#FFF3E6] border border-[#F27A8A]/25 hover:border-[#F27A8A]/50 transition-all duration-300 shadow-2xs hover:shadow-cute group active:scale-[0.98]"
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-8 h-8 rounded-xl bg-[#FDE8EB] text-[#F27A8A] flex items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-transform duration-200">
-                            <Gift className="w-4 h-4" />
+                        <div className="flex items-center gap-2">
+                          <div className="w-7 h-7 rounded-xl bg-[#FDE8EB] text-[#F27A8A] flex items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-transform duration-200">
+                            <Gift className="w-3.5 h-3.5" />
                           </div>
                           <div>
                             <span className="text-xs font-black text-[#F27A8A] block leading-tight">
@@ -436,26 +436,26 @@ export function MobileMenu({ cartCount = 0 }: MobileMenuProps) {
                   </div>
                 </div>
 
-                {/* 3. Bottom Auth Section: with generous bottom padding (pb-16 / 64px) so Sign Out is NEVER cut off */}
-                <div className="relative p-4 border-t border-[#EFE4D6] bg-white shrink-0 overflow-hidden shadow-cute mt-6 pb-16 sm:pb-10">
+                {/* 3. Bottom Auth Section: with generous bottom padding */}
+                <div className="relative p-3 border-t-2 border-[#D4C4AE]/60 bg-white/80 backdrop-blur-sm shrink-0 overflow-hidden shadow-sm mt-4 pb-12 sm:pb-8">
                   {/* Peeking Cute Teddy Bear Mascot in Bottom-Right Corner */}
-                  <div className="absolute -bottom-2 -right-2 pointer-events-none opacity-90 z-0">
-                    <CuteSittingTeddyIllustration className="w-24 h-24 sm:w-28 sm:h-28" />
+                  <div className="absolute -bottom-2 -right-2 pointer-events-none opacity-80 z-0">
+                    <CuteSittingTeddyIllustration className="w-20 h-20 sm:w-24 sm:h-24" />
                   </div>
 
-                  <div className="relative z-10 pr-16 animate-stagger-item" style={{ animationDelay: '460ms' }}>
+                  <div className="relative z-10 pr-14 animate-stagger-item" style={{ animationDelay: '460ms' }}>
                     {isAuthenticated ? (
                       <div className="space-y-2">
                         {/* User Profile Card */}
-                        <div className="flex items-center gap-2.5 pb-1">
-                          <div className="w-8 h-8 rounded-full bg-[#FFD6E0] text-[#F27A8A] font-extrabold text-xs flex items-center justify-center shadow-2xs shrink-0">
+                        <div className="flex items-center gap-2 pb-1">
+                          <div className="w-8 h-8 rounded-full bg-[#FFD6E0] text-[#F27A8A] font-extrabold text-xs flex items-center justify-center shadow-sm shrink-0">
                             {userInitial}
                           </div>
                           <div className="overflow-hidden">
-                            <p className="text-xs font-extrabold text-[#193653] truncate">
+                            <p className="text-[11px] font-extrabold text-[#3D2E17] truncate">
                               {userName}
                             </p>
-                            <p className="text-[10px] text-[#5D7285] truncate font-medium">
+                            <p className="text-[9px] text-[#7D6E57] truncate font-medium">
                               {user?.email}
                             </p>
                           </div>
@@ -465,7 +465,7 @@ export function MobileMenu({ cartCount = 0 }: MobileMenuProps) {
                         <button
                           type="button"
                           onClick={handleSignOut}
-                          className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-full bg-[#FAF4EE] hover:bg-[#FDE8EB] border border-[#F27A8A]/30 text-[#F27A8A] text-xs font-extrabold shadow-2xs hover:shadow-cute active:scale-95 transition-all duration-200"
+                          className="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-full bg-white hover:bg-[#FDE8EB] border-2 border-[#F27A8A]/40 text-[#F27A8A] text-xs font-extrabold shadow-sm hover:shadow-md active:scale-95 transition-all duration-300"
                         >
                           <LogOut className="w-3.5 h-3.5" />
                           <span>Sign Out</span>
@@ -477,19 +477,19 @@ export function MobileMenu({ cartCount = 0 }: MobileMenuProps) {
                         <Link
                           href="/login"
                           onClick={closeMenu}
-                          className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-full bg-[#F27A8A] hover:bg-[#e06878] text-white text-xs font-extrabold shadow-cute-pink hover:shadow-cute-pink-hover active:scale-95 transition-all duration-200"
+                          className="w-full flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-full bg-[#F06277] hover:bg-[#D9455B] text-white text-xs font-extrabold shadow-[0_3px_14px_-2px_rgba(240,98,119,0.5)] hover:shadow-[0_5px_20px_-2px_rgba(240,98,119,0.6)] active:scale-95 transition-all duration-300"
                         >
-                          <LogIn className="w-4 h-4" />
+                          <LogIn className="w-3.5 h-3.5" />
                           <span>Sign In</span>
                         </Link>
 
                         {/* Create Account Link */}
-                        <p className="text-[11px] text-center text-[#5D7285] font-medium pt-0.5">
+                        <p className="text-[10px] text-center text-[#7D6E57] font-medium pt-0.5">
                           New here?{' '}
                           <Link
                             href="/register"
                             onClick={closeMenu}
-                            className="text-[#F27A8A] font-extrabold hover:underline"
+                            className="text-[#F06277] font-extrabold hover:underline"
                           >
                             Create an account
                           </Link>
