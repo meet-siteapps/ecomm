@@ -462,32 +462,65 @@ export default function CheckoutPage() {
                 </span>
               </label>
 
-              {/* Cash on Delivery (Temporarily Disabled / Off) */}
-              <div
-                className="p-4 rounded-2xl border-2 border-dashed border-[#EFE6DA] bg-[#FFF9F2]/60 opacity-60 cursor-not-allowed flex items-center justify-between gap-3 select-none relative"
-                title="Cash on Delivery is currently unavailable. Please use Pay via UPI (WhatsApp)."
-              >
-                <div className="flex items-center gap-3 min-w-0">
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="cod"
-                    disabled
-                    checked={false}
-                    className="accent-gray-400 w-4 h-4 cursor-not-allowed shrink-0"
-                  />
-                  <div className="space-y-0.5 min-w-0">
-                    <div className="flex items-center gap-1.5 font-bold text-xs text-gray-400">
-                      <Banknote className="w-4 h-4 text-gray-400 shrink-0" />
-                      <span>Cash on Delivery</span>
+              {/* Cash on Delivery - Dynamic based on admin settings */}
+              {storeSettings?.is_cod_enabled ? (
+                // COD ENABLED - Normal selectable option
+                <label
+                  className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                    paymentMethod === 'cod'
+                      ? 'border-[#F27A8A] bg-gradient-to-r from-[#FDE8EB] via-white to-white shadow-cute-pink'
+                      : 'border-[#EFE6DA] bg-white hover:border-[#F27A8A]/30 hover:bg-[#FFF9F2]'
+                  }`}
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="cod"
+                      checked={paymentMethod === 'cod'}
+                      onChange={() => setPaymentMethod('cod')}
+                      className="accent-[#F27A8A] w-4 h-4 cursor-pointer shrink-0"
+                    />
+                    <div className="space-y-0.5 min-w-0">
+                      <div className="flex items-center gap-1.5 font-bold text-xs text-[#193653]">
+                        <Banknote className="w-4 h-4 text-[#F27A8A] shrink-0" />
+                        <span>Cash on Delivery</span>
+                      </div>
+                      <p className="text-[10px] text-[#5D7285]">Pay with cash when order arrives</p>
                     </div>
-                    <p className="text-[10px] text-gray-400 truncate">Temporarily unavailable</p>
                   </div>
+                  <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-300 shrink-0">
+                    Available
+                  </span>
+                </label>
+              ) : (
+                // COD DISABLED - Greyed out with "Off" badge
+                <div
+                  className="p-4 rounded-2xl border-2 border-dashed border-[#EFE6DA] bg-[#FFF9F2]/60 opacity-60 cursor-not-allowed flex items-center justify-between gap-3 select-none relative"
+                  title="Cash on Delivery is currently unavailable. Please use Pay via UPI (WhatsApp)."
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="cod"
+                      disabled
+                      checked={false}
+                      className="accent-gray-400 w-4 h-4 cursor-not-allowed shrink-0"
+                    />
+                    <div className="space-y-0.5 min-w-0">
+                      <div className="flex items-center gap-1.5 font-bold text-xs text-gray-400">
+                        <Banknote className="w-4 h-4 text-gray-400 shrink-0" />
+                        <span>Cash on Delivery</span>
+                      </div>
+                      <p className="text-[10px] text-gray-400 truncate">Currently unavailable</p>
+                    </div>
+                  </div>
+                  <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider bg-gray-100 text-gray-500 border border-gray-200 shrink-0">
+                    Off
+                  </span>
                 </div>
-                <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider bg-gray-100 text-gray-500 border border-gray-200 shrink-0">
-                  Off
-                </span>
-              </div>
+              )}
 
               {/* Online Payment / Razorpay (Coming Soon / Disabled) */}
               <div

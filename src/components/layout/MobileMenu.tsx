@@ -114,9 +114,9 @@ export function MobileMenu({ cartCount = 0 }: MobileMenuProps) {
         <Menu className="w-5 h-5 sm:w-5 sm:h-5 text-current" strokeWidth={2.5} />
       </button>
 
-      {/* Mobile Drawer Modal - Opens from exact hamburger button position in top-right */}
+      {/* Mobile Drawer Modal - Opens from exact hamburger button position */}
       {mounted && isOpen && createPortal(
-        <div className="fixed inset-0 z-[9999] flex justify-end items-start pt-[14px] sm:pt-[16px] lg:pt-[16px] pr-[16px] sm:pr-[24px] lg:pr-[36px] pb-6 pl-4">
+        <div className="fixed inset-0 z-[9999]">
           {/* Backdrop (dark overlay with smooth fade) */}
           <div
             className={`fixed inset-0 bg-[#1E293B]/50 backdrop-blur-sm transition-all duration-400 ease-out ${
@@ -126,19 +126,31 @@ export function MobileMenu({ cartCount = 0 }: MobileMenuProps) {
             aria-hidden="true"
           />
 
-          {/* Slide-in Drawer Panel - animates from hamburger button position */}
+          {/* Close button positioned exactly where hamburger button is */}
+          <button
+            type="button"
+            onClick={closeMenu}
+            className={`fixed top-[14px] sm:top-[17px] lg:top-[18px] right-[16px] sm:right-[28px] lg:right-[40px] z-20 p-2 sm:p-2.5 rounded-full border-2 border-[#D4C4AE] bg-gradient-to-br from-[#FAF3E9] via-[#F7EDDF] to-[#F4E8D5] text-[#5D4E37] hover:bg-[#FDE8EB] hover:text-[#F27A8A] hover:border-[#F27A8A]/40 shadow-sm hover:shadow-md transition-all duration-300 active:scale-90 ${
+              isClosing ? 'opacity-0 scale-75' : 'opacity-100 scale-100'
+            }`}
+            aria-label="Close navigation menu"
+          >
+            <X className="w-5 h-5 sm:w-5 sm:h-5 text-current" strokeWidth={2.5} />
+          </button>
+
+          {/* Slide-in Drawer Panel from top-right */}
           <div
             role="dialog"
             aria-modal="true"
             aria-label="Navigation Menu"
-            className={`relative z-10 w-[280px] sm:w-[320px] max-h-[calc(100vh-80px)] bg-gradient-to-br from-[#FAF3E9] via-[#F7EDDF] to-[#F4E8D5] shadow-[0_8px_40px_-4px_rgba(30,41,59,0.25)] flex flex-col overflow-hidden rounded-[24px] sm:rounded-[28px] border-2 border-[#D4C4AE] transition-all duration-400 ease-out origin-top-right ${
-              isClosing ? 'translate-x-12 -translate-y-12 opacity-0 scale-75' : 'translate-x-0 translate-y-0 opacity-100 scale-100'
+            className={`fixed top-[60px] sm:top-[68px] lg:top-[72px] right-[12px] sm:right-[24px] lg:right-[36px] w-[280px] sm:w-[320px] max-h-[calc(100vh-140px)] bg-gradient-to-br from-[#FAF3E9] via-[#F7EDDF] to-[#F4E8D5] shadow-[0_8px_40px_-4px_rgba(30,41,59,0.25)] flex flex-col overflow-hidden rounded-[24px] sm:rounded-[28px] border-2 border-[#D4C4AE] transition-all duration-400 ease-out origin-top-right ${
+              isClosing ? 'translate-y-[-20px] opacity-0 scale-95' : 'translate-y-0 opacity-100 scale-100'
             }`}
           >
-            {/* 1. Header with Brand & Polished Close Button (Sticky top) */}
-            <div className="relative px-4 py-3 border-b-2 border-[#D4C4AE]/60 bg-white/80 backdrop-blur-sm shrink-0 flex items-center justify-between shadow-sm z-20">
+            {/* 1. Header with Brand - No close button here anymore */}
+            <div className="relative px-4 py-3 border-b-2 border-[#D4C4AE]/60 bg-white/80 backdrop-blur-sm shrink-0 flex items-center justify-center shadow-sm z-10">
               {/* Subtle Decorative Sparkle */}
-              <div className="absolute top-2 right-12 opacity-35 pointer-events-none animate-twinkle">
+              <div className="absolute top-2 left-4 opacity-35 pointer-events-none animate-twinkle">
                 <Sparkles className="w-3.5 h-3.5 text-[#F6D77A]" />
               </div>
 
@@ -165,16 +177,6 @@ export function MobileMenu({ cartCount = 0 }: MobileMenuProps) {
                   <span className="text-[#F27A8A]">o</span>
                 </div>
               </Link>
-
-              {/* Polished Close Button */}
-              <button
-                type="button"
-                onClick={closeMenu}
-                className="w-8 h-8 rounded-full border-2 border-[#D4C4AE] bg-white/90 text-[#5D4E37] hover:bg-[#FDE8EB] hover:text-[#F27A8A] hover:border-[#F27A8A]/40 flex items-center justify-center transition-all duration-300 active:scale-90 shadow-sm hover:shadow-md"
-                aria-label="Close navigation menu"
-              >
-                <X className="w-4 h-4 text-current" strokeWidth={2.5} />
-              </button>
             </div>
 
             {/* 2. Unified Scrollable Menu Body (Nav + Bottom Auth in single scroll stream) */}
