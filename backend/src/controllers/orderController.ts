@@ -205,3 +205,52 @@ export async function getDashboardStats(
     next(err);
   }
 }
+
+/**
+ * DELETE /api/admin/orders/:id
+ *
+ * Permanently deletes an order and associated items (Admin only).
+ */
+export async function deleteOrderAdmin(
+  req: AuthenticatedRequest,
+  res: Response<ApiSuccess<{ deleted: boolean }>>,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    const { id: orderId } = req.params;
+    const { deleteOrderAdmin: deleteOrderAdminService } = await import('../services/orderService.js');
+    await deleteOrderAdminService(orderId);
+
+    res.status(200).json({
+      status: 'ok',
+      data: { deleted: true },
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * POST /api/admin/orders/bulk-delete
+ * DELETE /api/admin/orders/batch
+ *
+ * Permanently deletes multiple orders and associated items (Admin only).
+ */
+export async function bulkDeleteOrdersAdmin(
+  req: AuthenticatedRequest,
+  res: Response<ApiSuccess<{ deletedCount: number }>>,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    const { orderIds } = req.body as { orderIds: string[] };
+    const { bulkDeleteOrdersAdmin: bulkDeleteOrdersAdminService } = await import('../services/orderService.js');
+    const result = await bulkDeleteOrdersAdminService(orderIds);
+
+    res.status(200).json({
+      status: 'ok',
+      data: result,
+    });
+  } catch (err) {
+    next(err);
+  }
+}

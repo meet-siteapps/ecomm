@@ -111,12 +111,38 @@ function mapDbOrderToOrder(dbOrder: DbOrderRow): Order {
 }
 
 /**
- * Generate a friendly human-readable Order Number (e.g. ORD-2026-9482)
+ * Generate a sequential, human-readable Order Number starting from ORD-YYYY-0001, ORD-YYYY-0002, etc.
  */
-function generateOrderNumber(): string {
+async function generateOrderNumber(supabaseAdmin: ReturnType<typeof getSupabaseAdminClient>): Promise<string> {
   const year = new Date().getFullYear();
-  const randomSuffix = Math.floor(1000 + Math.random() * 9000);
-  return `ORD-${year}-${randomSuffix}`;
+  const prefix = `ORD-${year}-`;
+
+  try {
+    const { count } = await supabaseAdmin
+      .from('orders')
+      .select('*', { count: 'exact', head: true })
+      .ilike('order_number', `${prefix}%`);
+
+    const nextSeq = (count ?? 0) + 1;
+    let candidate = `${prefix}${String(nextSeq).padStart(4, '0')}`;
+
+    // Verify candidate does not collide with any existing record
+    const { data: existing } = await supabaseAdmin
+      .from('orders')
+      .select('id')
+      .eq('order_number', candidate)
+      .maybeSingle();
+
+    if (existing) {
+      const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+      candidate = `${prefix}${randomSuffix}`;
+    }
+
+    return candidate;
+  } catch {
+    const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+    return `${prefix}${randomSuffix}`;
+  }
 }
 
 /**
@@ -145,34 +171,32 @@ export async function createOrder(
     throw new AppError('Order must contain at least one item', 400, 'EMPTY_CART');
   }
 
-  // 1. Fetch current prices & stock directly from DB for each productId
-  const productIds = input.items.map((i) => i.productId);
-  const { data: dbProductsData, error: productError } = await supabaseAdmin
+  // 1. Fetch current product data directly from database
+  const productIds = input.items.map((item) => item.productId);
+  const { data: productsData, error: productsError } = await supabaseAdmin
     .from('products')
     .select('id, name, price, stock, is_active, images')
     .in('id', productIds);
 
-  if (productError) {
+  if (productsError || !productsData) {
     throw new AppError(
-      `Failed to fetch products: ${productError.message}`,
+      `Failed to fetch products for order validation: ${productsError?.message ?? 'Unknown database error'}`,
       500,
       'DATABASE_ERROR',
     );
   }
 
-  const dbProducts = (dbProductsData ?? []) as DbProductRow[];
-  const productMap = new Map<string, DbProductRow>();
-  for (const prod of dbProducts) {
-    productMap.set(prod.id, prod);
-  }
+  const dbProducts = productsData as DbProductRow[];
+  const productMap = new Map<string, DbProductRow>(
+    dbProducts.map((p) => [p.id, p]),
+  );
 
-  // 2. Validate availability and stock
+  // 2. Validate product availability and inventory
   for (const item of input.items) {
     const dbProduct = productMap.get(item.productId);
-
     if (!dbProduct) {
       throw new AppError(
-        `Product with ID ${item.productId} was not found.`,
+        `Product with id "${item.productId}" was not found.`,
         404,
         'PRODUCT_NOT_FOUND',
       );
@@ -204,7 +228,7 @@ export async function createOrder(
   const discount = 0;
   const shipping = subtotal >= 999 ? 0 : 99; // Free shipping over ₹999, else flat ₹99
   const totalAmount = subtotal + shipping - discount;
-  const orderNumber = generateOrderNumber();
+  const orderNumber = await generateOrderNumber(supabaseAdmin);
 
   // 4. Insert into `orders` table using supabaseAdmin
   const orderInsertPayload: Record<string, unknown> = {
@@ -682,4 +706,102 @@ export async function getDashboardStats(): Promise<import('../types/order.js').A
     );
   }
 }
+
+/**
+ * Permanently deletes an order and its associated line items (Admin action).
+ *
+ * @param orderId - UUID of the order to delete
+ */
+export async function deleteOrderAdmin(orderId: string): Promise<void> {
+  const supabaseAdmin = getSupabaseAdminClient();
+
+  // 1. Verify order exists
+  const { data: existingOrder, error: findError } = await supabaseAdmin
+    .from('orders')
+    .select('id, order_number')
+    .eq('id', orderId)
+    .maybeSingle();
+
+  if (findError) {
+    throw new AppError(`Database error finding order: ${findError.message}`, 500, 'DATABASE_ERROR');
+  }
+
+  if (!existingOrder) {
+    throw new AppError(`Order not found: ${orderId}`, 404, 'ORDER_NOT_FOUND');
+  }
+
+  // 2. Delete child line items first
+  const { error: itemsDeleteError } = await supabaseAdmin
+    .from('order_items')
+    .delete()
+    .eq('order_id', orderId);
+
+  if (itemsDeleteError) {
+    throw new AppError(
+      `Failed to delete line items for order: ${itemsDeleteError.message}`,
+      500,
+      'DATABASE_ERROR',
+    );
+  }
+
+  // 3. Delete the parent order
+  const { error: orderDeleteError } = await supabaseAdmin
+    .from('orders')
+    .delete()
+    .eq('id', orderId);
+
+  if (orderDeleteError) {
+    throw new AppError(
+      `Failed to delete order: ${orderDeleteError.message}`,
+      500,
+      'DATABASE_ERROR',
+    );
+  }
+}
+
+/**
+ * Permanently deletes multiple orders and their associated line items (Admin action).
+ *
+ * @param orderIds - Array of order UUIDs to delete
+ */
+export async function bulkDeleteOrdersAdmin(orderIds: string[]): Promise<{ deletedCount: number }> {
+  if (!orderIds || orderIds.length === 0) {
+    return { deletedCount: 0 };
+  }
+
+  const supabaseAdmin = getSupabaseAdminClient();
+
+  // 1. Delete child order_items for all selected orders
+  const { error: itemsDeleteError } = await supabaseAdmin
+    .from('order_items')
+    .delete()
+    .in('order_id', orderIds);
+
+  if (itemsDeleteError) {
+    throw new AppError(
+      `Failed to delete line items for selected orders: ${itemsDeleteError.message}`,
+      500,
+      'DATABASE_ERROR',
+    );
+  }
+
+  // 2. Delete the parent orders
+  const { data: deletedOrders, error: ordersDeleteError } = await supabaseAdmin
+    .from('orders')
+    .delete()
+    .in('id', orderIds)
+    .select('id');
+
+  if (ordersDeleteError) {
+    throw new AppError(
+      `Failed to delete selected orders: ${ordersDeleteError.message}`,
+      500,
+      'DATABASE_ERROR',
+    );
+  }
+
+  return { deletedCount: deletedOrders?.length ?? orderIds.length };
+}
+
+
 

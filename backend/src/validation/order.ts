@@ -128,3 +128,16 @@ export const updateOrderStatusSchema = z
   );
 
 export type UpdateOrderStatusSchema = z.infer<typeof updateOrderStatusSchema>;
+
+/**
+ * Validates the body for bulk deleting orders.
+ */
+export const bulkDeleteOrdersSchema = z.object({
+  orderIds: z
+    .array(z.string().uuid({ message: 'Each orderId must be a valid UUID' }))
+    .min(1, 'At least one order ID must be provided')
+    .max(100, 'Cannot delete more than 100 orders at once'),
+});
+
+export type BulkDeleteOrdersInput = z.infer<typeof bulkDeleteOrdersSchema>;
+

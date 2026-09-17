@@ -21,10 +21,12 @@ import {
   MapPin,
   Mail,
   Phone,
-  Check
+  Check,
+  Trash2,
 } from 'lucide-react';
 import { Order, OrderStatus, PaymentStatus } from '@/types/order';
-import { fetchAllOrdersAdmin, updateOrderStatusAdmin } from '@/lib/api/orders';
+import { fetchAllOrdersAdmin, updateOrderStatusAdmin, deleteOrderAdmin, bulkDeleteOrdersAdmin } from '@/lib/api/orders';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const STATUS_BADGES: Record<OrderStatus, { label: string; bg: string; text: string; border: string }> = {
   pending: { label: 'Pending', bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200' },
@@ -51,6 +53,13 @@ export default function AdminOrdersPage() {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [orderToDelete, setOrderToDelete] = useState<Order | null>(null);
+  const [selectedOrderIds, setSelectedOrderIds] = useState<Set<string>>(new Set());
+  const [isBulkDeletingModalOpen, setIsBulkDeletingModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const profile = useAuthStore((state) => state.profile);
+  const isAdmin = profile?.role === 'admin';
 
   const loadOrders = async () => {
     setIsLoading(true);
@@ -103,6 +112,101 @@ export default function AdminOrdersPage() {
       setFeedback({ type: 'error', message: err.message || 'Failed to update payment status.' });
     } finally {
       setUpdatingId(null);
+    }
+  };
+
+  const handleDeleteOrder = async () => {
+    if (!orderToDelete) return;
+    setIsDeleting(true);
+    try {
+      await deleteOrderAdmin(orderToDelete.id);
+      setOrders((prev) => prev.filter((o) => o.id !== orderToDelete.id));
+      setSelectedOrderIds((prev) => {
+        const next = new Set(prev);
+        next.delete(orderToDelete.id);
+        return next;
+      });
+      if (selectedOrder?.id === orderToDelete.id) {
+        setSelectedOrder(null);
+      }
+      setFeedback({
+        type: 'success',
+        message: `Order ${orderToDelete.order_number} has been permanently deleted.`,
+      });
+      setTimeout(() => setFeedback(null), 3500);
+      setOrderToDelete(null);
+    } catch (err: any) {
+      setFeedback({
+        type: 'error',
+        message: err.message || 'Failed to delete order record.',
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const toggleSelectOrder = (orderId: string) => {
+    setSelectedOrderIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(orderId)) {
+        next.delete(orderId);
+      } else {
+        next.add(orderId);
+      }
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (filteredOrders.length === 0) return;
+    const allSelected = filteredOrders.every((o) => selectedOrderIds.has(o.id));
+    if (allSelected) {
+      setSelectedOrderIds((prev) => {
+        const next = new Set(prev);
+        for (const o of filteredOrders) {
+          next.delete(o.id);
+        }
+        return next;
+      });
+    } else {
+      setSelectedOrderIds((prev) => {
+        const next = new Set(prev);
+        for (const o of filteredOrders) {
+          next.add(o.id);
+        }
+        return next;
+      });
+    }
+  };
+
+  const clearSelection = () => {
+    setSelectedOrderIds(new Set());
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedOrderIds.size === 0) return;
+    setIsDeleting(true);
+    try {
+      const idsToDelete = Array.from(selectedOrderIds);
+      const res = await bulkDeleteOrdersAdmin(idsToDelete);
+      setOrders((prev) => prev.filter((o) => !selectedOrderIds.has(o.id)));
+      if (selectedOrder && selectedOrderIds.has(selectedOrder.id)) {
+        setSelectedOrder(null);
+      }
+      setFeedback({
+        type: 'success',
+        message: `${res.deletedCount || idsToDelete.length} orders have been permanently deleted.`,
+      });
+      setTimeout(() => setFeedback(null), 3500);
+      setSelectedOrderIds(new Set());
+      setIsBulkDeletingModalOpen(false);
+    } catch (err: any) {
+      setFeedback({
+        type: 'error',
+        message: err.message || 'Failed to delete selected orders.',
+      });
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -195,6 +299,37 @@ export default function AdminOrdersPage() {
         </div>
       </div>
 
+      {/* Bulk Action Bar (When Orders are Selected) */}
+      {isAdmin && selectedOrderIds.size > 0 && (
+        <div className="bg-[#FFF0F3] border-2 border-[#FFD0DA] rounded-2xl p-3 px-4 flex items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-xl bg-[#FF6B8B] text-white flex items-center justify-center font-extrabold text-xs">
+              {selectedOrderIds.size}
+            </div>
+            <span className="text-xs sm:text-sm font-extrabold text-[#9F1239]">
+              {selectedOrderIds.size} {selectedOrderIds.size === 1 ? 'order' : 'orders'} selected
+            </span>
+            <button
+              type="button"
+              onClick={clearSelection}
+              className="text-xs text-gray-500 hover:text-gray-800 underline ml-2 cursor-pointer font-semibold"
+            >
+              Deselect All
+            </button>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setIsBulkDeletingModalOpen(true)}
+            disabled={isDeleting}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-red-600 hover:bg-red-700 active:scale-95 transition-all shadow-sm cursor-pointer"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            <span>Delete Selected ({selectedOrderIds.size})</span>
+          </button>
+        </div>
+      )}
+
       {/* Orders Table */}
       <div className="bg-white rounded-3xl border border-gray-200/80 shadow-xs overflow-hidden">
         {isLoading ? (
@@ -215,13 +350,32 @@ export default function AdminOrdersPage() {
             <table className="w-full text-left text-xs text-gray-700">
               <thead className="bg-gray-50/80 text-[11px] font-bold uppercase tracking-wider text-gray-500 border-b border-gray-100">
                 <tr>
+                  {isAdmin && (
+                    <th className="w-10 px-3.5 py-3.5 text-center">
+                      <input
+                        type="checkbox"
+                        checked={filteredOrders.length > 0 && filteredOrders.every((o) => selectedOrderIds.has(o.id))}
+                        ref={(el) => {
+                          if (el) {
+                            const some = filteredOrders.some((o) => selectedOrderIds.has(o.id));
+                            const all = filteredOrders.length > 0 && filteredOrders.every((o) => selectedOrderIds.has(o.id));
+                            el.indeterminate = some && !all;
+                          }
+                        }}
+                        onChange={toggleSelectAll}
+                        className="w-4 h-4 rounded border-gray-300 text-[#FF6B8B] focus:ring-[#FF6B8B] cursor-pointer accent-[#FF6B8B]"
+                        title="Select all"
+                        aria-label="Select all orders"
+                      />
+                    </th>
+                  )}
                   <th className="px-5 py-3.5">Order #</th>
                   <th className="px-4 py-3.5">Customer</th>
                   <th className="px-4 py-3.5">Date</th>
                   <th className="px-4 py-3.5">Total</th>
                   <th className="px-4 py-3.5">Payment</th>
                   <th className="px-4 py-3.5">Order Status</th>
-                  <th className="px-5 py-3.5 text-right">Details</th>
+                  <th className="px-5 py-3.5 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -230,7 +384,23 @@ export default function AdminOrdersPage() {
                   const paymentBadge = PAYMENT_BADGES[order.payment_status] || PAYMENT_BADGES.pending;
 
                   return (
-                    <tr key={order.id} className="hover:bg-gray-50/70 transition-colors">
+                    <tr
+                      key={order.id}
+                      className={`transition-colors ${
+                        selectedOrderIds.has(order.id) ? 'bg-[#FFF5F7]' : 'hover:bg-gray-50/70'
+                      }`}
+                    >
+                      {isAdmin && (
+                        <td className="w-10 px-3.5 py-4 text-center">
+                          <input
+                            type="checkbox"
+                            checked={selectedOrderIds.has(order.id)}
+                            onChange={() => toggleSelectOrder(order.id)}
+                            className="w-4 h-4 rounded border-gray-300 text-[#FF6B8B] focus:ring-[#FF6B8B] cursor-pointer accent-[#FF6B8B]"
+                            aria-label={`Select order ${order.order_number}`}
+                          />
+                        </td>
+                      )}
                       {/* Order Number */}
                       <td className="px-5 py-4 font-bold text-[#1F2937]">
                         <span className="font-mono text-xs text-[#4DA3FF] block">
@@ -323,17 +493,31 @@ export default function AdminOrdersPage() {
                         </select>
                       </td>
 
-                      {/* View Action */}
+                      {/* Actions: View & Delete */}
                       <td className="px-5 py-4 text-right">
-                        <button
-                          type="button"
-                          onClick={() => setSelectedOrder(order)}
-                          className="inline-flex items-center gap-1 p-2 rounded-xl text-gray-500 hover:text-[#4DA3FF] hover:bg-[#EAF6FF] transition-colors"
-                          title="View Order Details"
-                        >
-                          <Eye className="w-4 h-4" />
-                          <span className="text-xs font-semibold">View</span>
-                        </button>
+                        <div className="inline-flex items-center justify-end gap-1">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedOrder(order)}
+                            className="inline-flex items-center gap-1 p-2 rounded-xl text-gray-500 hover:text-[#4DA3FF] hover:bg-[#EAF6FF] transition-colors"
+                            title="View Order Details"
+                          >
+                            <Eye className="w-4 h-4" />
+                            <span className="text-xs font-semibold hidden md:inline">View</span>
+                          </button>
+                          {isAdmin && (
+                            <button
+                              type="button"
+                              onClick={() => setOrderToDelete(order)}
+                              disabled={isDeleting || updatingId === order.id}
+                              className="inline-flex items-center gap-1 p-2 rounded-xl text-red-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                              title="Delete Order"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                              <span className="text-xs font-semibold hidden md:inline">Delete</span>
+                            </button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   );
@@ -370,13 +554,26 @@ export default function AdminOrdersPage() {
                   )}
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={() => setSelectedOrder(null)}
-                className="p-2 text-gray-400 hover:text-gray-600 rounded-xl hover:bg-gray-100 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              <div className="flex items-center gap-2">
+                {isAdmin && (
+                  <button
+                    type="button"
+                    onClick={() => setOrderToDelete(selectedOrder)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 transition-colors"
+                    title="Delete this order"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Delete Order</span>
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setSelectedOrder(null)}
+                  className="p-2 text-gray-400 hover:text-gray-600 rounded-xl hover:bg-gray-100 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
             </div>
 
             {/* Customer & Shipping Details */}
@@ -467,6 +664,136 @@ export default function AdminOrdersPage() {
                 <span>Total Amount</span>
                 <span>₹{selectedOrder.total.toLocaleString('en-IN')}</span>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {orderToDelete && (
+        <div className="fixed inset-0 z-60 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 space-y-5 shadow-2xl border border-gray-200 animate-in zoom-in-95">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-2xl bg-red-50 text-red-500 flex items-center justify-center shrink-0 border border-red-100">
+                <Trash2 className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-extrabold text-[#1F2937]">Delete Order Permanently?</h3>
+                <p className="text-xs text-gray-500">This action cannot be undone.</p>
+              </div>
+            </div>
+
+            <div className="p-3.5 bg-[#FAF7F2] rounded-2xl border border-[#EFE7DE] text-xs space-y-1.5">
+              <div className="flex justify-between">
+                <span className="text-gray-500">Order ID:</span>
+                <span className="font-mono font-bold text-[#1F2937]">{orderToDelete.order_number}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Customer:</span>
+                <span className="font-semibold text-[#1F2937]">{orderToDelete.customer_name}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Total:</span>
+                <span className="font-bold text-[#1F2937]">₹{orderToDelete.total.toLocaleString('en-IN')}</span>
+              </div>
+            </div>
+
+            <p className="text-xs text-gray-500 leading-relaxed">
+              Are you sure you want to permanently delete this order record? It will be completely removed from the database along with all its line items.
+            </p>
+
+            <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-gray-100">
+              <button
+                type="button"
+                onClick={() => setOrderToDelete(null)}
+                disabled={isDeleting}
+                className="px-4 py-2 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-100 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteOrder}
+                disabled={isDeleting}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-red-600 hover:bg-red-700 active:scale-95 transition-all shadow-sm disabled:opacity-50"
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Deleting...</span>
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Delete Order</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Delete Confirmation Modal */}
+      {isBulkDeletingModalOpen && (
+        <div className="fixed inset-0 z-60 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 space-y-5 shadow-2xl border border-gray-200 animate-in zoom-in-95">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-2xl bg-red-50 text-red-500 flex items-center justify-center shrink-0 border border-red-100">
+                <Trash2 className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-extrabold text-[#1F2937]">
+                  Delete {selectedOrderIds.size} {selectedOrderIds.size === 1 ? 'Order' : 'Orders'} Permanently?
+                </h3>
+                <p className="text-xs text-gray-500">This action cannot be undone.</p>
+              </div>
+            </div>
+
+            <div className="p-3.5 bg-[#FAF7F2] rounded-2xl border border-[#EFE7DE] text-xs space-y-2">
+              <div className="flex justify-between font-bold text-[#1F2937]">
+                <span>Total Selected:</span>
+                <span>{selectedOrderIds.size} Orders</span>
+              </div>
+              <div className="text-gray-500 text-[11px] leading-relaxed max-h-24 overflow-y-auto">
+                {orders
+                  .filter((o) => selectedOrderIds.has(o.id))
+                  .map((o) => o.order_number)
+                  .join(', ')}
+              </div>
+            </div>
+
+            <p className="text-xs text-gray-500 leading-relaxed">
+              Are you sure you want to permanently delete these {selectedOrderIds.size} orders from the database? All associated line items and records will be completely removed.
+            </p>
+
+            <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-gray-100">
+              <button
+                type="button"
+                onClick={() => setIsBulkDeletingModalOpen(false)}
+                disabled={isDeleting}
+                className="px-4 py-2 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleBulkDelete}
+                disabled={isDeleting}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-red-600 hover:bg-red-700 active:scale-95 transition-all shadow-sm disabled:opacity-50 cursor-pointer"
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Deleting {selectedOrderIds.size}...</span>
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Confirm &amp; Delete ({selectedOrderIds.size})</span>
+                  </>
+                )}
+              </button>
             </div>
           </div>
         </div>

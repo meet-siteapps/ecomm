@@ -159,3 +159,30 @@ export async function updateOrderStatusAdmin(
     }),
   });
 }
+
+/**
+ * Admin: Permanently deletes an order via DELETE /api/admin/orders/:id
+ */
+export async function deleteOrderAdmin(
+  orderId: string,
+  accessToken?: string | null
+): Promise<{ deleted: boolean }> {
+  return apiOrderFetch<{ deleted: boolean }>(`/api/admin/orders/${orderId}`, accessToken, {
+    method: 'DELETE',
+  });
+}
+
+/**
+ * Admin: Permanently deletes multiple orders via POST /api/admin/orders/bulk-delete
+ */
+export async function bulkDeleteOrdersAdmin(
+  orderIds: string[],
+  accessToken?: string | null
+): Promise<{ deletedCount: number }> {
+  return apiOrderFetch<{ deletedCount: number }>('/api/admin/orders/bulk-delete', accessToken, {
+    method: 'POST',
+    body: JSON.stringify({ orderIds }),
+  });
+}
+
+
