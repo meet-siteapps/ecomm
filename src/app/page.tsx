@@ -9,6 +9,7 @@ import {
   HeroGroundShape,
 } from '@/components/common/CartoonIllustrations';
 import { FloatingStars, FloatingHeartsMinimal } from '@/components/common/DecorativeElements';
+import { BrandSplashScreen } from '@/components/common/BrandSplashScreen';
 
 export const revalidate = 60; // Revalidate every 60s for fresh real products from Supabase
 
@@ -17,6 +18,7 @@ export default async function HomePage() {
 
   return (
     <div className="w-full space-y-10 sm:space-y-14 pb-16 animate-fade-in">
+      <BrandSplashScreen />
       {/* ========================================================= */}
       {/* 1. HERO SECTION WITH SEAMLESS MASCOTS & MATCHING BG       */}
       {/* ========================================================= */}
