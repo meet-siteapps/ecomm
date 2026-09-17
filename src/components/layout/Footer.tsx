@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { MapPin, Phone, Mail, ChevronDown } from 'lucide-react';
-import { CuteTeddyLogo } from '@/components/common/CartoonIllustrations';
+import { CuteTeddyLogo, SmallCloudAccent } from '@/components/common/CartoonIllustrations';
 import { fetchStoreSettings } from '@/lib/api/settings';
 import { StoreSettings, DEFAULT_STORE_SETTINGS } from '@/types/settings';
 
@@ -30,16 +30,16 @@ export function Footer() {
   };
 
   return (
-    <footer className="w-full bg-[#FFFBF5] mt-auto relative overflow-hidden border-t border-[#F3ECE1]">
+    <footer className="w-full bg-[#FFFBF5] mt-auto relative overflow-hidden border-t border-[#F3ECE1]/80">
       {/* ========================================================= */}
       {/* 1. MAIN FOOTER CONTENT ON LIGHT CREAM BACKGROUND          */}
       {/* ========================================================= */}
-      <div className="pt-6 md:pt-10 sm:pt-14 pb-3 md:pb-4 sm:pb-6 relative">
+      <div className="pt-2 sm:pt-3 md:pt-5 pb-3 md:pb-4 sm:pb-6 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
           
           {/* Mobile Top Header: Brand info + Small Hot Air Balloon */}
-          <div className="flex md:hidden items-center justify-between gap-4 pb-4 mb-4 border-b border-[#EFE8DC]/80">
-            <div className="space-y-1.5 max-w-[70%]">
+          <div className="flex md:hidden items-center justify-between gap-3 sm:gap-4 pb-4 mb-4 border-b border-[#EFE8DC]/80">
+            <div className="space-y-1.5 max-w-[65%] sm:max-w-[70%]">
               <Link href="/" className="inline-flex items-center gap-1.5 group">
                 <div className="w-7 h-7 rounded-xl bg-[#FDF2F4] p-1 flex items-center justify-center border border-[#F06277]/20 shadow-2xs">
                   <CuteTeddyLogo className="w-full h-full" />
@@ -67,28 +67,44 @@ export function Footer() {
               </p>
             </div>
 
-            {/* Mobile Hot Air Balloon Illustration */}
-            <div className="relative w-24 sm:w-28 shrink-0 animate-float opacity-90">
+            {/* Mobile Hot Air Balloon Illustration with decorative floating clouds (well clear of top edge) */}
+            <div className="relative w-20 sm:w-24 shrink-0 animate-float opacity-90 overflow-visible">
+              {/* Floating Cloud 1 (safely on the left, below top boundary so never cut off) */}
+              <div className="absolute top-4 -left-7 pointer-events-none z-0 animate-float opacity-90">
+                <SmallCloudAccent className="w-11 sm:w-13 h-auto" tint="sky" />
+              </div>
+              {/* Floating Cloud 2 (Lower Right near basket) */}
+              <div className="absolute bottom-1 -right-2 pointer-events-none z-0 animate-float opacity-80" style={{ animationDelay: '1.2s' }}>
+                <SmallCloudAccent className="w-8 sm:w-10 h-auto" tint="pastel" />
+              </div>
               <Image
                 src="/hotairbaloon.png"
                 alt=""
                 width={800}
                 height={1317}
-                className="w-full h-auto object-contain select-none pointer-events-none mix-blend-multiply transition-transform duration-500 hover:scale-110"
+                className="w-full h-auto object-contain select-none pointer-events-none mix-blend-multiply transition-transform duration-500 hover:scale-110 relative z-10"
               />
             </div>
           </div>
 
-          <div className="flex flex-col lg:flex-row items-end justify-between gap-6 lg:gap-8">
-            {/* Desktop Left Bookend: Hot Air Balloon Image */}
-            <div className="hidden lg:flex shrink-0 items-end justify-center self-end -mb-4 xl:-mb-6">
-              <div className="relative w-28 lg:w-32 xl:w-36 h-auto group animate-float">
+          <div className="flex flex-col md:flex-row items-end justify-between gap-4 md:gap-6 lg:gap-8">
+            {/* Desktop & Tablet Left Bookend: Hot Air Balloon Image with decorative clouds */}
+            <div className="hidden md:flex shrink-0 items-end justify-center self-end -mb-4 xl:-mb-6">
+              <div className="relative w-24 md:w-28 lg:w-32 xl:w-36 h-auto group">
+                {/* Decorative Clouds around Hot Air Balloon - Vividly visible and floating */}
+                <div className="absolute -top-3 -left-5 md:-left-7 pointer-events-none z-0 animate-float">
+                  <SmallCloudAccent className="w-16 sm:w-20 md:w-22 h-auto" tint="sky" />
+                </div>
+                <div className="absolute bottom-5 -right-4 md:-right-6 pointer-events-none z-0 animate-float" style={{ animationDelay: '1.4s' }}>
+                  <SmallCloudAccent className="w-14 sm:w-16 md:w-18 h-auto" tint="pastel" />
+                </div>
+
                 <Image
                   src="/hotairbaloon.png"
                   alt="Baby Ladoo Hot Air Balloon"
                   width={800}
                   height={1317}
-                  className="w-full h-auto object-contain object-bottom select-none pointer-events-none mix-blend-multiply transition-transform duration-500 ease-out group-hover:scale-110"
+                  className="w-full h-auto object-contain object-bottom select-none pointer-events-none mix-blend-multiply transition-transform duration-500 ease-out group-hover:scale-110 relative z-10 animate-float"
                 />
               </div>
             </div>
@@ -378,10 +394,10 @@ export function Footer() {
                 </div>
               </div>
 
-              {/* Central 5 Columns - Desktop only (md and up) */}
-              <div className="hidden md:grid md:grid-cols-3 lg:grid-cols-5 gap-8 sm:gap-6 flex-1 w-full self-start pt-2">
-                {/* Column 1: Brand & Social (Hidden on mobile since shown in mobile header) */}
-                <div className="hidden lg:block space-y-3.5">
+              {/* Central Columns - Balanced across Tablet (md: 2x2) and Desktop (lg: 4 cols, xl: 5 cols) */}
+              <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6 lg:gap-8 flex-1 w-full self-start pt-2">
+                {/* Column 1: Brand & Social (Shown on xl screens where space allows 5 columns) */}
+                <div className="hidden xl:block space-y-3.5">
                   <Link href="/" className="inline-flex items-center gap-2 group">
                     <div className="w-9 h-9 rounded-2xl bg-[#FDF2F4] p-1 flex items-center justify-center border border-[#F06277]/20 shadow-2xs group-hover:scale-105 transition-transform">
                       <CuteTeddyLogo className="w-full h-full" />
@@ -576,29 +592,41 @@ export function Footer() {
             </div>
             {/* End wrapper for mobile accordions and desktop columns */}
 
-            {/* Desktop Right Bookend: Giraffe Image */}
-            <div className="hidden lg:flex shrink-0 items-end justify-center self-end -mb-4 xl:-mb-6">
-              <div className="relative w-32 lg:w-36 xl:w-44 h-auto group animate-sway">
+            {/* Desktop & Tablet Right Bookend: Giraffe Image with decorative clouds */}
+            <div className="hidden md:flex shrink-0 items-end justify-center self-end -mb-4 xl:-mb-6">
+              <div className="relative w-28 md:w-32 lg:w-36 xl:w-44 h-auto group">
+                {/* Decorative Clouds near Giraffe - Vividly visible and floating */}
+                <div className="absolute top-4 -left-4 md:-left-6 pointer-events-none z-0 animate-float" style={{ animationDelay: '0.8s' }}>
+                  <SmallCloudAccent className="w-16 sm:w-18 md:w-20 h-auto" tint="sky" />
+                </div>
+                <div className="absolute bottom-7 -right-3 md:-right-5 pointer-events-none z-0 animate-float" style={{ animationDelay: '2s' }}>
+                  <SmallCloudAccent className="w-12 sm:w-14 md:w-16 h-auto" tint="pastel" />
+                </div>
+
                 <Image
                   src="/giraffe.png"
                   alt="Baby Ladoo Giraffe Mascot"
                   width={879}
                   height={1216}
-                  className="w-full h-auto object-contain object-bottom select-none pointer-events-none mix-blend-multiply transition-transform duration-500 ease-out group-hover:scale-110 group-hover:rotate-3"
+                  className="w-full h-auto object-contain object-bottom select-none pointer-events-none mix-blend-multiply transition-transform duration-500 ease-out group-hover:scale-110 group-hover:rotate-3 relative z-10 animate-sway"
                 />
               </div>
             </div>
           </div>
 
-          {/* Mobile Giraffe Mascot: decorative accent with animation */}
-          <div className="flex md:hidden justify-end items-end pt-4 -mb-3">
-            <div className="relative w-24 sm:w-28 shrink-0 animate-sway opacity-85">
+          {/* Mobile Giraffe Mascot: decorative accent with floating cloud kept at distance from head */}
+          <div className="flex md:hidden justify-end items-end pt-4 -mb-3 overflow-visible">
+            <div className="relative w-20 sm:w-24 shrink-0 animate-sway opacity-90 overflow-visible">
+              {/* Floating Cloud in open space to the left of giraffe, away from head and horns */}
+              <div className="absolute top-9 -left-12 pointer-events-none z-0 animate-float opacity-90" style={{ animationDelay: '0.8s' }}>
+                <SmallCloudAccent className="w-11 sm:w-13 h-auto" tint="sky" />
+              </div>
               <Image
                 src="/giraffe.png"
                 alt=""
                 width={879}
                 height={1216}
-                className="w-full h-auto object-contain object-bottom select-none pointer-events-none mix-blend-multiply transition-transform duration-500 hover:scale-110"
+                className="w-full h-auto object-contain object-bottom select-none pointer-events-none mix-blend-multiply transition-transform duration-500 hover:scale-110 relative z-10"
               />
             </div>
           </div>

@@ -4,6 +4,8 @@ import './globals.css';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { AuthListener } from '@/components/auth/AuthListener';
+import { AdminFab } from '@/components/layout/AdminFab';
+import { ScrollToTopOnNav } from '@/components/common/ScrollToTopOnNav';
 
 const quicksand = Quicksand({
   subsets: ['latin'],
@@ -35,10 +37,12 @@ export default function RootLayout({
         className="min-h-screen flex flex-col bg-[#FFFEFA] text-[#1E293B] font-sans antialiased selection:bg-[#FDF2F4] selection:text-[#F06277]"
         suppressHydrationWarning
       >
+        <ScrollToTopOnNav />
         <AuthListener />
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
+        <AdminFab />
       </body>
     </html>
   );

@@ -206,13 +206,18 @@ export function ProductCard({ product, onStatusChange }: ProductCardProps) {
               type="button"
               onClick={handleAddToCart}
               disabled={product.stock <= 0}
-              className={`p-2 rounded-full text-xs font-bold flex items-center justify-center transition-all duration-200 shadow-cute-pink active:scale-90 ${
+              className={`relative p-2 rounded-full text-xs font-bold flex items-center justify-center transition-all duration-200 shadow-cute-pink active:scale-90 ${
                 added
                   ? 'bg-[#A8C98B] text-[#193653] shadow-none scale-105'
                   : 'bg-[#F27A8A] hover:bg-[#e06878] text-white hover:shadow-cute-pink-hover disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed'
               }`}
               aria-label="Add to cart"
             >
+              {added && (
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full bg-[#193653] text-[#F6D77A] text-[10px] font-black pointer-events-none shadow-md animate-bounce-up-fade whitespace-nowrap z-20">
+                  +1
+                </span>
+              )}
               {added ? <Check className="w-3.5 h-3.5 animate-pop-in" /> : <ShoppingBag className="w-3.5 h-3.5" />}
             </button>
           )}

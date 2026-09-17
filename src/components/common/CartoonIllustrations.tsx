@@ -606,15 +606,36 @@ export function FooterGiraffe({ className = 'w-24 h-36' }: { className?: string 
 }
 
 /**
- * SmallCloudAccent — a single puffy cloud shape for hero decoration.
+ * SmallCloudAccent — a single puffy cloud shape for hero and footer decoration.
+ * Features a soft pastel gradient, delicate sky-blue outline, and drop-shadow
+ * so it is clearly visible and playful against cream and white backgrounds.
  */
-export function SmallCloudAccent({ className = 'w-20 h-10' }: { className?: string }) {
+export function SmallCloudAccent({
+  className = 'w-20 h-10',
+  tint = 'pastel',
+}: {
+  className?: string;
+  tint?: 'pastel' | 'sky' | 'white';
+}) {
+  const id = React.useId();
   return (
-    <svg viewBox="0 0 80 40" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} aria-hidden="true">
+    <svg viewBox="0 0 84 44" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} aria-hidden="true">
+      <defs>
+        <linearGradient id={`cloudFill-${id}`} x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="100%" stopColor={tint === 'sky' ? '#E1F3FA' : tint === 'pastel' ? '#EDF7FC' : '#F8FAFC'} />
+        </linearGradient>
+        <filter id={`cloudShadow-${id}`} x="-15%" y="-15%" width="130%" height="135%">
+          <feDropShadow dx="0" dy="3" stdDeviation="3" floodColor="#8FD3E8" floodOpacity="0.35" />
+        </filter>
+      </defs>
       <path
-        d="M 10 32 Q 0 32 0 24 Q 0 14 10 13 Q 14 4 24 6 Q 32 0 44 5 Q 56 0 64 10 Q 78 10 78 22 Q 80 32 64 32 Z"
-        fill="white"
-        fillOpacity="0.85"
+        d="M 12 34 Q 2 34 2 26 Q 2 16 12 15 Q 16 6 26 8 Q 34 2 46 7 Q 58 2 66 12 Q 80 12 80 24 Q 82 34 66 34 Z"
+        fill={`url(#cloudFill-${id})`}
+        stroke="#A5DFF2"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+        filter={`url(#cloudShadow-${id})`}
       />
     </svg>
   );

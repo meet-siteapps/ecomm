@@ -333,15 +333,20 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                 type="button"
                 onClick={handleAddToCart}
                 disabled={product.stock <= 0}
-                className={`flex-1 py-3.5 px-6 rounded-full text-xs sm:text-sm font-extrabold flex items-center justify-center gap-2 transition-all shadow-cute-pink active:scale-98 ${
+                className={`relative flex-1 py-3.5 px-6 rounded-full text-xs sm:text-sm font-extrabold flex items-center justify-center gap-2 transition-all shadow-cute-pink active:scale-98 ${
                   added
-                    ? 'bg-[#A8C98B] text-[#193653]'
+                    ? 'bg-[#A8C98B] text-[#193653] scale-[1.02]'
                     : 'bg-[#F27A8A] hover:bg-[#e06878] text-white disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed'
                 }`}
               >
+                {added && (
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full bg-[#193653] text-[#F6D77A] text-xs font-black pointer-events-none shadow-lg animate-bounce-up-fade whitespace-nowrap z-20">
+                    +{quantity} Added!
+                  </span>
+                )}
                 {added ? (
                   <>
-                    <Check className="w-4 h-4" />
+                    <Check className="w-4 h-4 animate-pop-in" />
                     <span>Added to Cart!</span>
                   </>
                 ) : (

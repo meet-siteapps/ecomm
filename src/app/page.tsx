@@ -17,9 +17,9 @@ export default async function HomePage() {
   const featuredProducts = await getProducts({ limit: 8 });
 
   return (
-    <div className="w-full space-y-10 sm:space-y-14 pb-16 animate-fade-in">
-      <BrandSplashScreen />
-      {/* ========================================================= */}
+    <BrandSplashScreen>
+      <div className="w-full space-y-8 sm:space-y-10">
+        {/* ========================================================= */}
       {/* 1. HERO SECTION WITH SEAMLESS MASCOTS & MATCHING BG       */}
       {/* ========================================================= */}
       <section className="relative overflow-hidden bg-gradient-to-b from-[#FFFEFA] via-[#FFFDF9] to-[#FFFBF5] pt-6 sm:pt-10 lg:pt-16 pb-12 sm:pb-16 lg:pb-24 px-4 sm:px-6 lg:px-8 border-b border-[#F3ECE1]">
@@ -32,7 +32,7 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center relative z-10">
           {/* Left Column: Heading, Subtext & Two CTAs */}
           <div className="text-center lg:text-left space-y-5 sm:space-y-6 animate-fade-up">
-            <h1 className="text-4xl xs:text-5xl sm:text-6xl lg:text-[62px] font-black text-[#1E293B] tracking-tight leading-[1.12]">
+            <h1 className="text-3xl sm:text-5xl lg:text-[62px] font-black text-[#1E293B] tracking-tight leading-[1.14]">
               Made with{' '}
               <span className="text-[#F06277] relative inline-block">
                 Love
@@ -56,10 +56,10 @@ export default async function HomePage() {
             </p>
 
             {/* Two CTAs: Primary Pink Button with Heart + Text Link with Arrow */}
-            <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-6">
+            <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-3 sm:gap-6">
               <Link
                 href="/products"
-                className="inline-flex items-center justify-center gap-2 px-7 sm:px-8 py-3.5 sm:py-4 rounded-full bg-[#F06277] hover:bg-[#D9455B] text-white font-extrabold text-sm sm:text-base transition-all duration-300 shadow-[0_6px_20px_-2px_rgba(240,98,119,0.38)] hover:shadow-[0_8px_24px_-2px_rgba(240,98,119,0.48)] active:scale-95 group"
+                className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 rounded-full bg-[#F06277] hover:bg-[#D9455B] text-white font-extrabold text-sm sm:text-base transition-all duration-300 shadow-[0_6px_20px_-2px_rgba(240,98,119,0.38)] hover:shadow-[0_8px_24px_-2px_rgba(240,98,119,0.48)] active:scale-95 group"
               >
                 <span>Shop Now</span>
                 <Heart className="w-4 h-4 fill-white text-white group-hover:scale-110 transition-transform duration-200" />
@@ -101,9 +101,9 @@ export default async function HomePage() {
             </div>
 
             {/* Clean White Floating Pill Card */}
-            <div className="bg-white/95 backdrop-blur-md rounded-3xl sm:rounded-full px-5 sm:px-6 py-4 sm:py-5 border border-[#F3ECE1] shadow-[0_8px_30px_rgb(0,0,0,0.04)] grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-0 lg:divide-x lg:divide-[#F3ECE1] items-center">
+            <div className="bg-white/95 backdrop-blur-md rounded-3xl sm:rounded-full px-4 sm:px-6 py-3.5 sm:py-5 border border-[#F3ECE1] shadow-[0_8px_30px_rgb(0,0,0,0.04)] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4 lg:gap-0 lg:divide-x lg:divide-[#F3ECE1] items-center">
               {/* 1. Safe & Certified (Soft Sage Green circle) */}
-              <div className="flex items-center gap-3 px-2 sm:px-4">
+              <div className="flex items-center gap-3 px-2 sm:px-4 py-1 sm:py-0">
                 <div className="w-10 h-10 rounded-full bg-[#EBF7EE] text-[#34A853] flex items-center justify-center shrink-0">
                   <ShieldCheck className="w-5 h-5 stroke-[2.2]" />
                 </div>
@@ -114,7 +114,7 @@ export default async function HomePage() {
               </div>
 
               {/* 2. 100% Organic (Coral Pink circle) */}
-              <div className="flex items-center gap-3 px-2 sm:px-4">
+              <div className="flex items-center gap-3 px-2 sm:px-4 py-1 sm:py-0">
                 <div className="w-10 h-10 rounded-full bg-[#FDF2F4] text-[#F06277] flex items-center justify-center shrink-0">
                   <Leaf className="w-5 h-5 stroke-[2.2]" />
                 </div>
@@ -125,7 +125,7 @@ export default async function HomePage() {
               </div>
 
               {/* 3. Fast Delivery (Pastel Sky Blue circle) */}
-              <div className="flex items-center gap-3 px-2 sm:px-4">
+              <div className="flex items-center gap-3 px-2 sm:px-4 py-1 sm:py-0">
                 <div className="w-10 h-10 rounded-full bg-[#EBF5FB] text-[#2B8CE6] flex items-center justify-center shrink-0">
                   <Truck className="w-5 h-5 stroke-[2.2]" />
                 </div>
@@ -136,7 +136,7 @@ export default async function HomePage() {
               </div>
 
               {/* 4. Loved by Parents (Pastel Yellow circle) */}
-              <div className="flex items-center gap-3 px-2 sm:px-4">
+              <div className="flex items-center gap-3 px-2 sm:px-4 py-1 sm:py-0">
                 <div className="w-10 h-10 rounded-full bg-[#FEF9E8] text-[#EAB308] flex items-center justify-center shrink-0">
                   <Heart className="w-5 h-5 fill-[#EAB308] stroke-[2.2]" />
                 </div>
@@ -206,7 +206,7 @@ export default async function HomePage() {
       {/* ========================================================= */}
       {/* 3. SOFT PASTEL PROMOTIONAL BANNER                         */}
       {/* ========================================================= */}
-      <section className="bg-[#FFFBF5] py-10 sm:py-14 relative">
+      <section className="bg-[#FFFBF5] pt-4 sm:pt-6 pb-2 sm:pb-4 relative">
         {/* Decorative sparkles */}
         <FloatingStars className="opacity-60" />
         
@@ -251,11 +251,7 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-      
-      {/* Final divider before footer */}
-      <div className="bg-[#FFFBF5]">
-        <WavyDivider topColor="#FFFBF5" bottomColor="#FFFEFA" />
       </div>
-    </div>
+    </BrandSplashScreen>
   );
 }
